@@ -126,6 +126,7 @@ class datasetCommentView(APIView):
             data.append(serializer.data)
             likes=DatasetLike.objects.filter(comment=i)
             data[-1]['like']=len(likes)
+            data[-1]['add_time']=data[-1]['add_time'].split('T')[0]+' '+data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
     
 class llmCommentView(APIView):
@@ -142,6 +143,7 @@ class llmCommentView(APIView):
             data.append(serializer.data)
             likes=LLMLike.objects.filter(comment=i)
             data[-1]['like']=len(likes)
+            data[-1]['add_time']=data[-1]['add_time'].split('T')[0]+' '+data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
     
 class likeDCommentView(APIView):

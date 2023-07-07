@@ -424,6 +424,7 @@ class CommentTests(TestCase):
             format="json"
         )
         json_data=response.json()
+        print(json_data)
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json_data['data']), 2)
