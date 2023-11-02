@@ -7,6 +7,7 @@ class User(models.Model):
     password = models.CharField(max_length=32)
     mobile = models.CharField(max_length=255)
     add_time = models.DateTimeField(auto_now_add=True)
+    email_address = models.CharField(max_length=100)  #
     def __str__(self):
         return self.username
     
