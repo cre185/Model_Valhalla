@@ -34,6 +34,23 @@ def login(request):
                                 "message": "ok"}, status=status.HTTP_200_OK)
     except json.JSONDecodeError:
         return JsonResponse({"message": "Bad arguments"}, status=400)
+    
+@api_view(["POST"])
+def login_with_verify_code(request):
+    data = JSONParser().parse(request)
+    try:
+        verify_msg = VerifyMsg.objects.get(mobile=data['mobile'], code=data['code'])
+        try:
+            user = User.objects.get(mobile=data['mobile'])
+        except:
+            return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        jwt = generate_jwt({"user_id": user.id, "username": user.username})
+        return Response({"jwt": jwt, 
+                                "userId": user.id,
+                                "username": user.username,
+                                "message": "ok"}, status=status.HTTP_200_OK)
+    except:
+        return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
 
 @api_view(["POST"])
 def send_message(request):  
@@ -43,11 +60,30 @@ def send_message(request):
     
     if serializer.is_valid():
         serializer.save()
-        # send_msg.send_sms(serializer.code, serializer.mobile)
+        send = send_msg()
+        # send.send_sms(data["code"], data["mobile"])
         return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["POST"])
+def verify_code(request):
+    data = JSONParser().parse(request)
+    try:
+        verify_msg = VerifyMsg.objects.get(mobile=data['mobile'], code=data['code'])
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+    except:
+        return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
+
+@api_view(["POST"])
+def register(request):
+    data = JSONParser().parse(request)
+    serializer = UserSerializer(data=data)
     
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 @login_required
 def logout(request):
     return JsonResponse({"message": "ok"})

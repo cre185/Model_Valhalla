@@ -6,6 +6,7 @@ import jwt
 import scrypt
 from django.conf import settings
 from django.http import JsonResponse
+from user.models import User
 
 
 def generate_jwt(payload, expiry=None):
@@ -23,8 +24,8 @@ def generate_jwt(payload, expiry=None):
             else 1
         )
         expiry = now + datetime.timedelta(hours=expire_hours)
-        print("now:", now)
-        print("expiry:", expiry)
+        # print("now:", now)
+        # print("expiry:", expiry)
 
     _payload = {"exp": expiry}
     _payload.update(payload)
@@ -68,9 +69,11 @@ def jwt_authentication(request):
         payload = verify_jwt(token)
         if payload:
             user_id = payload.get("user_id")
-            user, result = get_user(user_id)
-            if result:
+            try:
+                user = User.objects.get(id=user_id)
                 request.user = user
+            except User.DoesNotExist:
+                pass
 
 
 def login_required(func):
