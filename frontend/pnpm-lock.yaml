@@ -2475,8 +2475,8 @@ packages:
       decompress-tarbz2: 4.1.1
       decompress-targz: 4.1.1
       decompress-unzip: 4.0.1
-      graceful-fs: 4.2.11
-      make-dir: 1.3.0
+      graceful-fs: registry.npmmirror.com/graceful-fs@4.2.11
+      make-dir: registry.npmmirror.com/make-dir@1.3.0
       pify: 2.3.0
       strip-dirs: 2.1.0
     dev: true
@@ -2646,7 +2646,7 @@ packages:
       filenamify: 2.1.0
       get-stream: 3.0.0
       got: 7.1.0
-      make-dir: 1.3.0
+      make-dir: registry.npmmirror.com/make-dir@1.3.0
       p-event: 1.3.0
       pify: 3.0.0
     dev: true
@@ -3812,7 +3812,7 @@ packages:
     engines: {node: '>=0.6.0'}
     hasBin: true
     dependencies:
-      minimist: 1.2.8
+      minimist: registry.npmmirror.com/minimist@1.2.8
     dev: true
 
   /gopd@1.0.1:
@@ -4839,9 +4839,9 @@ packages:
     resolution: {integrity: sha512-cy7ZdNRXdablkXYNI049pthVeXFurRyb9+hA/dZzerZ0pGTx42z+y+ssxBaVV2l70t1muq5IdKhn4UtcoGUY9A==}
     engines: {node: '>=0.10.0'}
     dependencies:
-      graceful-fs: 4.2.11
+      graceful-fs: registry.npmmirror.com/graceful-fs@4.2.11
       parse-json: 2.2.0
-      pify: 2.3.0
+      pify: registry.npmmirror.com/pify@2.3.0
       pinkie-promise: 2.0.1
       strip-bom: 2.0.0
     dev: true
@@ -4850,7 +4850,7 @@ packages:
     resolution: {integrity: sha512-Kx8hMakjX03tiGTLAIdJ+lL0htKnXjEZN6hk/tozf/WOuYGdZBJrZ+rCJRbVCugsjB3jMLn9746NsQIf5VjBMw==}
     engines: {node: '>=4'}
     dependencies:
-      graceful-fs: 4.2.11
+      graceful-fs: registry.npmmirror.com/graceful-fs@4.2.11
       parse-json: 4.0.0
       pify: 3.0.0
       strip-bom: 3.0.0
@@ -5020,13 +5020,6 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
 
-  /make-dir@1.3.0:
-    resolution: {integrity: sha512-2w31R7SJtieJJnQtGc7RVL2StM2vGYVfqUOvUDxH6bC6aJTxPxTF0GnIgCyu7tjockiUWAYQRbxa7vKn34s5sQ==}
-    engines: {node: '>=4'}
-    dependencies:
-      pify: 3.0.0
-    dev: true
-
   /make-dir@3.1.0:
     resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
     engines: {node: '>=8'}
@@ -5095,7 +5088,7 @@ packages:
       decamelize: 1.2.0
       loud-rejection: 1.6.0
       map-obj: 1.0.1
-      minimist: 1.2.8
+      minimist: registry.npmmirror.com/minimist@1.2.8
       normalize-package-data: 2.5.0
       object-assign: 4.1.1
       read-pkg-up: 1.0.1
@@ -5273,7 +5266,7 @@ packages:
     resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
     hasBin: true
     dependencies:
-      minimist: 1.2.8
+      minimist: registry.npmmirror.com/minimist@1.2.8
     dev: true
 
   /mockjs@1.1.0:
@@ -5387,7 +5380,7 @@ packages:
     engines: {node: '>=4'}
     dependencies:
       config-chain: 1.1.13
-      pify: 3.0.0
+      pify: registry.npmmirror.com/pify@3.0.0
     dev: true
 
   /npm-run-path@2.0.2:
@@ -5754,8 +5747,8 @@ packages:
     resolution: {integrity: sha512-S4eENJz1pkiQn9Znv33Q+deTOKmbl+jj1Fl+qiP/vYezj+S8x+J3Uo0ISrx/QoEvIlOaDWJhPaRd1flJ9HXZqg==}
     engines: {node: '>=0.10.0'}
     dependencies:
-      graceful-fs: 4.2.11
-      pify: 2.3.0
+      graceful-fs: registry.npmmirror.com/graceful-fs@4.2.11
+      pify: registry.npmmirror.com/pify@2.3.0
       pinkie-promise: 2.0.1
     dev: true
 
@@ -9795,7 +9788,7 @@ packages:
     version: 1.3.0
     engines: {node: '>=4'}
     dependencies:
-      pify: registry.npmmirror.com/pify@3.0.0
+      pify: 3.0.0
     dev: true
 
   registry.npmmirror.com/make-dir@2.1.0:
@@ -9805,7 +9798,7 @@ packages:
     engines: {node: '>=6'}
     requiresBuild: true
     dependencies:
-      pify: registry.npmmirror.com/pify@4.0.1
+      pify: 4.0.1
       semver: 5.7.1
     dev: true
     optional: true
@@ -9838,7 +9831,6 @@ packages:
     resolution: {integrity: sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==, tarball: https://registry.npmmirror.com/minimist/-/minimist-1.2.8.tgz}
     name: minimist
     version: 1.2.8
-    dev: false
 
   registry.npmmirror.com/ms@2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==, tarball: https://registry.npmmirror.com/ms/-/ms-2.1.2.tgz}
