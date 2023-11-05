@@ -63,3 +63,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# WebStorm project file
+.idea/
