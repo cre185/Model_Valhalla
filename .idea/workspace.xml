@@ -5,47 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="81c70758-a954-4a72-a14b-6c2c4abf7e17" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/alien_encounters/Alien-Encounters-Bold-Italic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/alien_encounters/Alien-Encounters-Bold.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/alien_encounters/Alien-Encounters-Italic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/alien_encounters/Alien-Encounters-Regular.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/alien_encounters/Alien-Encounters-Solid-Bold-Italic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/alien_encounters/Alien-Encounters-Solid-Bold.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/alien_encounters/Alien-Encounters-Solid-Italic.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/alien_encounters/Alien-Encounters-Solid-Regular.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/big_samurai/Big Samurai.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/douyin/douyuzhuiguangti.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/font.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/siyuan/SourceHanSansCN-Bold.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/siyuan/SourceHanSansCN-ExtraLight.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/siyuan/SourceHanSansCN-Heavy.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/siyuan/SourceHanSansCN-Light.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/siyuan/SourceHanSansCN-Medium.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/siyuan/SourceHanSansCN-Normal.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/font/siyuan/SourceHanSansCN-Regular.ttf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/trophy.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/assets/valhalla.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/router/routes/modules/home.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/dashboard/kaka/index.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/dashboard/kaka/locale/zh-CN.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/home/components/announcement.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/home/components/docs.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/home/components/quick-operation.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/home/index.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/home/locale/en-US.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/home/locale/zh-CN.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/frontend/src/views/home/mock.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/navbar/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/navbar/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/locale/zh-CN.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/locale/zh-CN.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/router/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/constants.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/router/routes/modules/dashboard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/routes/modules/dashboard.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/views/login/components/login-form.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/login/components/login-form.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/router/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,36 +41,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/yaorunmao/Desktop/大三上学期/软件工程/Model_Valhalla/frontend/src/views/home&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.stylelint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.stylelint&quot;: &quot;/Users/yaorunmao/Desktop/大三上学期/软件工程/Model_Valhalla/frontend/node_modules/stylelint&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/yaorunmao/Desktop/大三上学期/软件工程/Model_Valhalla/frontend/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/yaorunmao/Desktop/大三上学期/软件工程/Model_Valhalla/frontend/src/router/routes/modules",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.stylelint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.stylelint": "/Users/yaorunmao/Desktop/大三上学期/软件工程/Model_Valhalla/frontend/node_modules/stylelint",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "/Users/yaorunmao/Desktop/大三上学期/软件工程/Model_Valhalla/frontend/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;vue.recent.templates&quot;: [
-      &quot;Vue Composition API Component&quot;
+  "keyToStringList": {
+    "vue.recent.templates": [
+      "Vue Composition API Component"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/frontend/src/router/routes/modules" />
       <recent name="$PROJECT_DIR$/frontend/src/views/home" />
     </key>
   </component>
