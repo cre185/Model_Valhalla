@@ -33,6 +33,17 @@ const DASHBOARD: AppRouteRecordRaw = {
         roles: ['admin'],
       },
     },
+
+    {
+      path: 'kaka',
+      name: 'kaka',
+      component: () => import('@/views/dashboard/kaka/index.vue'),
+      meta: {
+        locale: 'menu.dashboard.kaka',
+        requiresAuth: true,
+        roles: ['*'],
+      },
+    },
   ],
 };
 

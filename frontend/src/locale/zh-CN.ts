@@ -5,6 +5,8 @@ import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 
 import localeMonitor from '@/views/dashboard/monitor/locale/zh-CN';
 
+import localeKaka from '@/views/dashboard/kaka/locale/zh-CN';
+
 import localeSearchTable from '@/views/list/search-table/locale/zh-CN';
 import localeCardList from '@/views/list/card/locale/zh-CN';
 
@@ -50,6 +52,7 @@ export default {
   ...localeWorkplace,
 
   ...localeMonitor,
+  ...localeKaka,
   ...localeSearchTable,
   ...localeCardList,
   ...localeStepForm,

@@ -1,0 +1,27 @@
+@font-face {
+    font-weight: normal;
+    font-family: AlienEncounters;
+    font-style: normal;
+    src: url('./alien_encounters/Alien-Encounters-Regular.ttf');
+}
+
+@font-face {
+    font-weight: normal;
+    font-family: BigSamurai;
+    font-style: normal;
+    src: url('./big_samurai/Big Samurai.ttf');
+}
+
+@font-face {
+    font-weight: normal;
+    font-family: DouYin;
+    font-style: normal;
+    src: url('./douyin/douyuzhuiguangti.ttf');
+}
+
+@font-face {
+    font-weight: normal;
+    font-family: SiYuan;
+    font-style: normal;
+    src: url('./siyuan/SourceHanSansCN-Regular.ttf');
+}
