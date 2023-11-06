@@ -49,9 +49,9 @@ def login_with_verify_code(request):
             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
         jwt = generate_jwt({"user_id": user.id, "username": user.username})
         return Response({"jwt": jwt, 
-                                "userId": user.id,
-                                "username": user.username,
-                                "message": "ok"}, status=status.HTTP_200_OK)
+                        "userId": user.id,
+                        "username": user.username,
+                        "message": "ok"}, status=status.HTTP_200_OK)
     except:
         return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -91,7 +91,7 @@ def register(request):
 def logout(request):
     return JsonResponse({"message": "ok"})
 
-def judge_password(password):
+'''def judge_password(password):
     if not (4 <= len(password) <= 32):
         return Response("密码长度限制为4~32", status=status.HTTP_400_BAD_REQUEST)
 
@@ -112,9 +112,9 @@ def judge_mobile(mobile):
         return Response("手机号码长度为11位", status=status.HTTP_400_BAD_REQUEST)
     pattern = r"^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
     if re.match(pattern, mobile) is None:
-        return Response("手机号码格式不合法", status=status.HTTP_400_BAD_REQUEST)
+        return Response("手机号码格式不合法", status=status.HTTP_400_BAD_REQUEST)'''
 
-@api_view(["POST"])
+'''@api_view(["POST"])
 def signup(request):
     if request.method == "POST":
         data = JSONParser().parse(request)
@@ -152,9 +152,9 @@ def generate_email_verifycode():  # 生成6位的验证码
     random.seed(int(time.time()))
     for i in range(6):
         res += codes[random.randint(0, len(codes)-1)]
-    return res
+    return res'''
 
-def send_email_verifycode(req: HttpRequest):
+'''def send_email_verifycode():
     if req.method == "GET":
         body = req.GET
         username = body.get('username')
@@ -184,4 +184,4 @@ def send_email_verifycode(req: HttpRequest):
         )
         return Response({"message": "验证码已发送"}, status=status.HTTP_200_OK)
 
-    return Response({"message": "Bad Method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    return Response({"message": "Bad Method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)'''
