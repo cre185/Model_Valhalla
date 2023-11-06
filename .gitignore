@@ -63,3 +63,10 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# WebStorm project file
+.idea/
+.DS_Store
+.DS_Store
+.DS_Store
+.idea/workspace.xml
