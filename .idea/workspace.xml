@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="81c70758-a954-4a72-a14b-6c2c4abf7e17" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/user/migrations/0005_alter_user_mobile_alter_user_username_and_more.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/frontend/src/assets/images/logo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Model_Valhalla/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Model_Valhalla/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/user/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/user/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/api/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/api/user.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/views/login/components/login-form.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/login/components/login-form.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/views/login/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/login/index.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/views/login/locale/en-US.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/login/locale/en-US.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/views/login/locale/zh-CN.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/views/login/locale/zh-CN.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+        <option value="Vue Composition API Component" />
+        <option value="CSS File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2Xhj2wbzDhyZQ6z02CIbyAI3l2f" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "F:/Model_Valhalla/backend/db.sqlite3",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.stylelint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.stylelint": "\\Users\\yaorunmao\\Desktop\\大三上学期\\软件工程\\Model_Valhalla\\frontend\\node_modules\\stylelint",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "yarn",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "F:\\Model_Valhalla\\frontend\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "vue.recent.templates": [
+      "Vue Composition API Component"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\Model_Valhalla\frontend\src\assets\images" />
+      <recent name="$PROJECT_DIR$/frontend/src/router/routes/modules" />
+      <recent name="$PROJECT_DIR$/frontend/src/views/home" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="81c70758-a954-4a72-a14b-6c2c4abf7e17" name="更改" comment="" />
+      <created>1699088003413</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1699088003413</updated>
+      <workItem from="1699088004435" duration="3432000" />
+      <workItem from="1699092485896" duration="6237000" />
+      <workItem from="1699167142999" duration="22580000" />
+      <workItem from="1699271590231" duration="4748000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+</project>

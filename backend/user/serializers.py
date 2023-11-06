@@ -21,7 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     def validate_password(self, password):
         # if password is valid
-        if re.match(r'^[a-zA-Z0-9_-]{8,32}$', password) is None:
+        if re.match(r'^[a-zA-Z0-9_-]{6,32}$', password) is None:
             raise ValidationErrorWithMsg(detail={'message':'Password is invalid'})
         
         return password
@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
         if User.objects.filter(mobile=mobile).count():
             raise ValidationErrorWithMsg(detail={'message':'Mobile already been used'})
         # if mobile is valid
-        if re.match(r'^1[358]\d{9}$|^147\d{8}$|^176\d{8}$', mobile) is None:
+        if re.match(r'^\d{11}$', mobile) is None:
             raise ValidationErrorWithMsg(detail={'message':'Mobile is invalid'})
         
         return mobile
