@@ -16,9 +16,6 @@ from utils.send_msg import send_msg
 
 # Create your views here.
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the user index.")
-
 @api_view(["POST", "OPTIONS"])
 def login(request):
     if request.method == "OPTIONS":
