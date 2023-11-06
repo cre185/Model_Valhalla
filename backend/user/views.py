@@ -22,7 +22,12 @@ def index(request):
 @api_view(["POST", "OPTIONS"])
 def login(request):
     if request.method == "OPTIONS":
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
+        response = HttpResponse("OK");
+        response["Access-Control-Allow-Headers"] = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response["Access-Control-Allow-Origin"] = "*"
+        response[status] = status.HTTP_204_NO_CONTENT
+        return response
     
     try:
         data = JSONParser().parse(request)
@@ -77,8 +82,16 @@ def verify_code(request):
     except:
         return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
 
-@api_view(["POST"])
+@api_view(["POST", "OPTION"])
 def register(request):
+    if request.method == "OPTIONS":
+        response = HttpResponse("OK");
+        response["Access-Control-Allow-Headers"] = "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        response["Access-Control-Allow-Methods"] = "POST, OPTIONS"
+        response["Access-Control-Allow-Origin"] = "*"
+        response[status] = status.HTTP_204_NO_CONTENT
+        return response
+
     data = JSONParser().parse(request)
     serializer = UserSerializer(data=data)
     

@@ -1,64 +1,132 @@
 <template>
   <div class="login-form-wrapper">
     <div class="login-form-title">{{ $t('login.form.title') }}</div>
-    <div class="login-form-error-msg">{{ errorMessage }}</div>
-    <a-form
-      ref="loginForm"
-      :model="userInfo"
-      class="login-form"
-      layout="vertical"
-      @submit="handleSubmit"
-    >
-      <a-form-item
-        field="username"
-        :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
-        :validate-trigger="['change', 'blur']"
-        hide-label
-      >
-        <a-input
-          v-model="userInfo.username"
-          :placeholder="$t('login.form.userName.placeholder')"
+    <a-tabs :justify="true">
+      <a-tab-pane key="1">
+        <template #title>
+          {{ $t('login.form.loginWay.password') }}
+        </template>
+        <div class="login-form-error-msg">{{ errorMessage }}</div>
+        <a-form
+          ref="loginForm"
+          :model="userPassInfo"
+          class="login-form"
+          layout="vertical"
+          @submit="handleSubmit"
         >
-          <template #prefix>
-            <icon-user />
-          </template>
-        </a-input>
-      </a-form-item>
-      <a-form-item
-        field="password"
-        :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
-        :validate-trigger="['change', 'blur']"
-        hide-label
-      >
-        <a-input-password
-          v-model="userInfo.password"
-          :placeholder="$t('login.form.password.placeholder')"
-          allow-clear
-        >
-          <template #prefix>
-            <icon-lock />
-          </template>
-        </a-input-password>
-      </a-form-item>
-      <a-space :size="16" direction="vertical">
-        <div class="login-form-password-actions">
-          <a-checkbox
-            checked="rememberPassword"
-            :model-value="loginConfig.rememberPassword"
-            @change="setRememberPassword as any"
+          <a-form-item
+            field="username"
+            :rules="[
+              { required: true, message: $t('login.form.userName.errMsg') },
+            ]"
+            :validate-trigger="['change', 'blur']"
+            hide-label
           >
-            {{ $t('login.form.rememberPassword') }}
-          </a-checkbox>
-          <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
-        </div>
-        <a-button type="primary" html-type="submit" long :loading="loading">
-          {{ $t('login.form.login') }}
-        </a-button>
-        <a-button type="text" long class="login-form-register-btn">
-          {{ $t('login.form.register') }}
-        </a-button>
-      </a-space>
-    </a-form>
+            <a-input
+              v-model="userPassInfo.username"
+              :placeholder="$t('login.form.userName.placeholder')"
+            >
+              <template #prefix>
+                <icon-user />
+              </template>
+            </a-input>
+          </a-form-item>
+          <a-form-item
+            field="password"
+            :rules="[
+              { required: true, message: $t('login.form.password.errMsg') },
+            ]"
+            :validate-trigger="['change', 'blur']"
+            hide-label
+          >
+            <a-input-password
+              v-model="userPassInfo.password"
+              :placeholder="$t('login.form.password.placeholder')"
+              allow-clear
+            >
+              <template #prefix>
+                <icon-lock />
+              </template>
+            </a-input-password>
+          </a-form-item>
+          <a-space :size="16" direction="vertical">
+            <div class="login-form-password-actions">
+              <a-checkbox
+                checked="rememberPassword"
+                :model-value="loginByPasswordConfig.rememberPassword"
+                @change="setRememberPassword as any"
+              >
+                {{ $t('login.form.rememberPassword') }}
+              </a-checkbox>
+              <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+            </div>
+            <a-button type="primary" html-type="submit" long :loading="loading">
+              {{ $t('login.form.login') }}
+            </a-button>
+            <a-button type="text" long class="login-form-register-btn">
+              {{ $t('login.form.register') }}
+            </a-button>
+          </a-space>
+        </a-form>
+      </a-tab-pane>
+      <a-tab-pane key="2">
+        <template #title>
+          {{ $t('login.form.loginWay.code') }}
+        </template>
+        <div class="login-form-error-msg">{{ errorMessage }}</div>
+        <a-form
+          ref="loginForm"
+          :model="userCodeInfo"
+          class="login-form"
+          layout="vertical"
+          @submit="handleSubmit"
+        >
+          <a-form-item
+            field="phone"
+            :rules="[
+              { required: true, message: $t('login.form.phone.errMsg') },
+            ]"
+            :validate-trigger="['change', 'blur']"
+            hide-label
+          >
+            <a-input
+              v-model="userCodeInfo.phone"
+              :placeholder="$t('login.form.phone.placeholder')"
+            >
+              <template #prefix>
+                <icon-phone />
+              </template>
+            </a-input>
+          </a-form-item>
+          <a-form-item
+            field="code"
+            :rules="[{ required: true, message: $t('login.form.code.errMsg') }]"
+            :validate-trigger="['change', 'blur']"
+            hide-label
+          >
+            <a-input-search
+              v-model="userCodeInfo.code"
+              :placeholder="$t('login.form.code.placeholder')"
+              allow-clear
+              button-text="发送验证码"
+              search-button
+            >
+              <template #prefix>
+                <icon-message />
+              </template>
+            </a-input-search>
+          </a-form-item>
+          <a-space :size="16" direction="vertical">
+            <a-button type="primary" html-type="submit" long :loading="loading">
+              {{ $t('login.form.login') }}
+            </a-button>
+            <a-button type="text" long class="login-form-register-btn">
+              {{ $t('login.form.register') }}
+            </a-button>
+          </a-space>
+        </a-form>
+      </a-tab-pane>
+    </a-tabs>
   </div>
 </template>
 
@@ -79,14 +147,22 @@
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
 
-  const loginConfig = useStorage('login-config', {
+  const loginByPasswordConfig = useStorage('login-by-password-config', {
     rememberPassword: true,
     username: 'admin', // 演示默认值
     password: 'admin', // demo default value
   });
-  const userInfo = reactive({
-    username: loginConfig.value.username,
-    password: loginConfig.value.password,
+  const loginByCodeConfig = useStorage('login-by-code-config', {
+    phone: '18678901234',
+    code: '',
+  });
+  const userPassInfo = reactive({
+    username: loginByPasswordConfig.value.username,
+    password: loginByPasswordConfig.value.password,
+  });
+  const userCodeInfo = reactive({
+    phone: loginByCodeConfig.value.phone,
+    code: loginByCodeConfig.value.code,
   });
 
   const handleSubmit = async ({
@@ -101,6 +177,7 @@
       setLoading(true);
       try {
         await userStore.login(values as LoginData);
+
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         router.push({
           name: (redirect as string) || 'Index',
@@ -109,12 +186,12 @@
           },
         });
         Message.success(t('login.form.login.success'));
-        const { rememberPassword } = loginConfig.value;
+        const { rememberPassword } = loginByPasswordConfig.value;
         const { username, password } = values;
         // 实际生产环境需要进行加密存储。
         // The actual production environment requires encrypted storage.
-        loginConfig.value.username = rememberPassword ? username : '';
-        loginConfig.value.password = rememberPassword ? password : '';
+        loginByPasswordConfig.value.username = rememberPassword ? username : '';
+        loginByPasswordConfig.value.password = rememberPassword ? password : '';
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {
@@ -123,7 +200,7 @@
     }
   };
   const setRememberPassword = (value: boolean) => {
-    loginConfig.value.rememberPassword = value;
+    loginByPasswordConfig.value.rememberPassword = value;
   };
 </script>
 
