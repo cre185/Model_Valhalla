@@ -1,0 +1,18 @@
+export default {
+  'register.form.title': '创建你的账号',
+  'login.form.loginWay.password': '密码登录',
+  'login.form.loginWay.code': '验证码登录',
+  'login.form.userName.errMsg': '用户名或邮箱不能为空',
+  'login.form.password.errMsg': '密码不能为空',
+  'login.form.phone.errMsg': '手机号不能为空',
+  'login.form.code.errMsg': '验证码不能为空',
+  'login.form.login.errMsg': '登录出错，轻刷新重试',
+  'login.form.login.success': '欢迎使用',
+  'login.form.userName.placeholder': '用户名/邮箱',
+  'login.form.password.placeholder': '密码',
+  'login.form.phone.placeholder': '手机号',
+  'login.form.code.placeholder': '请输入6位验证码',
+  'login.form.rememberPassword': '记住密码',
+  'login.form.forgetPassword': '忘记密码',
+  'register.form.register': '注册',
+};

@@ -1,0 +1,18 @@
+export default {
+  'register.form.title': 'Create your account',
+  'login.form.loginWay.password': 'By password',
+  'login.form.loginWay.code': 'By code',
+  'login.form.userName.errMsg': 'Username or email cannot be empty',
+  'login.form.password.errMsg': 'Password cannot be empty',
+  'login.form.phone.errMsg': 'Phone number cannot be empty',
+  'login.form.code.errMsg': 'Code cannot be empty',
+  'login.form.login.errMsg': 'Login error, refresh and try again',
+  'login.form.login.success': 'welcome to use',
+  'login.form.userName.placeholder': 'username/email',
+  'login.form.password.placeholder': 'password',
+  'login.form.phone.placeholder': 'phone number',
+  'login.form.code.placeholder': 'please input the 6-bit code',
+  'login.form.rememberPassword': 'Remember password',
+  'login.form.forgetPassword': 'Forgot password',
+  'register.form.register': 'register',
+};
