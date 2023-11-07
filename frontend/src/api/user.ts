@@ -8,7 +8,9 @@ export interface LoginData {
 }
 
 export interface LoginRes {
-  token: string;
+  jwt: string;
+  message: string;
+  userID: string;
 }
 export function login(data: LoginData) {
   return axios.post<LoginRes>('http://localhost:8000/user/login', data);
