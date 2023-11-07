@@ -77,19 +77,14 @@ def jwt_authentication(request):
 
 
 def login_required(func):
-    """
-    用户必须登录装饰器
-    使用方法：放在 method_decorators 中
-    """
-
     # @wraps(func)
-    def wrapper(request, *args, **kwargs):
+    def wrapper(self, request, *args, **kwargs):
         jwt_authentication(request)
         if not request.user:
             return JsonResponse(
                 {"message": "User must be authorized."}, status=401
             )
         else:
-            return func(request, *args, **kwargs)
+            return func(self, request, *args, **kwargs)
 
     return wrapper

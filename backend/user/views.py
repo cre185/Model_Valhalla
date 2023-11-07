@@ -1,25 +1,19 @@
-import json
 import random
-import re
-import time
 from django.http import HttpResponse, JsonResponse
 from .models import User, VerifyMsg
 from rest_framework import status
-from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from .serializers import UserSerializer, VerifyMsgSerializer
 from utils.jwt import encrypt_password, generate_jwt, login_required
 from utils.send_msg import send_msg
+from django.core.mail import send_mail
+from rest_framework.views import APIView
 
 # Create your views here.
 
-@api_view(["POST", "OPTIONS"])
-def login(request):
-    if request.method == "OPTIONS":
-        return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
-    
-    try:
+class loginView(APIView):
+    def post(self, request):
         data = JSONParser().parse(request)
         try:
             user = User.objects.get(username=data['username'], password=data['password'])
@@ -27,67 +21,72 @@ def login(request):
             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
         jwt = generate_jwt({"user_id": user.id, "username": user.username})
         return Response({"jwt": jwt, 
-                                "userId": user.id,
-                                "username": user.username,
-                                "message": "ok"}, status=status.HTTP_200_OK)
-    except json.JSONDecodeError:
-        return Response({"message": "Bad arguments"}, status=status.HTTP_400_BAD_REQUEST)
-    
-@api_view(["POST"])
-def login_with_verify_code(request):
-    data = JSONParser().parse(request)
-    try:
-        verify_msg = VerifyMsg.objects.get(mobile=data['mobile'], code=data['code'])
-        try:
-            user = User.objects.get(mobile=data['mobile'])
-        except:
-            return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-        jwt = generate_jwt({"user_id": user.id, "username": user.username})
-        return Response({"jwt": jwt, 
                         "userId": user.id,
                         "username": user.username,
                         "message": "ok"}, status=status.HTTP_200_OK)
-    except:
-        return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
-
-@api_view(["POST"])
-def send_message(request):  
-    data = JSONParser().parse(request)
-    data["code"] = random.randint(100000, 999999)
-    serializer = VerifyMsgSerializer(data=data)
     
-    if serializer.is_valid():
-        serializer.save()
-        send = send_msg()
-        # send.send_sms(data["code"], data["mobile"])
-        return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def options(self, request):
+        return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
+    
+class login_with_verify_codeView(APIView):
+    def post(self, request):
+        data = JSONParser().parse(request)
+        try:
+            verify_msg = VerifyMsg.objects.get(mobile=data['mobile'], code=data['code'])
+            try:
+                user = User.objects.get(mobile=data['mobile'])
+            except:
+                return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            jwt = generate_jwt({"user_id": user.id, "username": user.username})
+            return Response({"jwt": jwt, 
+                            "userId": user.id,
+                            "username": user.username,
+                            "message": "ok"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
 
-@api_view(["POST"])
-def verify_code(request):
-    data = JSONParser().parse(request)
-    try:
-        verify_msg = VerifyMsg.objects.get(mobile=data['mobile'], code=data['code'])
-        return Response({"message": "ok"}, status=status.HTTP_200_OK)
-    except:
-        return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
-
-@api_view(["POST", "OPTION"])
-def register(request):
-    if request.method == "OPTIONS":
+class send_messageView(APIView):
+    def post(self, request):
+        data = JSONParser().parse(request)
+        data["code"] = random.randint(100000, 999999)
+        serializer = VerifyMsgSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            send = send_msg()
+            # send.send_sms(data["code"], data["mobile"])
+            return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def options(self, request):
         return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
 
-    data = JSONParser().parse(request)
-    serializer = UserSerializer(data=data)
-    
-    if serializer.is_valid():
-        serializer.save()
-        return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class verify_codeView(APIView):
+    def post(self, request):
+        data = JSONParser().parse(request)
+        try:
+            verify_msg = VerifyMsg.objects.get(mobile=data['mobile'], code=data['code'])
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
 
-@login_required
-def logout(request):
-    return JsonResponse({"message": "ok"})
+class registerView(APIView):
+    def post(self, request):
+        data = JSONParser().parse(request)
+        serializer = UserSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def options(self, request):
+        return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
+
+class logoutView(APIView):
+    @login_required
+    def post(self, request):
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 '''def generate_email_verifycode():  # 生成6位的验证码
     codes = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

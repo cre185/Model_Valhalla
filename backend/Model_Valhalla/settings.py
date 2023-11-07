@@ -136,3 +136,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 JWT_SECRET = "terces"
 JWT_EXPIRE_HOURS = 1
+
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_HOST_USER = '3635326583@qq.com'
+EMAIL_HOST_PASSWORD = 'model_valhalla'
+
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_FROM = '3635326583@qq.com'

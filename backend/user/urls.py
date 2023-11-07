@@ -3,10 +3,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("login", views.login, name="login"),
-    path("login_with_verify_code", views.login_with_verify_code, name="login_with_verify_code"),
-    path("send_message", views.send_message, name="send_message"),
-    path("verify_code", views.verify_code, name="verify_code"),
-    path("register", views.register, name="register"),
-    path("logout", views.logout, name="logout"),
+    path("login", views.loginView.as_view(), name="login"),
+    path("login_with_verify_code", views.login_with_verify_codeView.as_view(), name="login_with_verify_code"),
+    path("send_message", views.send_messageView.as_view(), name="send_message"),
+    path("verify_code", views.verify_codeView.as_view(), name="verify_code"),
+    path("register", views.registerView.as_view(), name="register"),
+    path("logout", views.logoutView.as_view(), name="logout"),
 ]
