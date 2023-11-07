@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'user.apps.UserConfig',
+    'dataset.apps.DatasetConfig',
+    'ranking.apps.RankingConfig',
+    'testing.apps.TestingConfig',
     'corsheaders',
 ]
 

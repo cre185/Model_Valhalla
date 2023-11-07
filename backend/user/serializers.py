@@ -7,7 +7,7 @@ from utils.validation_error import ValidationErrorWithMsg
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'mobile', 'add_time')
+        fields = ('id', 'username', 'password', 'mobile', 'add_time', 'email')
 
     def validate_username(self, username):
         # if username already exists
@@ -33,8 +33,18 @@ class UserSerializer(serializers.ModelSerializer):
         # if mobile is valid
         if re.match(r'^\d{11}$', mobile) is None:
             raise ValidationErrorWithMsg(detail={'message':'Mobile is invalid'})
-        
+    
         return mobile
+    
+    def validate_email(self, email):
+        # if email already exists
+        if User.objects.filter(email=email).count():
+            raise ValidationErrorWithMsg(detail={'message':'Email already been used'})
+        # if email is valid
+        if re.match(r'^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$', email) is None:
+            raise ValidationErrorWithMsg(detail={'message':'Email is invalid'})
+        
+        return email
 
 class VerifyMsgSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,7 +53,8 @@ class VerifyMsgSerializer(serializers.ModelSerializer):
 
     def validate_mobile(self, mobile):
         # if mobile is valid
-
+        if re.match(r'^\d{11}$', mobile) is None:
+            raise ValidationErrorWithMsg(detail={'message':'Mobile is invalid'})
         # if code has been sent in one minute
         one_minute_age = datetime.datetime.now() - datetime.timedelta(hours=0, minutes=1, seconds=0)
         if VerifyMsg.objects.filter(add_time__gt=one_minute_age, mobile=mobile).count():
