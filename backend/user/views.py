@@ -1,14 +1,16 @@
 import random
-from django.http import HttpResponse, JsonResponse
 from .models import User, VerifyMsg
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from .serializers import UserSerializer, VerifyMsgSerializer
+from .serializers import UserSerializer, VerifyMsgSerializer, VerifyEmailSerializer
 from utils.jwt import encrypt_password, generate_jwt, login_required
 from utils.send_msg import send_msg
 from django.core.mail import send_mail
+from django.conf import settings
 from rest_framework.views import APIView
+from rest_framework import mixins
+from rest_framework import generics
 
 # Create your views here.
 
@@ -70,15 +72,13 @@ class verify_codeView(APIView):
         except:
             return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
 
-class registerView(APIView):
+class registerView(mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
     def post(self, request):
-        data = JSONParser().parse(request)
-        serializer = UserSerializer(data=data)
-        
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        headers = self.create(request)
+        return Response({"message": "ok"}, status=status.HTTP_201_CREATED, headers=headers)
     
     def options(self, request):
         return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
@@ -87,6 +87,24 @@ class logoutView(APIView):
     @login_required
     def post(self, request):
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
+    
+class send_emailView(APIView):
+    def post(self, request):
+        data = JSONParser().parse(request)
+        data["code"] = random.randint(100000, 999999)
+        serializer = VerifyEmailSerializer(data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            send_mail(
+                subject="Model_Valhalla 验证码",
+                message=("您的验证码为：" + str(data["code"])),
+                from_email=settings.EMAIL_FROM,
+                recipient_list=[data["email"]],
+                fail_silently=False
+            )
+            return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 '''def generate_email_verifycode():  # 生成6位的验证码
     codes = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

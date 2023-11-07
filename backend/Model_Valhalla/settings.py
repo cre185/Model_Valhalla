@@ -59,8 +59,6 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
-
 ROOT_URLCONF = 'Model_Valhalla.urls'
 
 TEMPLATES = [
@@ -137,10 +135,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 JWT_SECRET = "terces"
 JWT_EXPIRE_HOURS = 1
 
-EMAIL_HOST = 'smtp.qq.com'
-EMAIL_HOST_USER = '3635326583@qq.com'
-EMAIL_HOST_PASSWORD = 'model_valhalla'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
 
-EMAIL_PORT = 587
+EMAIL_HOST_USER = '18622735565@163.com'
+EMAIL_HOST_PASSWORD = 'ORUGISJTYHSXQPEC'
+
 EMAIL_USE_TLS = True
-EMAIL_FROM = '3635326583@qq.com'
+EMAIL_FROM = '18622735565@163.com'

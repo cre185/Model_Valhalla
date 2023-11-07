@@ -1,6 +1,6 @@
 import datetime
 from rest_framework import serializers
-from .models import User, VerifyMsg
+from .models import User, VerifyMsg, VerifyEmail
 import re
 from utils.validation_error import ValidationErrorWithMsg
 
@@ -65,3 +65,23 @@ class VerifyMsgSerializer(serializers.ModelSerializer):
             history_records.delete()
 
         return mobile
+    
+class VerifyEmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VerifyEmail
+        fields = ('email', 'code', 'add_time')
+
+    def validate_email(self, email):
+        # if email is valid
+        if re.match(r'^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$', email) is None:
+            raise ValidationErrorWithMsg(detail={'message':'Email is invalid'})
+        # if code has been sent in one minute
+        one_minute_age = datetime.datetime.now() - datetime.timedelta(hours=0, minutes=1, seconds=0)
+        if VerifyEmail.objects.filter(add_time__gt=one_minute_age, email=email).count():
+            raise ValidationErrorWithMsg(detail={'message':'Code has been sent in one minute'})
+        # remove former codes
+        history_records = VerifyEmail.objects.filter(add_time__lt=one_minute_age, email=email)
+        if history_records:
+            history_records.delete()
+
+        return email

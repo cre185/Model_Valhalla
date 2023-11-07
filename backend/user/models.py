@@ -17,3 +17,10 @@ class VerifyMsg(models.Model):
     add_time = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.mobile
+
+class VerifyEmail(models.Model):
+    email = models.CharField(max_length=127)
+    code = models.CharField(max_length=6)
+    add_time = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.email
