@@ -63,9 +63,11 @@
             <a-button type="primary" html-type="submit" long :loading="loading">
               {{ $t('login.form.login') }}
             </a-button>
-            <a-button type="text" long class="login-form-register-btn">
-              {{ $t('login.form.register') }}
-            </a-button>
+            <router-link to="/register">
+              <a-button type="text" long class="login-form-register-btn">
+                {{ $t('login.form.register') }}
+              </a-button>
+            </router-link>
           </a-space>
         </a-form>
       </a-tab-pane>
@@ -100,13 +102,13 @@
           </a-form-item>
           <a-form-item
             field="code"
-            :rules="[{ required: true, message: $t('login.form.code.errMsg') }]"
+            :rules="[{ required: true, message: $t('register.form.code.errMsg') }]"
             :validate-trigger="['change', 'blur']"
             hide-label
           >
             <a-input-search
               v-model="userCodeInfo.code"
-              :placeholder="$t('login.form.code.placeholder')"
+              :placeholder="$t('register.form.code.placeholder')"
               allow-clear
               button-text="发送验证码"
               search-button
@@ -117,12 +119,15 @@
             </a-input-search>
           </a-form-item>
           <a-space :size="16" direction="vertical">
+            <div id="codeMargin"></div>
             <a-button type="primary" html-type="submit" long :loading="loading">
               {{ $t('login.form.login') }}
             </a-button>
-            <a-button type="text" long class="login-form-register-btn">
-              {{ $t('login.form.register') }}
-            </a-button>
+            <router-link to="../register">
+              <a-button type="text" long class="login-form-register-btn">
+                {{ $t('login.form.register') }}
+              </a-button>
+            </router-link>
           </a-space>
         </a-form>
       </a-tab-pane>
@@ -179,7 +184,7 @@
         await userStore.login(values as LoginData);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         router.push({
-          name: (redirect as string) || 'Index',
+          name: (redirect as string) || '/index/home',
           query: {
             ...othersQuery,
           },
@@ -236,5 +241,8 @@
     &-register-btn {
       color: var(--color-text-3) !important;
     }
+  }
+  #codeMargin{
+    height: 24px;
   }
 </style>

@@ -27,12 +27,12 @@ export default function setupUserLoginInfoGuard(router: Router) {
         }
       }
     } else {
-      if (to.name === 'login') {
+      if (to.name !== 'Info' && to.name !== 'Setting') {
         next();
         return;
       }
       next({
-        name: 'login',
+        name: 'Login',
         query: {
           redirect: to.name,
           ...to.query,

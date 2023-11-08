@@ -4,7 +4,7 @@
     <div class="register-form-error-msg">{{ errorMessage }}</div>
     <a-form
       ref="registerForm"
-      :model="userPassInfo"
+      :model="registerInfo"
       class="register-form"
       layout="vertical"
       @submit="handleSubmit"
@@ -16,8 +16,8 @@
         hide-label
       >
         <a-input
-          v-model="userPassInfo.username"
-          :placeholder="$t('login.form.userName.placeholder')"
+          v-model="registerInfo.username"
+          :placeholder="$t('register.form.userName.placeholder')"
         >
           <template #prefix>
             <icon-user />
@@ -31,8 +31,8 @@
         hide-label
       >
         <a-input-password
-          v-model="userPassInfo.password"
-          :placeholder="$t('login.form.password.placeholder')"
+          v-model="registerInfo.password"
+          :placeholder="$t('register.form.password.placeholder')"
           allow-clear
         >
           <template #prefix>
@@ -40,29 +40,106 @@
           </template>
         </a-input-password>
       </a-form-item>
+      <a-form-item
+          field="check-password"
+          :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
+      >
+        <a-input-password
+            v-model="passwordValidation.passwordValidation"
+            :placeholder="$t('register.form.checkPassword.placeholder')"
+            allow-clear
+        >
+          <template #prefix>
+            <icon-check-square />
+          </template>
+        </a-input-password>
+      </a-form-item>
+      <a-form-item
+          field="phone"
+          :rules="[{ required: true, message: $t('register.form.phone.errMsg') }]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
+      >
+        <a-input
+            v-model="registerInfo.phone"
+            :placeholder="$t('register.form.phoneNumber.placeholder')"
+            allow-clear
+        >
+          <template #prefix>
+            <icon-phone />
+          </template>
+          <template #append>
+            <a-button
+                type="primary"
+                v-if="codeInterval.codeInterval < 0"
+                @click="codeInterval.codeInterval=60"
+            >
+              发送验证码
+            </a-button>
+            <a-button
+                v-if="codeInterval.codeInterval >= 0"
+            >
+              {{codeInterval.codeInterval + 's 后重试'}}
+            </a-button>
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item
+          field="code"
+          :rules="[{ required: true, message: $t('register.form.code.errMsg')}]"
+          :validate-trigger="['change', 'blur']"
+          hide-label
+      >
+        <a-input
+            v-model="phoneValidation.phoneValidationCode"
+            :placeholder="$t('register.form.code.placeholder')"
+            allow-clear
+        >
+          <template #prefix>
+            <icon-message />
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item
+          field="email"
+          hide-label
+      >
+        <a-input
+            v-model="registerInfo.email"
+            :placeholder="$t('register.form.email.placeholder')"
+            :rules="rules"
+            allow-clear
+        >
+          <template #prefix>
+            <icon-email />
+          </template>
+        </a-input>
+      </a-form-item>
       <a-space :size="16" direction="vertical">
         <div class="register-form-password-actions">
           <a-checkbox
-            checked="rememberPassword"
-            :model-value="loginByPasswordConfig.rememberPassword"
-            @change="setRememberPassword as any"
+            checked="acceptAgreement"
+            :model-value="acceptAgreementInfo.acceptAgreement"
+            @change="setAcceptAgreement"
           >
-            {{ $t('login.form.rememberPassword') }}
+            {{ $t('register.form.agreement') }}
+            <a-link>{{ $t('register.form.agreementName') }}</a-link>
+            <a-link>{{ $t('register.form.privacy') }}</a-link>
           </a-checkbox>
-          <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
         </div>
-        <a-button type="primary" html-type="submit" long :loading="loading">
-          {{ $t('register.form.register') }}
-        </a-button>
       </a-space>
+      <a-button type="primary" html-type="submit" long :loading="loading">
+        {{ $t('register.form.register') }}
+      </a-button>
     </a-form>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive } from 'vue';
+import {ref, reactive, onMounted, onBeforeUnmount} from 'vue';
   import { useRouter } from 'vue-router';
-  import { Message } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
   import { useI18n } from 'vue-i18n';
   import { useStorage } from '@vueuse/core';
@@ -71,28 +148,38 @@
   import type { LoginData } from '@/api/user';
 
   const router = useRouter();
-  const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
 
-  const loginByPasswordConfig = useStorage('login-by-password-config', {
-    rememberPassword: true,
-    username: 'admin', // 演示默认值
-    password: 'admin', // demo default value
+  const registerConfig = useStorage('register-config', {
+    username: '',
+    password: '',
+    phone: '',
+    email: '',
   });
-  const loginByCodeConfig = useStorage('login-by-code-config', {
-    phone: '18678901234',
-    code: '',
+  const registerInfo = reactive({
+    username: registerConfig.value.username,
+    password: registerConfig.value.password,
+    phone: registerConfig.value.phone,
+    email: registerConfig.value.email,
   });
-  const userPassInfo = reactive({
-    username: loginByPasswordConfig.value.username,
-    password: loginByPasswordConfig.value.password,
+  const acceptAgreementInfo = reactive({
+    acceptAgreement: false,
   });
-  const userCodeInfo = reactive({
-    phone: loginByCodeConfig.value.phone,
-    code: loginByCodeConfig.value.code,
+
+  const passwordValidation = reactive({
+    passwordValidation: '',
   });
+
+  const phoneValidation = reactive({
+    phoneValidationCode: '',
+  });
+
+  const codeInterval = reactive({
+    codeTimer: null as null | ReturnType<typeof setInterval>,
+    codeInterval: -1,
+  })
 
   const handleSubmit = async ({
     errors,
@@ -108,18 +195,11 @@
         await userStore.login(values as LoginData);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         router.push({
-          name: (redirect as string) || 'Index',
+          name: (redirect as string) || 'Login',
           query: {
             ...othersQuery,
           },
         });
-        Message.success(t('login.form.login.success'));
-        const { rememberPassword } = loginByPasswordConfig.value;
-        const { username, password } = values;
-        // 实际生产环境需要进行加密存储。
-        // The actual production environment requires encrypted storage.
-        loginByPasswordConfig.value.username = rememberPassword ? username : '';
-        loginByPasswordConfig.value.password = rememberPassword ? password : '';
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {
@@ -127,9 +207,37 @@
       }
     }
   };
-  const setRememberPassword = (value: boolean) => {
-    loginByPasswordConfig.value.rememberPassword = value;
+  const setAcceptAgreement = (value: boolean) => {
+    acceptAgreementInfo.acceptAgreement = value;
   };
+
+  // 设置验证码计时器
+  onMounted(() => {
+    codeInterval.codeTimer = setInterval(() => {
+      if(codeInterval.codeInterval >= 0){
+        codeInterval.codeInterval -= 1;
+      }
+    }, 1000);
+  });
+
+  onBeforeUnmount(() => {
+    if(codeInterval.codeTimer)
+      clearInterval(codeInterval.codeTimer);
+  });
+
+  const rules = [{
+    validator: (value: any, cb: (arg: string) => void) => {
+      return new Promise<void>(resolve => {
+        window.setTimeout(() => {
+          if (!/.+@.+\..+/.test(value)) {
+            cb('Email is not valid')
+          }
+          resolve()
+        }, 2000)
+      })
+    }
+  }];
+
 </script>
 
 <style lang="less" scoped>
@@ -165,5 +273,8 @@
     &-register-btn {
       color: var(--color-text-3) !important;
     }
+  }
+  ::v-deep(.arco-input-append) {
+    padding: 0;
   }
 </style>
