@@ -17,7 +17,7 @@ const router = createRouter({
     },
     {
       path: '/login',
-      name: 'login',
+      name: 'Login',
       component: () => import('@/views/login/index.vue'),
       meta: {
         requiresAuth: false,
@@ -25,7 +25,7 @@ const router = createRouter({
     },
     {
       path: '/register',
-      name: 'register',
+      name: 'Register',
       component: () => import('@/views/register/index.vue'),
       meta: {
         requiresAuth: false,
