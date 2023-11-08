@@ -13,6 +13,12 @@ Welcome to Model Valhalla
    
 .. toctree::
    :maxdepth: 2
+   :caption: 测试
+   
+   test.md
+
+.. toctree::
+   :maxdepth: 2
    :caption: API
 
    api.md
