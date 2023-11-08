@@ -1,5 +1,5 @@
 import random
-from .models import User, VerifyMsg
+from .models import User, VerifyMsg, VerifyEmail
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -106,42 +106,11 @@ class send_emailView(APIView):
             return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-'''def generate_email_verifycode():  # 生成6位的验证码
-    codes = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    res = ""
-    random.seed(int(time.time()))
-    for i in range(6):
-        res += codes[random.randint(0, len(codes)-1)]
-    return res'''
-
-'''def send_email_verifycode():
-    if req.method == "GET":
-        body = req.GET
-        username = body.get('username')
-        user = User.objects.filter(name=username).first()
-
-        if not user:
-            return Response({"message": "用户不存在"}, status=status.HTTP_404_NOT_FOUND)
-
-        if user.email_address == "":
-            return Response({"message": "用户未绑定邮箱"}, status=status.HTTP_400_BAD_REQUEST)
-
-        if (time.time() - user.email_verifycode_time) >= 300:
-            return Response({"message": "您已经在5分钟内获得过验证码，请稍后重试"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # 如果需要的话可以再给user加一个时间属性，判断验证码是否过期
-        verify_code = generate_email_verifycode()
-        user.email_verifycode = verify_code
-        user.email_verifycode_time = time.time()
-        user.save()
-
-        send_mail(
-            subject="Mode_Valhalla 用户密码找回",
-            message=("您的验证码为：" + verify_code),
-            from_email="",  # 这一块需要固定设置一个发送邮箱，可以后续商量
-            recipient_list=[user.email_address],
-            fail_silently=False
-        )
-        return Response({"message": "验证码已发送"}, status=status.HTTP_200_OK)
-
-    return Response({"message": "Bad Method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)'''
+class verify_emailView(APIView):
+    def post(self, request):
+        data = JSONParser().parse(request)
+        try:
+            verify_email = VerifyEmail.objects.get(email=data['email'], code=data['code'])
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)

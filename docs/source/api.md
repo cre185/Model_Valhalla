@@ -8,8 +8,10 @@
     - [login\_with\_verify\_code](#login_with_verify_code)
     - [logout](#logout)
     - [register](#register)
+    - [send\_email](#send_email)
     - [send\_message](#send_message)
     - [verify\_code](#verify_code)
+    - [verify\_email](#verify_email)
   - [数据集部分](#数据集部分)
   - [排行榜部分](#排行榜部分)
   - [模型测试部分](#模型测试部分)
@@ -95,6 +97,23 @@
     "message": #根据参数错误情况而定
 }, status=400
 ```
+#### send_email  
+**请求方式**：POST  
+**请求URL**：`/user/send_email`  
+**请求参数**：字符串email  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+}, status=201
+```
+* 参数异常  
+```python
+{
+    "message": #根据参数错误情况而定
+}, status=401
+```
 #### send_message  
 **请求方式**：POST  
 **请求URL**：`/user/send_message`  
@@ -130,8 +149,26 @@
     "message": "Invalid code"
 }, status=401
 ```
+#### verify_email  
+**请求方式**：POST  
+**请求URL**：`/user/verify_email`  
+**请求参数**：字符串email，字符串verify_code  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+}, status=200
+```
+* 验证码错误  
+```python
+{
+    "message": "Invalid code"
+}, status=401
+```
 ***
 ### 数据集部分  
+
 ***
 ### 排行榜部分  
 ***
