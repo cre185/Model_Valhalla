@@ -8,5 +8,7 @@ class DatasetSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'add_time')
 
     def validate_name(self, name):
-        # maybe there will be validation requirements...
+        # if the name has already been used
+        if Dataset.objects.filter(name=name).exists():
+            raise ValidationErrorWithMsg('The name has already been used.')
         return name

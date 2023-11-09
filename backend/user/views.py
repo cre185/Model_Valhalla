@@ -84,6 +84,7 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
         data = result.data
         data['message'] = 'ok'
         data['password'] = '********'
+        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
     
     def patch(self, request, *args, **kwargs):
@@ -91,6 +92,7 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
         data = result.data
         data['message'] = 'ok'
         data['password'] = '********'
+        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
     
 class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
@@ -103,6 +105,7 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data = result.data
         data['message'] = 'ok'
         data['password'] = '********'
+        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
     
 class logoutView(APIView):
