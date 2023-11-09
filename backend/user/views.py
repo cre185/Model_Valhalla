@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from .serializers import UserSerializer, VerifyMsgSerializer, VerifyEmailSerializer
-from utils.jwt import encrypt_password, generate_jwt, login_required
+from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
 from django.core.mail import send_mail
 from django.conf import settings
@@ -26,9 +26,6 @@ class loginView(APIView):
                         "userId": user.id,
                         "username": user.username,
                         "message": "ok"}, status=status.HTTP_200_OK)
-    
-    def options(self, request):
-        return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
     
 class login_with_verify_codeView(APIView):
     def post(self, request):
@@ -59,9 +56,6 @@ class send_messageView(APIView):
             # send.send_sms(data["code"], data["mobile"])
             return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def options(self, request):
-        return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
 
 class verify_codeView(APIView):
     def post(self, request):
