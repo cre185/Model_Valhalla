@@ -12,8 +12,8 @@ import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
-    name: undefined,
-    avatar: undefined,
+    name: '李好',
+    avatar: '/src/assets/user_dog.jpg',
     job: undefined,
     organization: undefined,
     location: undefined,
@@ -24,8 +24,8 @@ const useUserStore = defineStore('user', {
     organizationName: undefined,
     locationName: undefined,
     phone: undefined,
-    registrationDate: undefined,
-    accountId: undefined,
+    registrationDate: '2023.11.9',
+    accountId: '2021011785',
     certification: undefined,
     role: '',
   }),

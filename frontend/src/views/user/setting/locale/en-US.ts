@@ -18,7 +18,7 @@ export default {
   'userSetting.cancel': 'Cancel',
   'userSetting.reset': 'Reset',
   // new
-  'userSetting.label.certification': 'Certification',
+  'userSetting.label.email': 'Email',
   'userSetting.label.phone': 'Phone',
   'userSetting.label.accountId': 'Account Id',
   'userSetting.label.registrationDate': 'Registration Date',
@@ -29,7 +29,8 @@ export default {
   'userSetting.basicInfo.placeholder.email': `Please enter your email address, such as xxx{'@'}bytedance.com`,
   'userSetting.form.error.email.required': 'Please enter email address',
   'userSetting.basicInfo.form.label.nickname': 'Nickname',
-  'userSetting.basicInfo.placeholder.nickname': 'Please enter nickname',
+  'userSetting.basicInfo.form.label.username': 'Username',
+  'userSetting.basicInfo.placeholder.username': 'Please enter username',
   'userSetting.form.error.nickname.required': 'Please enter nickname',
   'userSetting.basicInfo.form.label.countryRegion': 'Country/region',
   'userSetting.basicInfo.placeholder.countryRegion':
@@ -45,6 +46,8 @@ export default {
   'userSetting.basicInfo.placeholder.profile':
     'Please enter your profile, no more than 200 words',
   'userSetting.form.error.profile.maxLength': 'No more than 200 words',
+  'userSetting.SecuritySettings.form.label.username': 'Username',
+  'userSetting.SecuritySettings.placeholder.username': 'LiHao',
   'userSetting.SecuritySettings.form.label.password': 'Login Password',
   'userSetting.SecuritySettings.placeholder.password':
     'Has been set. The password must contain at least six letters, digits, and special characters except Spaces. The password must contain both uppercase and lowercase letters.',

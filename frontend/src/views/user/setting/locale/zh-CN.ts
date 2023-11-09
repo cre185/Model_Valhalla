@@ -18,7 +18,7 @@ export default {
   'userSetting.cancel': '取消',
   'userSetting.reset': '重置',
   // new
-  'userSetting.label.certification': '实名认证',
+  'userSetting.label.email': '电子邮件',
   'userSetting.label.phone': '手机号码',
   'userSetting.label.accountId': '账号ID',
   'userSetting.label.registrationDate': '注册时间',
@@ -29,7 +29,8 @@ export default {
   'userSetting.basicInfo.placeholder.email': `请输入邮箱地址，如xxx{'@'}bytedance.com`,
   'userSetting.form.error.email.required': '请输入邮箱',
   'userSetting.basicInfo.form.label.nickname': '昵称',
-  'userSetting.basicInfo.placeholder.nickname': '请输入您的昵称',
+  'userSetting.basicInfo.form.label.username': '用户名',
+  'userSetting.basicInfo.placeholder.username': '请输入用户名',
   'userSetting.form.error.nickname.required': '请输入昵称',
   'userSetting.basicInfo.form.label.countryRegion': '国家/地区',
   'userSetting.basicInfo.placeholder.countryRegion': '请选择',
@@ -43,6 +44,8 @@ export default {
   'userSetting.basicInfo.placeholder.profile':
     '请输入您的个人简介，最多不超过200字。',
   'userSetting.form.error.profile.maxLength': '最多不超过200字',
+  'userSetting.SecuritySettings.form.label.username': '用户名称',
+  'userSetting.SecuritySettings.placeholder.username': '李好',
   'userSetting.SecuritySettings.form.label.password': '登录密码',
   'userSetting.SecuritySettings.placeholder.password':
     '已设置。密码至少6位字符，支持数字、字母和除空格外的特殊字符，且必须同时包含数字和大小写字母。',
@@ -53,7 +56,7 @@ export default {
   // 'userSetting.SecuritySettings.placeholder.phone': '已绑定：150******50',
   'userSetting.SecuritySettings.form.label.email': '安全邮箱',
   'userSetting.SecuritySettings.placeholder.email':
-    '您暂未设置邮箱，绑定邮箱可以用来找回密码、接收通知等。',
+    '已绑定：li***@mails.tsinghua.edu.cn',
   'userSetting.SecuritySettings.button.settings': '设置',
   'userSetting.SecuritySettings.button.update': '修改',
   'userSetting.certification.title.enterprise': '企业实名认证',

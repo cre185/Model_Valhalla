@@ -4,6 +4,34 @@
       <a-list-item-meta>
         <template #avatar>
           <a-typography-paragraph>
+            {{ $t('userSetting.SecuritySettings.form.label.username') }}
+          </a-typography-paragraph>
+        </template>
+        <template #description>
+          <div class="content">
+            <a-input
+              v-if="changeUsername"
+              id="input"
+              v-model="userStore.name"
+              :placeholder="userStore.name"
+              @press-enter="saveUsername"
+            />
+            <a-typography-paragraph v-else>
+              {{ userStore.name }}
+            </a-typography-paragraph>
+          </div>
+          <div class="operation">
+            <a-link @click="changeUsernameFunc">
+              {{ $t('userSetting.SecuritySettings.button.update') }}
+            </a-link>
+          </div>
+        </template>
+      </a-list-item-meta>
+    </a-list-item>
+    <a-list-item>
+      <a-list-item-meta>
+        <template #avatar>
+          <a-typography-paragraph>
             {{ $t('userSetting.SecuritySettings.form.label.password') }}
           </a-typography-paragraph>
         </template>
@@ -16,29 +44,6 @@
           <div class="operation">
             <a-link>
               {{ $t('userSetting.SecuritySettings.button.update') }}
-            </a-link>
-          </div>
-        </template>
-      </a-list-item-meta>
-    </a-list-item>
-    <a-list-item>
-      <a-list-item-meta>
-        <template #avatar>
-          <a-typography-paragraph>
-            {{ $t('userSetting.SecuritySettings.form.label.securityQuestion') }}
-          </a-typography-paragraph>
-        </template>
-        <template #description>
-          <div class="content">
-            <a-typography-paragraph class="tip">
-              {{
-                $t('userSetting.SecuritySettings.placeholder.securityQuestion')
-              }}
-            </a-typography-paragraph>
-          </div>
-          <div class="operation">
-            <a-link>
-              {{ $t('userSetting.SecuritySettings.button.settings') }}
             </a-link>
           </div>
         </template>
@@ -74,7 +79,7 @@
         </template>
         <template #description>
           <div class="content">
-            <a-typography-paragraph class="tip">
+            <a-typography-paragraph>
               {{ $t('userSetting.SecuritySettings.placeholder.email') }}
             </a-typography-paragraph>
           </div>
@@ -89,9 +94,25 @@
   </a-list>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+  import { ref } from 'vue';
+  import { useUserStore } from '@/store';
+  import {FileItem} from "@arco-design/web-vue/es/upload/interfaces";
+
+  const userStore = useUserStore();
+  const changeUsername = ref(false);
+  const changeUsernameFunc = () => {
+    changeUsername.value = true;
+  };
+  const saveUsername = () => {
+    changeUsername.value = false;
+  };
+</script>
 
 <style scoped lang="less">
+  #input {
+    margin-bottom: 20px;
+  }
   :deep(.arco-list-item) {
     border-bottom: none !important;
     .arco-typography {
