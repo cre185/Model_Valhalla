@@ -8,6 +8,7 @@
     - [login\_with\_verify\_code](#login_with_verify_code)
     - [logout](#logout)
     - [register](#register)
+    - [retrieve](#retrieve)
     - [send\_email](#send_email)
     - [send\_message](#send_message)
     - [verify\_code](#verify_code)
@@ -96,6 +97,25 @@
 {
     "message": #根据参数错误情况而定
 }, status=400
+```
+#### retrieve  
+**请求方式**：GET  
+**请求URL**：`/user/retrieve/<id>`  
+**请求参数**：无  
+**返回情况**：
+* 正常返回  
+```python
+{
+    "username": "用户名",
+    "mobile": "手机号",
+    ...(略)
+}, status=200
+```
+* 未找到用户  
+```python
+{
+    "detail": "未找到。"
+}, status=404
 ```
 #### send_email  
 **请求方式**：POST  

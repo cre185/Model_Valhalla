@@ -82,7 +82,25 @@ class registerView(mixins.CreateModelMixin, generics.GenericAPIView):
     
     def options(self, request):
         return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
+    
+class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
+    def put(self, request):
+        headers = self.update(request)
+        return Response({"message": "ok"}, status=status.HTTP_200_OK, headers=headers)
+    
+class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = "id"
+    
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class logoutView(APIView):
     @login_required
     def post(self, request):
