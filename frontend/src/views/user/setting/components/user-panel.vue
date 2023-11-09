@@ -14,7 +14,11 @@
             <template #trigger-icon>
               <icon-camera />
             </template>
-            <img v-if="fileList.length" :src="fileList[0].url" />
+            <img
+              v-if="fileList.length"
+              :src="fileList[0].url"
+              :alt="fileList[0].name"
+            />
           </a-avatar>
         </template>
       </a-upload>
@@ -35,15 +39,8 @@
         }"
       >
         <template #label="{ label }">{{ $t(label) }} :</template>
-        <template #value="{ value, data }">
-          <a-tag
-            v-if="data.label === 'userSetting.label.certification'"
-            color="green"
-            size="small"
-          >
-            已认证
-          </a-tag>
-          <span v-else>{{ value }}</span>
+        <template #value="{ value }">
+          <span>{{ value }}</span>
         </template>
       </a-descriptions>
     </a-space>
@@ -72,16 +69,8 @@
       value: userStore.name,
     },
     {
-      label: 'userSetting.label.certification',
-      value: userStore.certification,
-    },
-    {
       label: 'userSetting.label.accountId',
       value: userStore.accountId,
-    },
-    {
-      label: 'userSetting.label.phone',
-      value: userStore.phone,
     },
     {
       label: 'userSetting.label.registrationDate',
