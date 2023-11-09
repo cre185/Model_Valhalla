@@ -11,6 +11,7 @@
     - [retrieve](#retrieve)
     - [send\_email](#send_email)
     - [send\_message](#send_message)
+    - [update](#update)
     - [verify\_code](#verify_code)
     - [verify\_email](#verify_email)
   - [数据集部分](#数据集部分)
@@ -106,7 +107,9 @@
 * 正常返回  
 ```python
 {
+    "message": "ok",
     "username": "用户名",
+    "password": "********",
     "mobile": "手机号",
     ...(略)
 }, status=200
@@ -152,6 +155,28 @@
 }, status=401
 ```
 **特殊说明**：实际发送功能暂未实现  
+#### update  
+**请求方式**：PUT\PATCH  
+**请求URL**：`/user/update/<id>`  
+**请求参数**：使用PUT时为字符串username，字符串password，字符串mobile，可选字符串email  
+使用PATCH时所有字段均为可选  
+**返回情况**：
+* 正常返回  
+```python
+{
+    "message": "ok"
+    "username": "用户名",
+    "password": "********",
+    "mobile": "手机号",
+    ...(略)
+}, status=200
+```
+* 未找到用户  
+```python
+{
+    "detail": "未找到。"
+}, status=404
+```
 #### verify_code  
 **请求方式**：POST  
 **请求URL**：`/user/verify_code`  

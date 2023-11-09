@@ -169,6 +169,87 @@ class UserModelTests(TestCase):
         self.assertEqual(json_data['message'],"ok")
         self.assertEqual(response.status_code,200)
 
+class UserDataModelTests(TestCase):
+    def setUp(self):
+        user=User(
+            username="testuser",
+            password="testuser",
+            mobile="12345678901"
+        )
+        user.save()
+        self.client=APIClient()
+
+    def test_retrieve(self):
+        # the correct case
+        response=self.client.get(
+            '/user/retrieve/1',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(json_data['username'],"testuser")
+        self.assertEqual(json_data['mobile'],"12345678901")
+        # request with wrong id
+        response=self.client.get(
+            '/user/retrieve/2',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code,404)
+
+    def test_update(self):
+        # the correct case
+        response=self.client.put(
+            '/user/update/1',
+            {
+                "username":"testuser2",
+                "password":"testuser2",
+                "mobile":"12345678902"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        # request with wrong id
+        response=self.client.put(
+            '/user/update/2',
+            {
+                "username":"testuser2",
+                "password":"testuser2",
+                "mobile":"12345678902"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code,404)
+        # request with invalid username
+        response=self.client.put(
+            '/user/update/1',
+            {
+                "username":"short",
+                "password":"testuser2",
+                "mobile":"12345678902"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"Username is invalid")
+        self.assertEqual(response.status_code,400)
+        # test partial update
+        response=self.client.patch(
+            '/user/update/1',
+            {
+                "username":"testuser3"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(json_data['username'],"testuser3")
+        self.assertEqual(json_data['mobile'],"12345678902")
+
 class VerifyMsgModelTests(TestCase):
     def setUp(self):
         user=User(

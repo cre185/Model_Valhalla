@@ -80,16 +80,24 @@ class registerView(mixins.CreateModelMixin, generics.GenericAPIView):
         headers = self.create(request)
         return Response({"message": "ok"}, status=status.HTTP_201_CREATED, headers=headers)
     
-    def options(self, request):
-        return Response({"message": "ok"}, status=status.HTTP_204_NO_CONTENT)
-    
 class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    lookup_field = "id"
 
-    def put(self, request):
-        headers = self.update(request)
-        return Response({"message": "ok"}, status=status.HTTP_200_OK, headers=headers)
+    def put(self, request, *args, **kwargs):
+        result = self.update(request, *args, **kwargs)
+        data = result.data
+        data['message'] = 'ok'
+        data['password'] = '********'
+        return Response(data, status=status.HTTP_200_OK)
+    
+    def patch(self, request, *args, **kwargs):
+        result = self.partial_update(request, *args, **kwargs)
+        data = result.data
+        data['message'] = 'ok'
+        data['password'] = '********'
+        return Response(data, status=status.HTTP_200_OK)
     
 class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
@@ -97,9 +105,11 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     lookup_field = "id"
     
     def get(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        result = self.retrieve(request, *args, **kwargs)
+        data = result.data
+        data['message'] = 'ok'
+        data['password'] = '********'
+        return Response(data, status=status.HTTP_200_OK)
     
 class logoutView(APIView):
     @login_required
