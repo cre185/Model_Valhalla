@@ -11,7 +11,7 @@
     >
       <a-form-item
         field="username"
-        :rules="[{ required: true, message: $t('login.form.userName.errMsg') }]"
+        :rules="usernameRules"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
@@ -26,7 +26,7 @@
       </a-form-item>
       <a-form-item
         field="password"
-        :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+        :rules="passwordRules"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
@@ -42,13 +42,13 @@
       </a-form-item>
       <a-form-item
           field="check-password"
-          :rules="[{ required: true, message: $t('login.form.password.errMsg') }]"
+          :rules="passwordValidationRules"
           :validate-trigger="['change', 'blur']"
           hide-label
       >
         <a-input-password
             v-model="passwordValidation.passwordValidation"
-            :placeholder="$t('register.form.checkPassword.placeholder')"
+            :placeholder="$t('register.form.passwordValidation.placeholder')"
             allow-clear
         >
           <template #prefix>
@@ -57,13 +57,12 @@
         </a-input-password>
       </a-form-item>
       <a-form-item
-          field="phone"
-          :rules="[{ required: true, message: $t('register.form.phone.errMsg') }]"
-          :validate-trigger="['change', 'blur']"
+          field="mobile"
+          :rules="phoneRules"
           hide-label
       >
         <a-input
-            v-model="registerInfo.phone"
+            v-model="registerInfo.mobile"
             :placeholder="$t('register.form.phoneNumber.placeholder')"
             allow-clear
         >
@@ -74,7 +73,7 @@
             <a-button
                 type="primary"
                 v-if="codeInterval.codeInterval < 0"
-                @click="codeInterval.codeInterval=60"
+                @click="handleSendCode"
             >
               发送验证码
             </a-button>
@@ -88,12 +87,11 @@
       </a-form-item>
       <a-form-item
           field="code"
-          :rules="[{ required: true, message: $t('register.form.code.errMsg')}]"
-          :validate-trigger="['change', 'blur']"
+          :rules="codeRules"
           hide-label
       >
         <a-input
-            v-model="phoneValidation.phoneValidationCode"
+            v-model="phoneValidation.code"
             :placeholder="$t('register.form.code.placeholder')"
             allow-clear
         >
@@ -104,12 +102,12 @@
       </a-form-item>
       <a-form-item
           field="email"
+          :rules="emailRules"
           hide-label
       >
         <a-input
             v-model="registerInfo.email"
             :placeholder="$t('register.form.email.placeholder')"
-            :rules="rules"
             allow-clear
         >
           <template #prefix>
@@ -138,30 +136,31 @@
 </template>
 
 <script lang="ts" setup>
-import {ref, reactive, onMounted, onBeforeUnmount} from 'vue';
+import {ref, reactive, onMounted, onBeforeUnmount, getCurrentInstance} from 'vue';
   import { useRouter } from 'vue-router';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
-  import { useI18n } from 'vue-i18n';
   import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
-  import type { LoginData } from '@/api/user';
+  import type { LoginData, phoneVerifyData , registerData} from '@/api/user';
+import error from "@/views/result/error/index.vue";
 
   const router = useRouter();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
+  const { proxy } = getCurrentInstance()
 
   const registerConfig = useStorage('register-config', {
     username: '',
     password: '',
-    phone: '',
+    mobile: '',
     email: '',
   });
   const registerInfo = reactive({
     username: registerConfig.value.username,
     password: registerConfig.value.password,
-    phone: registerConfig.value.phone,
+    mobile: registerConfig.value.mobile,
     email: registerConfig.value.email,
   });
   const acceptAgreementInfo = reactive({
@@ -173,7 +172,7 @@ import {ref, reactive, onMounted, onBeforeUnmount} from 'vue';
   });
 
   const phoneValidation = reactive({
-    phoneValidationCode: '',
+    code: '',
   });
 
   const codeInterval = reactive({
@@ -192,7 +191,11 @@ import {ref, reactive, onMounted, onBeforeUnmount} from 'vue';
     if (!errors) {
       setLoading(true);
       try {
-        await userStore.login(values as LoginData);
+        if(!acceptAgreementInfo.acceptAgreement)
+          throw new Error("请同意服务协议和隐私政策")
+        const phoneVerification = {mobile: registerInfo.mobile, code: phoneValidation.code}
+        await userStore.verifyCode(phoneVerification as phoneVerifyData);
+        await userStore.register(values as registerData);
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
         router.push({
           name: (redirect as string) || 'Login',
@@ -207,37 +210,129 @@ import {ref, reactive, onMounted, onBeforeUnmount} from 'vue';
       }
     }
   };
+  // 发送验证码函数
+  const handleSendCode = async () => {
+    try {
+      codeInterval.codeInterval = 60
+      codeInterval.codeTimer = setInterval(() => {
+        if(codeInterval.codeInterval >= 0){
+          codeInterval.codeInterval -= 1;
+        }
+        else{
+          clearInterval(codeInterval.codeTimer);
+        }
+      }, 1000);
+    const res = await userStore.verifyPhone(registerInfo.mobile);
+    } catch (err) {
+      errorMessage.value = (err as Error).message;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const setAcceptAgreement = (value: boolean) => {
     acceptAgreementInfo.acceptAgreement = value;
   };
 
-  // 设置验证码计时器
-  onMounted(() => {
-    codeInterval.codeTimer = setInterval(() => {
-      if(codeInterval.codeInterval >= 0){
-        codeInterval.codeInterval -= 1;
-      }
-    }, 1000);
-  });
-
-  onBeforeUnmount(() => {
-    if(codeInterval.codeTimer)
-      clearInterval(codeInterval.codeTimer);
-  });
-
-  const rules = [{
-    validator: (value: any, cb: (arg: string) => void) => {
-      return new Promise<void>(resolve => {
+  // 表单信息验证
+  const usernameRules = [{
+    validator: (value, callback) => {
+      return new Promise(resolve => {
         window.setTimeout(() => {
-          if (!/.+@.+\..+/.test(value)) {
-            cb('Email is not valid')
+          if(value === ''){
+            callback(proxy.$t('register.form.userName.errMsg1'))
+          }
+          else if (value.length < 6) {
+            callback(proxy.$t('register.form.userName.errMsg2'))
           }
           resolve()
-        }, 2000)
+        }, 1000)
       })
-    }
+    },
   }];
 
+  const passwordRules = [{
+    validator: (value, callback) => {
+      return new Promise(resolve => {
+        window.setTimeout(() => {
+          if(value === ''){
+            callback(proxy.$t('register.form.password.errMsg1'))
+          }
+          else if (value.length < 8) {
+            callback(proxy.$t('register.form.password.errMsg2'))
+          }
+          resolve()
+        }, 1000)
+      })
+    },
+  }];
+
+  const passwordValidationRules = [{
+    validator: (value, callback) => {
+      return new Promise(resolve => {
+        window.setTimeout(() => {
+          value = passwordValidation.passwordValidation
+          if(value === ''){
+            callback(proxy.$t('register.form.passwordValidation.errMsg1'))
+          }
+          else if (value !== registerInfo.password) {
+            callback(proxy.$t('register.form.passwordValidation.errMsg2'))
+          }
+          resolve()
+        }, 1000)
+      })
+    },
+  }];
+
+  const phoneRules = [{
+    validator: (value, callback) => {
+      return new Promise(resolve => {
+        window.setTimeout(() => {
+          if(value === ''){
+            callback(proxy.$t('register.form.phone.errMsg1'))
+          }
+          else if (!/1[3,4,5,7,8][0-9]{9}/.test(value)) {
+            callback(proxy.$t('register.form.phone.errMsg2'))
+          }
+          resolve()
+        }, 1000)
+      })
+    },
+  }];
+
+  const codeRules = [{
+    required: true,
+    validator: (value, callback) => {
+      return new Promise(resolve => {
+        window.setTimeout(() => {
+          value = phoneValidation.code
+          if(value === ''){
+            callback(proxy.$t('register.form.code.errMsg1'))
+          }
+          else if (!/\d{6}/.test(value)) {
+            callback(proxy.$t('register.form.code.errMsg2'))
+          }
+          resolve()
+        }, 1000)
+      })
+    },
+    trigger: ['change', 'blur'],
+  }];
+
+  const emailRules = [{
+    required: false,
+    validator: (value, callback) => {
+      return new Promise(resolve => {
+        value = registerInfo.email
+        window.setTimeout(() => {
+          if (!/.+@.+\..+/.test(value) && value !== '') {
+            callback(proxy.$t('register.form.email.invalid'))
+          }
+          resolve()
+        }, 1000)
+      })
+    },
+  }];
 </script>
 
 <style lang="less" scoped>

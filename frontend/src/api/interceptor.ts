@@ -3,7 +3,7 @@ import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Message, Modal } from '@arco-design/web-vue';
 import { useUserStore } from '@/store';
 import { getToken } from '@/utils/auth';
-import { LoginRes } from '@/api/user';
+import {LoginRes} from '@/api/user';
 
 export interface HttpResponse<T = unknown> {
   status: number;
@@ -40,7 +40,7 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response: AxiosResponse<LoginRes>) => {
     // if the custom code is not 200, it is judged as an error.
-    if (response.status !== 200) {
+    if (response.status !== 200 && response.status !== 201) {
       Message.error({
         content: response.data.message || 'Error',
         duration: 5 * 1000,
