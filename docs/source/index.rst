@@ -4,13 +4,18 @@
    contain the root `toctree` directive.
 Welcome to Model Valhalla
 ==========================================
-
 .. toctree::
    :maxdepth: 2
    :caption: Welcome
    
    _index.md
    
+.. toctree::
+   :maxdepth: 2
+   :caption: 测试
+   
+   test.md
+
 .. toctree::
    :maxdepth: 2
    :caption: API
