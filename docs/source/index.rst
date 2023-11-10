@@ -19,6 +19,12 @@ Welcome to Model Valhalla documentation!
 
 .. toctree::
    :maxdepth: 2
+   :caption: 部署
+   
+   deploy.md
+
+.. toctree::
+   :maxdepth: 2
    :caption: API
 
    api.md

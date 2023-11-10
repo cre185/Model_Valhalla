@@ -9,7 +9,7 @@ class User(models.Model):
     add_time = models.DateTimeField(auto_now_add=True)
     email = models.CharField(max_length=255, null=True)
     is_admin = models.BooleanField(default=False)
-    avatar = models.ImageField(upload_to='static/avatar', null=True)
+    avatar = models.ImageField(upload_to='static/avatar', default='static/avatar/default.jpg')
     def __str__(self):
         return self.username
     

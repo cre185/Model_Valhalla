@@ -1,4 +1,9 @@
 ## 测试说明  
+### 更新python依赖  
+引入了新的python库后，使用下列命令重新导出依赖：  
+```bash
+pip list --format=freeze > requirements.txt
+```
 ### 数据库迁移  
 当一次更新改变了Models时，需要进行数据库迁移  
 使用下列命令迁移数据库至最新版本：  
