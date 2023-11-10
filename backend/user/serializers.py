@@ -7,7 +7,7 @@ from utils.validation_error import ValidationErrorWithMsg
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'mobile', 'add_time', 'email', 'is_admin')
+        fields = ('id', 'username', 'password', 'mobile', 'add_time', 'email', 'is_admin', 'avatar')
 
     def validate_username(self, username):
         # if username already exists

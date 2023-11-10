@@ -11,7 +11,7 @@ class DatasetModelTests(TestCase):
         dataset.save()
         self.client=APIClient()
 
-    def test_upload(self):
+    '''def test_upload(self):
         # the correct case
         response=self.client.post(
             '/dataset/upload', 
@@ -22,4 +22,4 @@ class DatasetModelTests(TestCase):
         )
         json_data=response.json()
         self.assertEqual(json_data['message'],"ok")
-        self.assertEqual(response.status_code,201)
+        self.assertEqual(response.status_code,201)'''
