@@ -8,6 +8,8 @@ from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.cache import cache
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
@@ -107,6 +109,21 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data['password'] = '********'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
+    
+class updateAvatarView(APIView):
+    @login_required
+    def post(self, request):
+        image = request.POST['image']
+        image_data = [image.file, image.field_name, image.name, image.content_type,
+                    image.size, image.charset, image.content_type_extra]
+        cache_key = 'image_key'
+        cache.set(cache_key, image_data, 60)
+    
+        cache_data = cache.get(cache_key)
+        image = InMemoryUploadedFile(*cache_data)
+        self.user.avatar = image
+        self.user.save()
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
     
 class logoutView(APIView):
     @login_required
