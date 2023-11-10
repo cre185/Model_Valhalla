@@ -12,12 +12,12 @@
             <a-input
               v-if="changeUsername"
               id="input"
-              v-model="userStore.name"
-              :placeholder="userStore.name"
+              v-model="username"
+              :placeholder="username"
               @press-enter="saveUsername"
             />
             <a-typography-paragraph v-else>
-              {{ userStore.name }}
+              {{ username }}
             </a-typography-paragraph>
           </div>
           <div class="operation">
@@ -95,18 +95,55 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { ref, onBeforeMount, defineEmits } from 'vue';
+  import axios from 'axios';
   import { useUserStore } from '@/store';
-  import {FileItem} from "@arco-design/web-vue/es/upload/interfaces";
+  import { FileItem } from '@arco-design/web-vue/es/upload/interfaces';
 
-  const userStore = useUserStore();
+  const username = ref('');
+  const addTime = ref('');
+  const userId = 1;
   const changeUsername = ref(false);
+  const emit = defineEmits<{
+    (event: 'changeName', payload: string): void;
+  }>();
+
+  const fetchData = () => {
+    axios
+      .get(`user/retrieve/${userId}`)
+      .then((response) => {
+        const responseJson = response.data;
+        // 请求成功，处理响应数据
+        username.value = responseJson.username;
+        addTime.value = responseJson.add_time;
+      })
+      .catch((error) => {
+        // 请求失败，处理错误
+        console.error(error);
+      });
+  };
   const changeUsernameFunc = () => {
     changeUsername.value = true;
   };
   const saveUsername = () => {
     changeUsername.value = false;
+    // 定义要更新的数据
+    const newUsername = username;
+    emit('changeName', newUsername.value);
+    const updatedData = {
+      username: newUsername.value,
+    };
+    // 发送 PATCH 请求
+    axios
+      .patch(`user/update/${userId}`, updatedData)
+      .then((response) => {})
+      .catch((error) => {
+        console.error(error);
+      });
   };
+  onBeforeMount(() => {
+    fetchData();
+  });
 </script>
 
 <style scoped lang="less">
