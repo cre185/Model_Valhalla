@@ -3,13 +3,13 @@
     <Breadcrumb :items="['menu.user', 'menu.user.setting']" />
     <a-row style="margin-bottom: 16px">
       <a-col :span="24">
-        <UserPanel />
+        <UserPanel :name="newName" />
       </a-col>
     </a-row>
     <a-row class="wrapper">
       <a-col :span="24">
         <a-tabs default-active-key="1" type="rounded">
-          <SecuritySettings />
+          <SecuritySettings @change-name="handleChange" />
         </a-tabs>
       </a-col>
     </a-row>
@@ -17,10 +17,16 @@
 </template>
 
 <script lang="ts" setup>
+  import { ref } from 'vue';
   import UserPanel from './components/user-panel.vue';
   import BasicInformation from './components/basic-information.vue';
   import SecuritySettings from './components/security-settings.vue';
   import Certification from './components/certification.vue';
+
+  const newName = ref('');
+  const handleChange = (username:string) => {
+    newName.value = username;
+  };
 </script>
 
 <script lang="ts">

@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { ref, onBeforeMount, watch } from 'vue';
   import type {
     FileItem,
     RequestOption,
@@ -56,6 +56,13 @@
   import { useUserStore } from '@/store';
   import { userUploadApi } from '@/api/user-center';
   import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
+  import axios from 'axios';
+
+  // const username = ref('');
+  const addTime = ref('');
+  const userId = 1;
+  const props = defineProps(['name']);
+  const username = ref(props.name);
 
   const userStore = useUserStore();
   const file = {
@@ -63,20 +70,20 @@
     name: 'avatar.png',
     url: userStore.avatar,
   };
-  const renderData = [
+  const renderData = ref([
     {
       label: 'userSetting.label.name',
-      value: userStore.name,
+      value: username,
     },
     {
       label: 'userSetting.label.accountId',
-      value: userStore.accountId,
+      value: userId,
     },
     {
       label: 'userSetting.label.registrationDate',
-      value: userStore.registrationDate,
+      value: addTime,
     },
-  ] as DescData[];
+  ]) as unknown as DescData[];
   const fileList = ref<FileItem[]>([file]);
   const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
     fileList.value = [fileItem];
@@ -123,6 +130,31 @@
       },
     };
   };
+
+  const fetchData = () => {
+    axios
+      .get(`user/retrieve/${userId}`)
+      .then((response) => {
+        const responseJson = response.data;
+        // 请求成功，处理响应数据
+        username.value = responseJson.username;
+        addTime.value = responseJson.add_time;
+      })
+      .catch((error) => {
+        // 请求失败，处理错误
+        console.error(error);
+      });
+  };
+  onBeforeMount(() => {
+    fetchData();
+  });
+  watch(
+    () => props.name,
+    (newVal, oldVal) => {
+      // 更新组件内部的响应式变量
+      username.value = newVal;
+    }
+  );
 </script>
 
 <style scoped lang="less">
