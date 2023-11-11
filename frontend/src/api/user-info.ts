@@ -1,19 +1,16 @@
 import axios from 'axios';
+import apiCat from '@/api/main';
 
 export async function getUsername(
   userId: string,
   jwt: string
 ): Promise<string> {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
-      {
-        headers: {
-          Authorization: jwt,
-        },
-      }
-    );
-
+    const response = await axios.get(apiCat(`/user/retrieve/${userId}`), {
+      headers: {
+        Authorization: jwt,
+      },
+    });
     const responseJson = response.data;
     return responseJson.username;
   } catch (error) {
@@ -27,14 +24,11 @@ export async function getRegisterTime(
   jwt: string
 ): Promise<string> {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
-      {
-        headers: {
-          Authorization: jwt,
-        },
-      }
-    );
+    const response = await axios.get(apiCat(`/user/retrieve/${userId}`), {
+      headers: {
+        Authorization: jwt,
+      },
+    });
 
     const responseJson = response.data;
     return responseJson.add_time;
@@ -46,14 +40,11 @@ export async function getRegisterTime(
 
 export async function getAvatar(userId: string, jwt: string): Promise<string> {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
-      {
-        headers: {
-          Authorization: jwt,
-        },
-      }
-    );
+    const response = await axios.get(apiCat(`/user/retrieve/${userId}`), {
+      headers: {
+        Authorization: jwt,
+      },
+    });
 
     const responseJson = response.data;
     return responseJson.avatar;
@@ -65,14 +56,11 @@ export async function getAvatar(userId: string, jwt: string): Promise<string> {
 
 export async function getPhone(userId: string, jwt: string): Promise<string> {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
-      {
-        headers: {
-          Authorization: jwt,
-        },
-      }
-    );
+    const response = await axios.get(apiCat(`/user/retrieve/${userId}`), {
+      headers: {
+        Authorization: jwt,
+      },
+    });
 
     const responseJson = response.data;
     return responseJson.mobile;
@@ -84,14 +72,11 @@ export async function getPhone(userId: string, jwt: string): Promise<string> {
 
 export async function getEmail(userId: string, jwt: string): Promise<string> {
   try {
-    const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
-      {
-        headers: {
-          Authorization: jwt,
-        },
-      }
-    );
+    const response = await axios.get(apiCat(`/user/retrieve/${userId}`), {
+      headers: {
+        Authorization: jwt,
+      },
+    });
 
     const responseJson = response.data;
     return responseJson.email;

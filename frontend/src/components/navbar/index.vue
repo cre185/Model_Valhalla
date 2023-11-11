@@ -15,9 +15,9 @@
     <ul class="right-side">
       <li v-if="isLogin()">
         <a-space size="medium">
-          <span>欢迎回来，{{ username }}</span>
+          <span>欢迎回来，{{ userStore.username }}</span>
           <a-avatar :size="32">
-            <img alt="用户头像" :src="userAvatar" />
+            <img alt="用户头像" :src="userStore.avatar" />
           </a-avatar>
         </a-space>
       </li>
@@ -41,12 +41,8 @@
   import { LOCALE_OPTIONS } from '@/locale';
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
-  import Menu from '@/components/menu/index.vue';
   import { useRouter } from 'vue-router';
   import {getToken, isLogin} from '@/utils/auth';
-  import { onBeforeMount } from 'vue/dist/vue';
-  import { getAvatar, getRegisterTime, getUsername } from '@/api/user-info';
-  import MessageBox from '../message-box/index.vue';
 
   const router = useRouter();
   const Login = () => {
@@ -54,31 +50,11 @@
       name: 'Login',
     });
   };
-  const username = ref('');
-  const userAvatar = ref('');
-  const userId = '1';
   const jwt = getToken();
-
-  const fetchData = () => {
-    getUsername(userId, jwt!)
-      .then((returnUsername) => {
-        username.value = returnUsername;
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    getAvatar(userId, jwt!)
-      .then((returnAvatar) => {
-        userAvatar.value = returnAvatar;
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  };
-  fetchData();
 
   const appStore = useAppStore();
   const userStore = useUserStore();
+  userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   const { logout } = useUser();
   const { changeLocale, currentLocale } = useLocale();
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();

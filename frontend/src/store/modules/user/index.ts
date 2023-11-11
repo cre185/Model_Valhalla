@@ -1,13 +1,15 @@
 import { defineStore } from 'pinia';
 import {
   login as userLogin,
+  loginByPhone as userLoginByPhone,
   logout as userLogout,
   getUserInfo,
   verifyPhone as registerVerifyPhone,
   verifyCode as registerVerifyCode,
   LoginData,
   phoneVerifyData,
-  registerData, register,
+  registerData,
+  register,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
@@ -16,20 +18,12 @@ import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
-    name: undefined,
-    avatar: undefined,
-    job: undefined,
-    organization: undefined,
-    location: undefined,
-    email: undefined,
-    introduction: undefined,
-    personalWebsite: undefined,
-    jobName: undefined,
-    organizationName: undefined,
-    locationName: undefined,
-    phone: undefined,
-    registrationDate: undefined,
     accountId: undefined,
+    username: undefined,
+    avatar: undefined,
+    phone: undefined,
+    email: undefined,
+    registrationDate: undefined,
     certification: undefined,
     role: '',
   }),
@@ -47,6 +41,7 @@ const useUserStore = defineStore('user', {
         resolve(this.role);
       });
     },
+
     // Set user's information
     setInfo(partial: Partial<UserState>) {
       this.$patch(partial);
@@ -69,6 +64,17 @@ const useUserStore = defineStore('user', {
       try {
         const res = await userLogin(loginForm);
         setToken(res.data.jwt);
+        this.setInfo({ accountId: res.data.userId });
+      } catch (err) {
+        clearToken();
+        throw err;
+      }
+    },
+    async loginByPhone(loginForm: phoneVerifyData) {
+      try {
+        const res = await userLoginByPhone(loginForm);
+        setToken(res.data.jwt);
+        this.setInfo({ accountId: res.data.userId });
       } catch (err) {
         clearToken();
         throw err;
@@ -91,17 +97,25 @@ const useUserStore = defineStore('user', {
     },
 
     // Verify phone number
-    async verifyPhone(phone: string){
-      const data = {"mobile": phone};
+    async verifyPhone(phone: string) {
+      const data = { mobile: phone };
       const res = await registerVerifyPhone(data);
     },
 
-    async verifyCode(data: phoneVerifyData){
+    async verifyCode(data: phoneVerifyData) {
       const res = await registerVerifyCode(data);
     },
 
-    async register(data: registerData){
-      const modifiedData = data.email === '' ? {username: data.username, password: data.password, mobile: data.mobile} : data;
+    async register(data: registerData) {
+      const modifiedData =
+        data.email === ''
+          ? {
+              username: data.username,
+              password: data.password,
+              mobile: data.mobile,
+              is_admin: data.is_admin,
+            }
+          : data;
       const res = await register(modifiedData);
     },
   },
