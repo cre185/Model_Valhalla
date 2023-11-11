@@ -109,7 +109,6 @@
   import { getToken } from '@/utils/auth';
 
   const userStore = JSON.parse(localStorage.getItem('userStore')!);
-
   // const username = ref('');
   // const phone = ref('');
   const maskedPhone = ref('');

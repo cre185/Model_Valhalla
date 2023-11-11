@@ -23,7 +23,7 @@
         </template>
       </a-upload>
       <a-descriptions
-        :data="renderData"
+        id="infoBar"
         :column="2"
         align="right"
         layout="inline-horizontal"
@@ -38,10 +38,13 @@
           textAlign: 'left',
         }"
       >
-        <template #label="{ label }">{{ $t(label) }} :</template>
-        <template #value="{ value }">
-          <span>{{ value }}</span>
-        </template>
+        <span
+          >{{ $t('userSetting.label.name') }}：{{ userStore.username }}</span
+        >
+        <span>{{ $t('userSetting.label.accountId') }}：{{ userStore.accountId }}</span>
+        <span
+          >{{ $t('userSetting.label.registrationDate') }}：{{ userStore.registrationDate }}</span
+        >
       </a-descriptions>
     </a-space>
   </a-card>
@@ -134,24 +137,24 @@
 
   // const fetchData = () => {
   //   getUsername(userId, jwt!)
-        //     .then((returnUsername) => {
+  //     .then((returnUsername) => {
   //       username.value = returnUsername;
   //     })
-        //     .catch((error) => {
+  //     .catch((error) => {
   //       console.error('Error:', error);
   //     });
   //   getRegisterTime(userId, jwt!)
-        //     .then((returnTime) => {
+  //     .then((returnTime) => {
   //       addTime.value = returnTime;
   //     })
-        //     .catch((error) => {
+  //     .catch((error) => {
   //       console.error('Error:', error);
   //     });
   //   getAvatar(userId, jwt!)
-        //     .then((returnAvatar) => {
+  //     .then((returnAvatar) => {
   //       userAvatar.value = returnAvatar;
   //     })
-        //     .catch((error) => {
+  //     .catch((error) => {
   //       console.error('Error:', error);
   //     });
   // };
