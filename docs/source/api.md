@@ -36,10 +36,6 @@
 }, 
 status=200
 ```
-* 未找到用户  
-```python
-status=404
-```
 * jwt错误  
 ```python
 {
