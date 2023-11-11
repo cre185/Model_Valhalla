@@ -46,6 +46,8 @@ def verify_jwt(token):
     secret = settings.JWT_SECRET
 
     try:
+        if token.startswith("Bearer "):
+            token = token[7:]
         payload = jwt.decode(token, secret, algorithms=["HS256"])
     except jwt.PyJWTError:
         payload = None
