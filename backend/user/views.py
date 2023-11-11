@@ -1,6 +1,6 @@
 import datetime
 import random
-from .models import User, VerifyMsg, VerifyEmail
+from .models import User, VerifyMsg, VerifyEmail, ResetPassword
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
