@@ -84,9 +84,7 @@
             </a-typography-paragraph>
           </div>
           <div v-else class="content">
-            <a-typography-paragraph>
-              未绑定邮箱
-            </a-typography-paragraph>
+            <a-typography-paragraph> 未绑定邮箱 </a-typography-paragraph>
           </div>
           <div v-if="email != null" class="operation">
             <a-link>
@@ -107,26 +105,38 @@
   import axios from 'axios';
   import { useUserStore } from '@/store';
   import { FileItem } from '@arco-design/web-vue/es/upload/interfaces';
+  import { getPhone, getEmail, getUsername } from '@/api/user-info';
+  import { getToken } from '@/utils/auth';
 
   const username = ref('');
   const phone = ref('');
   const maskedPhone = ref('');
   const email = ref('');
-  const userId = 1;
+  const userId = '1';
+  const jwt = getToken();
   const changeUsername = ref(false);
   const emit = defineEmits<{
     (event: 'changeName', payload: string): void;
   }>();
 
   const fetchData = () => {
-    axios
-      .get(`http://localhost:8000/user/retrieve/${userId}`)
-      .then((response) => {
-        const responseJson = response.data;
-        // 请求成功，处理响应数据
-        username.value = responseJson.username;
-        phone.value = responseJson.mobile;
-        email.value = responseJson.email;
+    getUsername(userId, jwt!)
+      .then((returnUsername) => {
+        username.value = returnUsername;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    getPhone(userId, jwt!)
+      .then((returnPhone) => {
+        phone.value = returnPhone;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    getEmail(userId, jwt!)
+      .then((returnEmail) => {
+        email.value = returnEmail;
         const start = phone.value.slice(0, 3); // 前三位
         const middle = '*'.repeat(6); // 中间六位替换成星号
         const end = phone.value.slice(-2); // 后两位
@@ -134,10 +144,10 @@
         maskedPhone.value = `${start}${middle}${end}`;
       })
       .catch((error) => {
-        // 请求失败，处理错误
-        console.error(error);
+        console.error('Error:', error);
       });
   };
+  fetchData();
   const changeUsernameFunc = () => {
     changeUsername.value = true;
   };
@@ -157,9 +167,6 @@
         console.error(error);
       });
   };
-  onBeforeMount(() => {
-    fetchData();
-  });
 </script>
 
 <style scoped lang="less">
