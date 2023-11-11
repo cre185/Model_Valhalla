@@ -58,8 +58,8 @@
         </template>
         <template #description>
           <div class="content">
-            <a-typography-paragraph>
-              已绑定：150******50
+            <a-typography-paragraph v-model="maskedPhone">
+              已绑定：{{ maskedPhone }}
             </a-typography-paragraph>
           </div>
           <div class="operation">
@@ -78,15 +78,23 @@
           </a-typography-paragraph>
         </template>
         <template #description>
-          <div class="content">
-            <a-typography-paragraph>
-              {{ $t('userSetting.SecuritySettings.placeholder.email') }}
+          <div v-if="email != null" class="content">
+            <a-typography-paragraph v-model="email">
+              已绑定：{{ email }}
             </a-typography-paragraph>
           </div>
-          <div class="operation">
+          <div v-else class="content">
+            <a-typography-paragraph>
+              未绑定邮箱
+            </a-typography-paragraph>
+          </div>
+          <div v-if="email != null" class="operation">
             <a-link>
               {{ $t('userSetting.SecuritySettings.button.update') }}
             </a-link>
+          </div>
+          <div v-else class="operation">
+            <a-link> 绑定 </a-link>
           </div>
         </template>
       </a-list-item-meta>
@@ -101,7 +109,9 @@
   import { FileItem } from '@arco-design/web-vue/es/upload/interfaces';
 
   const username = ref('');
-  const addTime = ref('');
+  const phone = ref('');
+  const maskedPhone = ref('');
+  const email = ref('');
   const userId = 1;
   const changeUsername = ref(false);
   const emit = defineEmits<{
@@ -110,12 +120,18 @@
 
   const fetchData = () => {
     axios
-      .get(`user/retrieve/${userId}`)
+      .get(`http://localhost:8000/user/retrieve/${userId}`)
       .then((response) => {
         const responseJson = response.data;
         // 请求成功，处理响应数据
         username.value = responseJson.username;
-        addTime.value = responseJson.add_time;
+        phone.value = responseJson.mobile;
+        email.value = responseJson.email;
+        const start = phone.value.slice(0, 3); // 前三位
+        const middle = '*'.repeat(6); // 中间六位替换成星号
+        const end = phone.value.slice(-2); // 后两位
+
+        maskedPhone.value = `${start}${middle}${end}`;
       })
       .catch((error) => {
         // 请求失败，处理错误
@@ -135,7 +151,7 @@
     };
     // 发送 PATCH 请求
     axios
-      .patch(`user/update/${userId}`, updatedData)
+      .patch(`http://localhost:8000/user/update/${userId}`, updatedData)
       .then((response) => {})
       .catch((error) => {
         console.error(error);

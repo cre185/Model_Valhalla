@@ -14,11 +14,7 @@
             <template #trigger-icon>
               <icon-camera />
             </template>
-            <img
-              v-if="fileList.length"
-              :src="fileList[0].url"
-              :alt="fileList[0].name"
-            />
+            <img v-if="fileList.length" alt="用户头像" :src="userAvatar" />
           </a-avatar>
         </template>
       </a-upload>
@@ -57,18 +53,18 @@
   import { userUploadApi } from '@/api/user-center';
   import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
   import axios from 'axios';
+  import { getToken } from '@/utils/auth';
 
-  // const username = ref('');
   const addTime = ref('');
   const userId = 1;
   const props = defineProps(['name']);
   const username = ref(props.name);
+  const userAvatar = ref('');
 
-  const userStore = useUserStore();
   const file = {
     uid: '-2',
     name: 'avatar.png',
-    url: userStore.avatar,
+    url: userAvatar.value,
   };
   const renderData = ref([
     {
@@ -87,6 +83,7 @@
   const fileList = ref<FileItem[]>([file]);
   const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
     fileList.value = [fileItem];
+    userAvatar.value = fileItem.url!;
   };
   const customRequest = (options: RequestOption) => {
     // docs: https://axios-http.com/docs/cancellation
@@ -115,7 +112,8 @@
         // https://github.com/axios/axios/issues/1630
         // https://github.com/nuysoft/Mock/issues/127
 
-        const res = await userUploadApi(formData, {
+        const data = { img: formData, jwt: getToken()! };
+        const res = await userUploadApi(data, {
           controller,
           onUploadProgress,
         });
@@ -133,12 +131,14 @@
 
   const fetchData = () => {
     axios
-      .get(`user/retrieve/${userId}`)
+      .get(`http://localhost:8000/user/retrieve/${userId}`)
       .then((response) => {
         const responseJson = response.data;
         // 请求成功，处理响应数据
         username.value = responseJson.username;
         addTime.value = responseJson.add_time;
+        userAvatar.value = responseJson.avatar;
+        console.log(responseJson);
       })
       .catch((error) => {
         // 请求失败，处理错误
