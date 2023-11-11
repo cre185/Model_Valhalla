@@ -2,23 +2,26 @@
   <div class="navbar">
     <div class="left-side">
       <a-space>
-        <img
-          alt="logo"
-          src="../../assets/trophy.png"
-          width="25"
-          height="25"
-        />
+        <img alt="logo" src="../../assets/trophy.png" width="25" height="25" />
         <a-typography-title
           :style="{ margin: 0, fontSize: '18px' }"
           :heading="5"
         >
-          模型竞技场  Model Valhalla
+          模型竞技场 Model Valhalla
         </a-typography-title>
       </a-space>
     </div>
 
     <ul class="right-side">
-      <li>
+      <li v-if="isLogin()">
+        <a-space size="medium">
+          <span>欢迎回来，{{ username }}</span>
+          <a-avatar :size="32">
+            <img alt="用户头像" :src="userAvatar" />
+          </a-avatar>
+        </a-space>
+      </li>
+      <li v-else @click="Login">
         <a-space size="medium">
           <span>您好，请先登录</span>
           <a-avatar :size="32" :style="{ backgroundColor: '#FFC72E' }">
@@ -39,7 +42,40 @@
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
   import Menu from '@/components/menu/index.vue';
+  import { useRouter } from 'vue-router';
+  import {getToken, isLogin} from '@/utils/auth';
+  import { onBeforeMount } from 'vue/dist/vue';
+  import { getAvatar, getRegisterTime, getUsername } from '@/api/user-info';
   import MessageBox from '../message-box/index.vue';
+
+  const router = useRouter();
+  const Login = () => {
+    router.push({
+      name: 'Login',
+    });
+  };
+  const username = ref('');
+  const userAvatar = ref('');
+  const userId = '1';
+  const jwt = getToken();
+
+  const fetchData = () => {
+    getUsername(userId, jwt!)
+      .then((returnUsername) => {
+        username.value = returnUsername;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    getAvatar(userId, jwt!)
+      .then((returnAvatar) => {
+        userAvatar.value = returnAvatar;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+  fetchData();
 
   const appStore = useAppStore();
   const userStore = useUserStore();

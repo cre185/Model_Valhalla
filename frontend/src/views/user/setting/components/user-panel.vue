@@ -54,9 +54,10 @@
   import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
   import axios from 'axios';
   import { getToken } from '@/utils/auth';
+  import { getAvatar, getRegisterTime, getUsername } from '@/api/user-info';
 
   const addTime = ref('');
-  const userId = 1;
+  const userId = '1';
   const props = defineProps(['name']);
   const username = ref(props.name);
   const userAvatar = ref('');
@@ -127,28 +128,29 @@
   };
 
   const fetchData = () => {
-    axios
-      .get(`http://localhost:8000/user/retrieve/${userId}`, {
-        headers: {
-          Authorization: jwt!,
-        },
-      })
-      .then((response) => {
-        const responseJson = response.data;
-        console.log(responseJson);
-        // 请求成功，处理响应数据
-        username.value = responseJson.username;
-        addTime.value = responseJson.add_time;
-        userAvatar.value = responseJson.avatar;
+    getUsername(userId, jwt!)
+      .then((returnUsername) => {
+        username.value = returnUsername;
       })
       .catch((error) => {
-        // 请求失败，处理错误
-        console.error(error);
+        console.error('Error:', error);
+      });
+    getRegisterTime(userId, jwt!)
+      .then((returnTime) => {
+        addTime.value = returnTime;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    getAvatar(userId, jwt!)
+      .then((returnAvatar) => {
+        userAvatar.value = returnAvatar;
+      })
+      .catch((error) => {
+        console.error('Error:', error);
       });
   };
-  onBeforeMount(() => {
-    fetchData();
-  });
+  fetchData();
   watch(
     () => props.name,
     (newVal, oldVal) => {
