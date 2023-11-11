@@ -126,16 +126,14 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
 class updateAvatarView(APIView):
     @login_required
     def post(self, request):
-        image = request.POST['file']
-        image_data = [image.file, image.field_name, image.name, image.content_type,
-                    image.size, image.charset, image.content_type_extra]
-        cache_key = 'image_key'
-        cache.set(cache_key, image_data, 60)
-    
-        cache_data = cache.get(cache_key)
-        img = InMemoryUploadedFile(*cache_data)
-        print(img)
-        self.user.avatar = img
+        image = request.POST.get('file')
+        image_file = open(image.name, 'rb')
+
+        for i in image.chunks():
+            image_file.write(i)
+
+        image_file.close()
+        self.user.avatar = image
         self.user.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
     
