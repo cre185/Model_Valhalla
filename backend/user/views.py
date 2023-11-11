@@ -64,6 +64,10 @@ class verify_codeView(APIView):
         data = JSONParser().parse(request)
         try:
             verify_msg = VerifyMsg.objects.get(mobile=data['mobile'], code=data['code'])
+            add_time = verify_msg.add_time
+            due_time = datetime.datetime.now() - datetime.timedelta(minutes=10)
+            if add_time <= due_time:
+                return Response({'message':'Code expired'}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -166,6 +170,10 @@ class verify_emailView(APIView):
         data = JSONParser().parse(request)
         try:
             verify_email = VerifyEmail.objects.get(email=data['email'], code=data['code'])
+            add_time = verify_email.add_time
+            due_time = datetime.datetime.now() - datetime.timedelta(minutes=10)
+            if add_time <= due_time:
+                return Response({'message':'Code expired'}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
