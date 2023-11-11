@@ -206,16 +206,19 @@
           await userStore.loginByPhone(values as phoneVerifyData);
         }
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        const userStore = useUserStore();
         const jwt = getToken();
         const userID = userStore.$state.accountId;
-        let username, registerTime, avatar, phone, email;
-        getUsername(userID!, jwt!).then((returnValue) => { username = returnValue });
-        getRegisterTime(userID!, jwt!).then((returnValue) => { registerTime = returnValue });
+        let name;
+        let registrationDate;
+        let avatar;
+        let phone;
+        let email;
+        getUsername(userID!, jwt!).then((returnValue) => { name = returnValue });
+        getRegisterTime(userID!, jwt!).then((returnValue) => { registrationDate = returnValue });
         getAvatar(userID!, jwt!).then((returnValue) => { avatar = returnValue });
         getPhone(userID!, jwt!).then((returnValue) => { phone = returnValue });
         getEmail(userID!, jwt!).then((returnValue) => { email = returnValue });
-        userStore.setInfo({name: username, avatar: avatar, registrationDate: registerTime, phone: phone, email: email });
+        userStore.setInfo({username: name, avatar, registrationDate, phone, email });
         router.push({
           name: (redirect as string) || 'Index',
           query: {

@@ -64,7 +64,7 @@ const useUserStore = defineStore('user', {
       try {
         const res = await userLogin(loginForm);
         setToken(res.data.jwt);
-        this.setInfo({accountId: res.data.userID})
+        this.setInfo({accountId: res.data.userId})
       } catch (err) {
         clearToken();
         throw err;
@@ -74,6 +74,7 @@ const useUserStore = defineStore('user', {
       try {
         const res = await userLoginByPhone(loginForm);
         setToken(res.data.jwt);
+        this.setInfo({accountId: res.data.userId})
       } catch (err) {
         clearToken();
         throw err;

@@ -24,7 +24,7 @@ export interface registerData {
 export interface LoginRes {
   jwt: string;
   message: string;
-  userID: string;
+  userId: string;
 }
 
 export function login(data: LoginData) {
