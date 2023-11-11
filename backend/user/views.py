@@ -1,3 +1,4 @@
+import datetime
 import random
 from .models import User, VerifyMsg, VerifyEmail
 from rest_framework import status
@@ -13,7 +14,6 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
-from PIL import Image
 
 # Create your views here.
 
@@ -88,7 +88,7 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
 
     @login_required
     def put(self, request, *args, **kwargs):
-        if self.user.id != int(kwargs['id']):
+        if request.user.id != int(kwargs['id']):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         result = self.update(request, *args, **kwargs)
         data = result.data
@@ -99,7 +99,7 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     
     @login_required
     def patch(self, request, *args, **kwargs):
-        if self.user.id != int(kwargs['id']):
+        if request.user.id != int(kwargs['id']):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         result = self.partial_update(request, *args, **kwargs)
         data = result.data
@@ -115,7 +115,7 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     
     @login_required
     def get(self, request, *args, **kwargs):
-        if self.user.id != int(kwargs['id']):
+        if request.user.id != int(kwargs['id']):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         result = self.retrieve(request, *args, **kwargs)
         data = result.data
@@ -129,22 +129,9 @@ class updateAvatarView(APIView):
     def post(self, request):
         dict = request.FILES
         image = dict['file']
-        print(image)
         request.user.avatar = image
         request.user.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
-    
-class retrieveAvatarView(APIView):
-    def get(self, request, id):
-        try:
-            user = User.objects.get(id=id)
-        except:
-            return Response({"message": "User does not exist."}, status=status.HTTP_404_NOT_FOUND)
-        avatar = user.avatar
-        if avatar:
-            return Response({"avatar": avatar.url}, status=status.HTTP_200_OK)
-        else:
-            return Response({"message": "User does not have an avatar."}, status=status.HTTP_404_NOT_FOUND)
 
 class logoutView(APIView):
     @login_required
