@@ -64,7 +64,7 @@ const useUserStore = defineStore('user', {
       try {
         const res = await userLogin(loginForm);
         setToken(res.data.jwt);
-        this.setInfo({accountId: res.data.userId})
+        this.setInfo({ accountId: res.data.userId });
       } catch (err) {
         clearToken();
         throw err;
@@ -74,7 +74,7 @@ const useUserStore = defineStore('user', {
       try {
         const res = await userLoginByPhone(loginForm);
         setToken(res.data.jwt);
-        this.setInfo({accountId: res.data.userId})
+        this.setInfo({ accountId: res.data.userId });
       } catch (err) {
         clearToken();
         throw err;
@@ -97,17 +97,25 @@ const useUserStore = defineStore('user', {
     },
 
     // Verify phone number
-    async verifyPhone(phone: string){
-      const data = {"mobile": phone};
+    async verifyPhone(phone: string) {
+      const data = { mobile: phone };
       const res = await registerVerifyPhone(data);
     },
 
-    async verifyCode(data: phoneVerifyData){
+    async verifyCode(data: phoneVerifyData) {
       const res = await registerVerifyCode(data);
     },
 
-    async register(data: registerData){
-      const modifiedData = data.email === '' ? {username: data.username, password: data.password, mobile: data.mobile, is_admin:data.is_admin} : data;
+    async register(data: registerData) {
+      const modifiedData =
+        data.email === ''
+          ? {
+              username: data.username,
+              password: data.password,
+              mobile: data.mobile,
+              is_admin: data.is_admin,
+            }
+          : data;
       const res = await register(modifiedData);
     },
   },

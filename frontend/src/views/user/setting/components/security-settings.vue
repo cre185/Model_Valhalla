@@ -104,56 +104,21 @@
   import { ref, onBeforeMount, defineEmits } from 'vue';
   import axios from 'axios';
   import { useUserStore } from '@/store';
-  import { FileItem } from '@arco-design/web-vue/es/upload/interfaces';
-  import { getPhone, getEmail, getUsername } from '@/api/user-info';
   import { getToken } from '@/utils/auth';
 
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
-  // const username = ref('');
-  // const phone = ref('');
   const maskedPhone = ref('');
   const start = userStore.phone!.slice(0, 3); // 前三位
   const middle = '*'.repeat(6); // 中间六位替换成星号
   const end = userStore.phone!.slice(-2); // 后两位
   maskedPhone.value = `${start}${middle}${end}`;
-  // const email = ref('');
-  // const userId = '1';
   const jwt = getToken();
   const changeUsername = ref(false);
   const emit = defineEmits<{
     (event: 'changeName', payload: string): void;
   }>();
 
-  // const fetchData = () => {
-  //   getUsername(userId, jwt!)
-  //     .then((returnUsername) => {
-  //       username.value = returnUsername;
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error);
-  //     });
-  //   getPhone(userId, jwt!)
-  //     .then((returnPhone) => {
-  //       phone.value = returnPhone;
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error);
-  //     });
-  //   getEmail(userId, jwt!)
-  //     .then((returnEmail) => {
-  //       email.value = returnEmail;
-  //       const start = phone.value.slice(0, 3); // 前三位
-  //       const middle = '*'.repeat(6); // 中间六位替换成星号
-  //       const end = phone.value.slice(-2); // 后两位
-//
-  //       maskedPhone.value = `${start}${middle}${end}`;
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error);
-  //     });
-  // };
-  // fetchData();
   const changeUsernameFunc = () => {
     changeUsername.value = true;
   };
@@ -169,7 +134,10 @@
     localStorage.setItem('userStore', JSON.stringify(userStore.$state));
     // 发送 PATCH 请求
     axios
-      .patch(`http://localhost:8000/user/update/${userStore.accountId}`, updatedData)
+      .patch(
+        `http://localhost:8000/user/update/${userStore.accountId}`,
+        updatedData
+      )
       .then((response) => {})
       .catch((error) => {
         console.error(error);

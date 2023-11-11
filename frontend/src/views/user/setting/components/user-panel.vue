@@ -59,17 +59,11 @@
   import { useUserStore } from '@/store';
   import { userUploadApi } from '@/api/user-center';
   import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
-  import axios from 'axios';
   import { getToken } from '@/utils/auth';
-  import { getAvatar, getRegisterTime, getUsername } from '@/api/user-info';
 
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
-  // const addTime = ref('');
-  // const userId = '1';
   const props = defineProps(['name']);
-  // const username = ref(props.name);
-  // const userAvatar = ref('');
   const jwt = getToken();
 
   const file = {
@@ -95,6 +89,7 @@
   const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
     fileList.value = [fileItem];
     userStore.setInfo({ avatar: fileItem.url });
+    localStorage.setItem('userStore', JSON.stringify(userStore.$state));
   };
   const customRequest = (options: RequestOption) => {
     // docs: https://axios-http.com/docs/cancellation
@@ -135,37 +130,12 @@
       },
     };
   };
-
-  // const fetchData = () => {
-  //   getUsername(userId, jwt!)
-  //     .then((returnUsername) => {
-  //       username.value = returnUsername;
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error);
-  //     });
-  //   getRegisterTime(userId, jwt!)
-  //     .then((returnTime) => {
-  //       addTime.value = returnTime;
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error);
-  //     });
-  //   getAvatar(userId, jwt!)
-  //     .then((returnAvatar) => {
-  //       userAvatar.value = returnAvatar;
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error:', error);
-  //     });
-  // };
-  // fetchData();
   watch(
     () => props.name,
     (newVal, oldVal) => {
       // 更新组件内部的响应式变量
       userStore.setInfo({ username: newVal });
-      // userStore.username.value = newVal;
+      localStorage.setItem('userStore', JSON.stringify(userStore.$state));
     }
   );
 </script>

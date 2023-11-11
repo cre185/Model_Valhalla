@@ -98,11 +98,7 @@
               </template>
             </a-input>
           </a-form-item>
-          <a-form-item
-            field="code"
-            :rules="codeRules"
-            hide-label
-          >
+          <a-form-item field="code" :rules="codeRules" hide-label>
             <a-input
               v-model="userCodeInfo.code"
               :placeholder="$t('login.form.code.placeholder')"
@@ -113,16 +109,17 @@
               </template>
               <template #append>
                 <a-button
-                    type="primary"
-                    v-if="codeInterval.codeInterval < 0"
-                    @click="handleSendCode"
+                  v-if="codeInterval.codeInterval < 0"
+                  type="primary"
+                  @click="handleSendCode"
                 >
-                  {{$t('login.form.code.buttonText1')}}
+                  {{ $t('login.form.code.buttonText1') }}
                 </a-button>
-                <a-button
-                    v-if="codeInterval.codeInterval >= 0"
-                >
-                  {{codeInterval.codeInterval + $t('register.form.code.buttonText2')}}
+                <a-button v-if="codeInterval.codeInterval >= 0">
+                  {{
+                    codeInterval.codeInterval +
+                    $t('register.form.code.buttonText2')
+                  }}
                 </a-button>
               </template>
             </a-input>
@@ -153,16 +150,22 @@
   import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
-  import type {LoginData, phoneVerifyData} from '@/api/user';
-  import {getUsername, getRegisterTime, getPhone, getAvatar, getEmail} from "@/api/user-info";
-  import {getToken} from "@/utils/auth";
+  import type { LoginData, phoneVerifyData } from '@/api/user';
+  import {
+    getUsername,
+    getRegisterTime,
+    getPhone,
+    getAvatar,
+    getEmail,
+  } from '@/api/user-info';
+  import { getToken } from '@/utils/auth';
 
   const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
-  const { proxy } = getCurrentInstance()
+  const { proxy } = getCurrentInstance();
 
   const loginByPasswordConfig = useStorage('login-by-password-config', {
     rememberPassword: true,
@@ -185,7 +188,7 @@
   const codeInterval = reactive({
     codeTimer: null as null | ReturnType<typeof setInterval>,
     codeInterval: -1,
-  })
+  });
 
   const loginWay = ref('1');
   const handleSubmit = async ({
@@ -199,10 +202,9 @@
     if (!errors) {
       setLoading(true);
       try {
-        if(loginWay.value === '1'){
+        if (loginWay.value === '1') {
           await userStore.login(values as LoginData);
-        }
-        else {
+        } else {
           await userStore.loginByPhone(values as phoneVerifyData);
         }
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
@@ -213,12 +215,28 @@
         let avatar;
         let phone;
         let email;
-        await getUsername(userID!, jwt!).then((returnValue) => { name = returnValue });
-        await getRegisterTime(userID!, jwt!).then((returnValue) => { registrationDate = returnValue });
-        await getAvatar(userID!, jwt!).then((returnValue) => { avatar = returnValue });
-        await getPhone(userID!, jwt!).then((returnValue) => { phone = returnValue });
-        await getEmail(userID!, jwt!).then((returnValue) => { email = returnValue });
-        userStore.setInfo({username: name, avatar, registrationDate, phone, email });
+        await getUsername(userID!, jwt!).then((returnValue) => {
+          name = returnValue;
+        });
+        await getRegisterTime(userID!, jwt!).then((returnValue) => {
+          registrationDate = returnValue;
+        });
+        await getAvatar(userID!, jwt!).then((returnValue) => {
+          avatar = returnValue;
+        });
+        await getPhone(userID!, jwt!).then((returnValue) => {
+          phone = returnValue;
+        });
+        await getEmail(userID!, jwt!).then((returnValue) => {
+          email = returnValue;
+        });
+        userStore.setInfo({
+          username: name,
+          avatar,
+          registrationDate,
+          phone,
+          email,
+        });
         localStorage.setItem('userStore', JSON.stringify(userStore.$state));
         router.push({
           name: (redirect as string) || 'Index',
@@ -227,12 +245,16 @@
           },
         });
         Message.success(t('login.form.login.success'));
-        if(loginWay.value === '1'){
+        if (loginWay.value === '1') {
           const { rememberPassword } = loginByPasswordConfig.value;
           const { username, password } = values;
           // 实际生产环境需要进行加密存储。
-          loginByPasswordConfig.value.username = rememberPassword ? username : '';
-          loginByPasswordConfig.value.password = rememberPassword ? password : '';
+          loginByPasswordConfig.value.username = rememberPassword
+            ? username
+            : '';
+          loginByPasswordConfig.value.password = rememberPassword
+            ? password
+            : '';
         }
       } catch (err) {
         errorMessage.value = (err as Error).message;
@@ -244,12 +266,11 @@
 
   const handleSendCode = async () => {
     try {
-      codeInterval.codeInterval = 60
+      codeInterval.codeInterval = 60;
       codeInterval.codeTimer = setInterval(() => {
-        if(codeInterval.codeInterval >= 0){
+        if (codeInterval.codeInterval >= 0) {
           codeInterval.codeInterval -= 1;
-        }
-        else{
+        } else {
           clearInterval(codeInterval.codeTimer);
         }
       }, 1000);
@@ -265,40 +286,42 @@
     loginByPasswordConfig.value.rememberPassword = value;
   };
 
-  const phoneRules = [{
-    validator: (value, callback) => {
-      return new Promise(resolve => {
-        window.setTimeout(() => {
-          if(value === ''){
-            callback(proxy.$t('login.form.phone.errMsg1'))
-          }
-          else if (!/1[3,4,5,7,8][0-9]{9}/.test(value)) {
-            callback(proxy.$t('login.form.phone.errMsg2'))
-          }
-          resolve()
-        }, 1000)
-      })
+  const phoneRules = [
+    {
+      validator: (value, callback) => {
+        return new Promise((resolve) => {
+          window.setTimeout(() => {
+            if (value === '') {
+              callback(proxy.$t('login.form.phone.errMsg1'));
+            } else if (!/1[3,4,5,7,8][0-9]{9}/.test(value)) {
+              callback(proxy.$t('login.form.phone.errMsg2'));
+            }
+            resolve();
+          }, 1000);
+        });
+      },
     },
-  }];
+  ];
 
-  const codeRules = [{
-    required: true,
-    validator: (value, callback) => {
-      return new Promise(resolve => {
-        window.setTimeout(() => {
-          value = userCodeInfo.code
-          if(value === ''){
-            callback(proxy.$t('register.form.code.errMsg1'))
-          }
-          else if (!/\d{6}/.test(value)) {
-            callback(proxy.$t('login.form.code.errMsg2'))
-          }
-          resolve()
-        }, 1000)
-      })
+  const codeRules = [
+    {
+      required: true,
+      validator: (value, callback) => {
+        return new Promise((resolve) => {
+          window.setTimeout(() => {
+            value = userCodeInfo.code;
+            if (value === '') {
+              callback(proxy.$t('register.form.code.errMsg1'));
+            } else if (!/\d{6}/.test(value)) {
+              callback(proxy.$t('login.form.code.errMsg2'));
+            }
+            resolve();
+          }, 1000);
+        });
+      },
+      trigger: ['change', 'blur'],
     },
-    trigger: ['change', 'blur'],
-  }];
+  ];
 </script>
 
 <style lang="less" scoped>
@@ -335,7 +358,7 @@
       color: var(--color-text-3) !important;
     }
   }
-  #codeMargin{
+  #codeMargin {
     height: 24px;
   }
   ::v-deep(.arco-input-append) {
