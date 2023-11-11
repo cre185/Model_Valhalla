@@ -10,6 +10,7 @@ urlpatterns = [
     path("update/<int:id>", views.updateView.as_view(), name="update"),
     path("retrieve/<int:id>", views.retrieveView.as_view(), name="retrieve"),
     path("update_avatar", views.updateAvatarView.as_view(), name="update_avatar"),
+    path("retrieve_avatar/<int:id>", views.retrieveAvatarView.as_view(), name="retrieve_avatar"),
     path("logout", views.logoutView.as_view(), name="logout"),
     path("send_email", views.send_emailView.as_view(), name="send_email"),
     path("verify_email", views.verify_emailView.as_view(), name="verify_email"),

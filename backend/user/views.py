@@ -13,6 +13,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
+from PIL import Image
 
 # Create your views here.
 
@@ -126,19 +127,24 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
 class updateAvatarView(APIView):
     @login_required
     def post(self, request):
-        image = request.POST.get('file')
-        image_file = open(image.name, 'rb')
-
-        for i in image.chunks():
-            image_file.write(i)
-
-        image_file.close()
-        self.user.avatar = image
-        self.user.save()
+        dict = request.FILES
+        image = dict['file']
+        print(image)
+        request.user.avatar = image
+        request.user.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
     
 class retrieveAvatarView(APIView):
-    pass
+    def get(self, request, id):
+        try:
+            user = User.objects.get(id=id)
+        except:
+            return Response({"message": "User does not exist."}, status=status.HTTP_404_NOT_FOUND)
+        avatar = user.avatar
+        if avatar:
+            return Response({"avatar": avatar.url}, status=status.HTTP_200_OK)
+        else:
+            return Response({"message": "User does not have an avatar."}, status=status.HTTP_404_NOT_FOUND)
 
 class logoutView(APIView):
     @login_required
