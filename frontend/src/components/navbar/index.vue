@@ -78,7 +78,7 @@
   // fetchData();
 
   const appStore = useAppStore();
-  const userStore = useUserStore();
+  const userStore = JSON.parse(localStorage.getItem('userStore')!);
   const { logout } = useUser();
   const { changeLocale, currentLocale } = useLocale();
   const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();

@@ -60,7 +60,7 @@
   import { getToken } from '@/utils/auth';
   import { getAvatar, getRegisterTime, getUsername } from '@/api/user-info';
 
-  const userStore = useUserStore();
+  const userStore = JSON.parse(localStorage.getItem('userStore')!);
   // const addTime = ref('');
   // const userId = '1';
   const props = defineProps(['name']);

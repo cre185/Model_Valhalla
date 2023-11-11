@@ -219,6 +219,7 @@
         await getPhone(userID!, jwt!).then((returnValue) => { phone = returnValue });
         await getEmail(userID!, jwt!).then((returnValue) => { email = returnValue });
         userStore.setInfo({username: name, avatar, registrationDate, phone, email });
+        localStorage.setItem('userStore', JSON.stringify(userStore));
         router.push({
           name: (redirect as string) || 'Index',
           query: {

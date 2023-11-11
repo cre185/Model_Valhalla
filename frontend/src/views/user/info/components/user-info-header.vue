@@ -8,7 +8,7 @@
         <img :src="userInfo.avatar" />
       </a-avatar>
       <a-typography-title :heading="6" style="margin: 0">
-        {{ userInfo.name }}
+        {{ userInfo.username }}
       </a-typography-title>
       <div class="user-msg">
         <a-space :size="18">
