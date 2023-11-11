@@ -14,7 +14,11 @@
             <template #trigger-icon>
               <icon-camera />
             </template>
-            <img v-if="fileList.length" alt="用户头像" :src="userAvatar" />
+            <img
+              v-if="fileList.length"
+              alt="用户头像"
+              :src="userStore.avatar"
+            />
           </a-avatar>
         </template>
       </a-upload>
@@ -56,36 +60,37 @@
   import { getToken } from '@/utils/auth';
   import { getAvatar, getRegisterTime, getUsername } from '@/api/user-info';
 
-  const addTime = ref('');
-  const userId = '1';
+  const userStore = useUserStore();
+  // const addTime = ref('');
+  // const userId = '1';
   const props = defineProps(['name']);
-  const username = ref(props.name);
-  const userAvatar = ref('');
+  // const username = ref(props.name);
+  // const userAvatar = ref('');
   const jwt = getToken();
 
   const file = {
     uid: '-2',
     name: 'avatar.png',
-    url: userAvatar.value,
+    url: userStore.avatar,
   };
   const renderData = ref([
     {
       label: 'userSetting.label.name',
-      value: username,
+      value: userStore.username,
     },
     {
       label: 'userSetting.label.accountId',
-      value: userId,
+      value: userStore.accountId,
     },
     {
       label: 'userSetting.label.registrationDate',
-      value: addTime,
+      value: userStore.registrationDate,
     },
   ]) as unknown as DescData[];
   const fileList = ref<FileItem[]>([file]);
   const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
     fileList.value = [fileItem];
-    userAvatar.value = fileItem.url!;
+    userStore.setInfo({ avatar: fileItem.url });
   };
   const customRequest = (options: RequestOption) => {
     // docs: https://axios-http.com/docs/cancellation
@@ -127,35 +132,36 @@
     };
   };
 
-  const fetchData = () => {
-    getUsername(userId, jwt!)
-      .then((returnUsername) => {
-        username.value = returnUsername;
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    getRegisterTime(userId, jwt!)
-      .then((returnTime) => {
-        addTime.value = returnTime;
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    getAvatar(userId, jwt!)
-      .then((returnAvatar) => {
-        userAvatar.value = returnAvatar;
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  };
-  fetchData();
+  // const fetchData = () => {
+  //   getUsername(userId, jwt!)
+        //     .then((returnUsername) => {
+  //       username.value = returnUsername;
+  //     })
+        //     .catch((error) => {
+  //       console.error('Error:', error);
+  //     });
+  //   getRegisterTime(userId, jwt!)
+        //     .then((returnTime) => {
+  //       addTime.value = returnTime;
+  //     })
+        //     .catch((error) => {
+  //       console.error('Error:', error);
+  //     });
+  //   getAvatar(userId, jwt!)
+        //     .then((returnAvatar) => {
+  //       userAvatar.value = returnAvatar;
+  //     })
+        //     .catch((error) => {
+  //       console.error('Error:', error);
+  //     });
+  // };
+  // fetchData();
   watch(
     () => props.name,
     (newVal, oldVal) => {
       // 更新组件内部的响应式变量
-      username.value = newVal;
+      userStore.setInfo({ username: newVal });
+      // userStore.username.value = newVal;
     }
   );
 </script>

@@ -15,9 +15,9 @@
     <ul class="right-side">
       <li v-if="isLogin()">
         <a-space size="medium">
-          <span>欢迎回来，{{ username }}</span>
+          <span>欢迎回来，{{ userStore.username }}</span>
           <a-avatar :size="32">
-            <img alt="用户头像" :src="userAvatar" />
+            <img alt="用户头像" :src="userStore.avatar" />
           </a-avatar>
         </a-space>
       </li>
@@ -54,28 +54,28 @@
       name: 'Login',
     });
   };
-  const username = ref('');
-  const userAvatar = ref('');
-  const userId = '1';
+  // const username = ref('');
+  // const userAvatar = ref('');
+  // const userId = '1';
   const jwt = getToken();
 
-  const fetchData = () => {
-    getUsername(userId, jwt!)
-      .then((returnUsername) => {
-        username.value = returnUsername;
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-    getAvatar(userId, jwt!)
-      .then((returnAvatar) => {
-        userAvatar.value = returnAvatar;
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  };
-  fetchData();
+  // const fetchData = () => {
+  //   getUsername(userId, jwt!)
+  //     .then((returnUsername) => {
+  //       username.value = returnUsername;
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error:', error);
+  //     });
+  //   getAvatar(userId, jwt!)
+  //     .then((returnAvatar) => {
+  //       userAvatar.value = returnAvatar;
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error:', error);
+  //     });
+  // };
+  // fetchData();
 
   const appStore = useAppStore();
   const userStore = useUserStore();

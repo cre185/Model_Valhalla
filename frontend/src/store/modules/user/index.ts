@@ -7,7 +7,8 @@ import {
   verifyCode as registerVerifyCode,
   LoginData,
   phoneVerifyData,
-  registerData, register,
+  registerData,
+  register,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
@@ -16,20 +17,12 @@ import useAppStore from '../app';
 
 const useUserStore = defineStore('user', {
   state: (): UserState => ({
-    name: undefined,
-    avatar: undefined,
-    job: undefined,
-    organization: undefined,
-    location: undefined,
-    email: undefined,
-    introduction: undefined,
-    personalWebsite: undefined,
-    jobName: undefined,
-    organizationName: undefined,
-    locationName: undefined,
-    phone: undefined,
-    registrationDate: undefined,
     accountId: undefined,
+    username: undefined,
+    avatar: undefined,
+    phone: undefined,
+    email: undefined,
+    registrationDate: undefined,
     certification: undefined,
     role: '',
   }),
@@ -47,6 +40,7 @@ const useUserStore = defineStore('user', {
         resolve(this.role);
       });
     },
+
     // Set user's information
     setInfo(partial: Partial<UserState>) {
       this.$patch(partial);
