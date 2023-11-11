@@ -1,6 +1,6 @@
 import datetime
 from rest_framework import serializers
-from .models import User, VerifyMsg, VerifyEmail
+from .models import User, VerifyMsg, VerifyEmail, ResetPassword
 import re
 from utils.validation_error import ValidationErrorWithMsg
 
