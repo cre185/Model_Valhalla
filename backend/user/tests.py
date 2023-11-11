@@ -177,12 +177,29 @@ class UserDataModelTests(TestCase):
             mobile="12345678901"
         )
         user.save()
+        user2=User(
+            username="testtest",
+            password="testtest",
+            mobile="11122233344"
+        )
+        user2.save()
         self.client=APIClient()
 
     def test_retrieve(self):
         # the correct case
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testuser"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        jwt=json_data['jwt']
         response=self.client.get(
             '/user/retrieve/1',
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
@@ -191,14 +208,42 @@ class UserDataModelTests(TestCase):
         self.assertEqual(json_data['mobile'],"12345678901")
         # request with wrong id
         response=self.client.get(
-            '/user/retrieve/2',
+            '/user/retrieve/3',
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
         self.assertEqual(response.status_code,404)
+        # unauthorized request
+        response=self.client.get(
+            '/user/retrieve/1',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"User must be authorized.")
+        self.assertEqual(response.status_code,401)
+        # request another user's data
+        response=self.client.get(
+            '/user/retrieve/2',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"User must be authorized.")
+        self.assertEqual(response.status_code,401)
 
     def test_update(self):
         # the correct case
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testuser"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        jwt=json_data['jwt']
         response=self.client.put(
             '/user/update/1',
             {
@@ -206,6 +251,7 @@ class UserDataModelTests(TestCase):
                 "password":"testuser2",
                 "mobile":"12345678902"
             },
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
@@ -213,12 +259,13 @@ class UserDataModelTests(TestCase):
         self.assertEqual(response.status_code,200)
         # request with wrong id
         response=self.client.put(
-            '/user/update/2',
+            '/user/update/3',
             {
                 "username":"testuser2",
                 "password":"testuser2",
                 "mobile":"12345678902"
             },
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
@@ -231,24 +278,168 @@ class UserDataModelTests(TestCase):
                 "password":"testuser2",
                 "mobile":"12345678902"
             },
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
         self.assertEqual(json_data['message'],"Username is invalid")
         self.assertEqual(response.status_code,400)
+        # unauthorized request
+        response=self.client.put(
+            '/user/update/1',
+            {
+                "username":"testuser2",
+                "password":"testuser2",
+                "mobile":"12345678902"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"User must be authorized.")
+        self.assertEqual(response.status_code,401)
+        # request another user's data
+        response=self.client.put(
+            '/user/update/2',
+            {
+                "username":"testuser3",
+                "password":"testuser3",
+                "mobile":"12345678903"
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"User must be authorized.")
+        self.assertEqual(response.status_code,401)
         # test partial update
         response=self.client.patch(
             '/user/update/1',
             {
-                "username":"testuser3"
+                "username":"testuser4"
             },
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
         self.assertEqual(json_data['message'],"ok")
         self.assertEqual(response.status_code,200)
-        self.assertEqual(json_data['username'],"testuser3")
+        self.assertEqual(json_data['username'],"testuser4")
         self.assertEqual(json_data['mobile'],"12345678902")
+
+class UserAdminModelTests(TestCase):
+    def setUp(self):
+        user=User(
+            username="testuser",
+            password="testuser",
+            mobile="12345678901",
+            is_admin=True
+        )
+        user.save()
+        user2=User(
+            username="testtest",
+            password="testtest",
+            mobile="11122233344"
+        )
+        user2.save()
+        user3=User(
+            username="testtest2",
+            password="testtest2",
+            mobile="11122233345"
+        )
+        user3.save()
+        user4=User(
+            username="testtest3",
+            password="testtest3",
+            mobile="11122233346"
+        )
+        user4.save()
+        self.client=APIClient()
+
+    def test_delete(self):
+        # the correct case for admin
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testuser"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        jwt=json_data['jwt']
+        response=self.client.delete(
+            '/user/delete/4',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser3",
+                "password":"testuser3"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code,401)
+        # delete others without admin
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testtest",
+                "password":"testtest"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        jwt=json_data['jwt']
+        response=self.client.delete(
+            '/user/delete/3',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"User must be authorized.")
+        self.assertEqual(response.status_code,401)
+        # delete with wrong id
+        response=self.client.delete(
+            '/user/delete/5',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"User must be authorized.")
+        self.assertEqual(response.status_code,401)
+        # unauthorized request
+        response=self.client.delete(
+            '/user/delete/2',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"User must be authorized.")
+        self.assertEqual(response.status_code,401)
+        # delete self
+        response=self.client.delete(
+            '/user/delete/2',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testtest",
+                "password":"testtest"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code,401)
 
 class VerifyMsgModelTests(TestCase):
     def setUp(self):
