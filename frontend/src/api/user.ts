@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type { RouteRecordNormalized } from 'vue-router';
 import { UserState } from '@/store/modules/user/types';
+import apiCat from '@/api/main';
 
 export interface LoginData {
   username: string;
@@ -16,7 +17,8 @@ export interface registerData {
   username: string;
   password: string;
   mobile: string;
-  email: string
+  email: string;
+  is_admin: boolean
 }
 
 export interface LoginRes {
@@ -26,7 +28,11 @@ export interface LoginRes {
 }
 
 export function login(data: LoginData) {
-  return axios.post<LoginRes>('http://localhost:8000/user/login', data);
+  return axios.post<LoginRes>(apiCat('/user/login'), data);
+}
+
+export function loginByPhone(data: phoneVerifyData) {
+  return axios.post<LoginRes>(apiCat('/user/login_with_verify_code'), data);
 }
 
 export function logout() {
@@ -41,14 +47,14 @@ export function getMenuList() {
   return axios.post<RouteRecordNormalized[]>('/api/user/menu');
 }
 
-export function verifyPhone(data: {mobile: string}){
-  return axios.post('http://localhost:8000/user/send_message', data);
+export function verifyPhone(data: { mobile: string }) {
+  return axios.post(apiCat('/user/send_message'), data);
 }
 
-export function verifyCode(data: phoneVerifyData){
-  return axios.post("http://localhost:8000/user/verify_code", data);
+export function verifyCode(data: phoneVerifyData) {
+  return axios.post(apiCat('/user/verify_code'), data);
 }
 
-export function register(data: any){
-  return axios.post("http://localhost:8000/user/register", data);
+export function register(data: any) {
+  return axios.post(apiCat('/user/register'), data);
 }

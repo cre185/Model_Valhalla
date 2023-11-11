@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import {
   login as userLogin,
+  loginByPhone as userLoginByPhone,
   logout as userLogout,
   getUserInfo,
   verifyPhone as registerVerifyPhone,
@@ -69,6 +70,16 @@ const useUserStore = defineStore('user', {
       try {
         const res = await userLogin(loginForm);
         setToken(res.data.jwt);
+        this.setInfo({accountId: res.data.userID})
+      } catch (err) {
+        clearToken();
+        throw err;
+      }
+    },
+    async loginByPhone(loginForm: phoneVerifyData) {
+      try {
+        const res = await userLoginByPhone(loginForm);
+        setToken(res.data.jwt);
       } catch (err) {
         clearToken();
         throw err;
@@ -101,7 +112,7 @@ const useUserStore = defineStore('user', {
     },
 
     async register(data: registerData){
-      const modifiedData = data.email === '' ? {username: data.username, password: data.password, mobile: data.mobile} : data;
+      const modifiedData = data.email === '' ? {username: data.username, password: data.password, mobile: data.mobile, is_admin:data.is_admin} : data;
       const res = await register(modifiedData);
     },
   },

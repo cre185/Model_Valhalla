@@ -1,7 +1,7 @@
 <template>
   <div class="login-form-wrapper">
     <div class="login-form-title">{{ $t('login.form.title') }}</div>
-    <a-tabs :justify="true">
+    <a-tabs v-model:active-key="loginWay">
       <a-tab-pane key="1">
         <template #title>
           {{ $t('login.form.loginWay.password') }}
@@ -84,15 +84,13 @@
           @submit="handleSubmit"
         >
           <a-form-item
-            field="phone"
-            :rules="[
-              { required: true, message: $t('login.form.phone.errMsg') },
-            ]"
+            field="mobile"
+            :rules="phoneRules"
             :validate-trigger="['change', 'blur']"
             hide-label
           >
             <a-input
-              v-model="userCodeInfo.phone"
+              v-model="userCodeInfo.mobile"
               :placeholder="$t('login.form.phone.placeholder')"
             >
               <template #prefix>
@@ -102,21 +100,32 @@
           </a-form-item>
           <a-form-item
             field="code"
-            :rules="[{ required: true, message: $t('register.form.code.errMsg') }]"
-            :validate-trigger="['change', 'blur']"
+            :rules="codeRules"
             hide-label
           >
-            <a-input-search
+            <a-input
               v-model="userCodeInfo.code"
-              :placeholder="$t('register.form.code.placeholder')"
+              :placeholder="$t('login.form.code.placeholder')"
               allow-clear
-              button-text="发送验证码"
-              search-button
             >
               <template #prefix>
                 <icon-message />
               </template>
-            </a-input-search>
+              <template #append>
+                <a-button
+                    type="primary"
+                    v-if="codeInterval.codeInterval < 0"
+                    @click="handleSendCode"
+                >
+                  {{$t('login.form.code.buttonText1')}}
+                </a-button>
+                <a-button
+                    v-if="codeInterval.codeInterval >= 0"
+                >
+                  {{codeInterval.codeInterval + $t('register.form.code.buttonText2')}}
+                </a-button>
+              </template>
+            </a-input>
           </a-form-item>
           <a-space :size="16" direction="vertical">
             <div id="codeMargin"></div>
@@ -136,7 +145,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive } from 'vue';
+  import { ref, reactive, getCurrentInstance } from 'vue';
   import { useRouter } from 'vue-router';
   import { Message } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
@@ -144,13 +153,16 @@
   import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
-  import type { LoginData } from '@/api/user';
+  import type {LoginData, phoneVerifyData} from '@/api/user';
+  import {getUsername, getRegisterTime, getPhone, getAvatar, getEmail} from "@/api/user-info";
+  import {getToken} from "@/utils/auth";
 
   const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
+  const { proxy } = getCurrentInstance()
 
   const loginByPasswordConfig = useStorage('login-by-password-config', {
     rememberPassword: true,
@@ -158,7 +170,7 @@
     password: 'admin', // demo default value
   });
   const loginByCodeConfig = useStorage('login-by-code-config', {
-    phone: '18678901234',
+    mobile: '18678901234',
     code: '',
   });
   const userPassInfo = reactive({
@@ -166,10 +178,16 @@
     password: loginByPasswordConfig.value.password,
   });
   const userCodeInfo = reactive({
-    phone: loginByCodeConfig.value.phone,
+    mobile: loginByCodeConfig.value.mobile,
     code: loginByCodeConfig.value.code,
   });
 
+  const codeInterval = reactive({
+    codeTimer: null as null | ReturnType<typeof setInterval>,
+    codeInterval: -1,
+  })
+
+  const loginWay = ref('1');
   const handleSubmit = async ({
     errors,
     values,
@@ -181,8 +199,23 @@
     if (!errors) {
       setLoading(true);
       try {
-        await userStore.login(values as LoginData);
+        if(loginWay.value === '1'){
+          await userStore.login(values as LoginData);
+        }
+        else {
+          await userStore.loginByPhone(values as phoneVerifyData);
+        }
         const { redirect, ...othersQuery } = router.currentRoute.value.query;
+        const userStore = useUserStore();
+        const jwt = getToken();
+        const userID = userStore.$state.accountId;
+        let username, registerTime, avatar, phone, email;
+        getUsername(userID!, jwt!).then((returnValue) => { username = returnValue });
+        getRegisterTime(userID!, jwt!).then((returnValue) => { registerTime = returnValue });
+        getAvatar(userID!, jwt!).then((returnValue) => { avatar = returnValue });
+        getPhone(userID!, jwt!).then((returnValue) => { phone = returnValue });
+        getEmail(userID!, jwt!).then((returnValue) => { email = returnValue });
+        userStore.setInfo({name: username, avatar: avatar, registrationDate: registerTime, phone: phone, email: email });
         router.push({
           name: (redirect as string) || 'Index',
           query: {
@@ -190,12 +223,13 @@
           },
         });
         Message.success(t('login.form.login.success'));
-        const { rememberPassword } = loginByPasswordConfig.value;
-        const { username, password } = values;
-        // 实际生产环境需要进行加密存储。
-        // The actual production environment requires encrypted storage.
-        loginByPasswordConfig.value.username = rememberPassword ? username : '';
-        loginByPasswordConfig.value.password = rememberPassword ? password : '';
+        if(loginWay.value === '1'){
+          const { rememberPassword } = loginByPasswordConfig.value;
+          const { username, password } = values;
+          // 实际生产环境需要进行加密存储。
+          loginByPasswordConfig.value.username = rememberPassword ? username : '';
+          loginByPasswordConfig.value.password = rememberPassword ? password : '';
+        }
       } catch (err) {
         errorMessage.value = (err as Error).message;
       } finally {
@@ -203,9 +237,64 @@
       }
     }
   };
+
+  const handleSendCode = async () => {
+    try {
+      codeInterval.codeInterval = 60
+      codeInterval.codeTimer = setInterval(() => {
+        if(codeInterval.codeInterval >= 0){
+          codeInterval.codeInterval -= 1;
+        }
+        else{
+          clearInterval(codeInterval.codeTimer);
+        }
+      }, 1000);
+      const res = await userStore.verifyPhone(userCodeInfo.mobile);
+    } catch (err) {
+      errorMessage.value = (err as Error).message;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const setRememberPassword = (value: boolean) => {
     loginByPasswordConfig.value.rememberPassword = value;
   };
+
+  const phoneRules = [{
+    validator: (value, callback) => {
+      return new Promise(resolve => {
+        window.setTimeout(() => {
+          if(value === ''){
+            callback(proxy.$t('login.form.phone.errMsg1'))
+          }
+          else if (!/1[3,4,5,7,8][0-9]{9}/.test(value)) {
+            callback(proxy.$t('login.form.phone.errMsg2'))
+          }
+          resolve()
+        }, 1000)
+      })
+    },
+  }];
+
+  const codeRules = [{
+    required: true,
+    validator: (value, callback) => {
+      return new Promise(resolve => {
+        window.setTimeout(() => {
+          value = userCodeInfo.code
+          if(value === ''){
+            callback(proxy.$t('register.form.code.errMsg1'))
+          }
+          else if (!/\d{6}/.test(value)) {
+            callback(proxy.$t('login.form.code.errMsg2'))
+          }
+          resolve()
+        }, 1000)
+      })
+    },
+    trigger: ['change', 'blur'],
+  }];
 </script>
 
 <style lang="less" scoped>
@@ -244,5 +333,8 @@
   }
   #codeMargin{
     height: 24px;
+  }
+  ::v-deep(.arco-input-append) {
+    padding: 0;
   }
 </style>

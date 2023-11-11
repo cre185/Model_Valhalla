@@ -1,5 +1,26 @@
 <template>
-  <div class="register-form-wrapper">
+  <div class="register-form-type-selector" v-if="userType === ''">
+    <a-space direction="vertical" :size="60" :align="'center'">
+      <div class="register-form-type-selector-title">
+        {{$t('register.form.typeSelector.title')}}
+      </div>
+      <a-space :size="'large'">
+        <a-button type="primary" shape="round" class="register-form-type-selector-user-btn" @click="userType= 'user'">
+          <template #icon>
+            <icon-user />
+          </template>
+          {{$t('register.form.user.buttonText')}}
+        </a-button>
+        <a-button type="primary" shape="round" class="register-form-type-selector-admin-btn" @click="userType = 'administrator'">
+          <template #icon>
+            <icon-customer-service />
+          </template>
+          {{$t('register.form.administrator.buttonText')}}
+        </a-button>
+      </a-space>
+    </a-space>
+  </div>
+  <div class="register-form-wrapper" v-if="userType !== ''">
     <div class="register-form-title">{{ $t('register.form.title') }}</div>
     <div class="register-form-error-msg">{{ errorMessage }}</div>
     <a-form
@@ -75,12 +96,12 @@
                 v-if="codeInterval.codeInterval < 0"
                 @click="handleSendCode"
             >
-              发送验证码
+              {{$t('register.form.code.buttonText1')}}
             </a-button>
             <a-button
                 v-if="codeInterval.codeInterval >= 0"
             >
-              {{codeInterval.codeInterval + 's 后重试'}}
+              {{codeInterval.codeInterval + $t('register.form.code.buttonText2')}}
             </a-button>
           </template>
         </a-input>
@@ -97,6 +118,22 @@
         >
           <template #prefix>
             <icon-message />
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item
+          field="adminCode"
+          :rules="adminCodeRules"
+          hide-label
+          v-if="userType === 'administrator'"
+      >
+        <a-input
+            v-model="adminCode"
+            :placeholder="$t('register.form.adminCode.placeholder')"
+            allow-clear
+        >
+          <template #prefix>
+            <icon-bookmark />
           </template>
         </a-input>
       </a-form-item>
@@ -127,10 +164,13 @@
             <a-link>{{ $t('register.form.privacy') }}</a-link>
           </a-checkbox>
         </div>
+        <a-button type="primary" html-type="submit" long :loading="loading">
+          {{ $t('register.form.register') }}
+        </a-button>
+        <a-button type="text" long class="login-form-register-btn" @click="userType=''">
+          {{ $t('register.form.return.btn') }}
+        </a-button>
       </a-space>
-      <a-button type="primary" html-type="submit" long :loading="loading">
-        {{ $t('register.form.register') }}
-      </a-button>
     </a-form>
   </div>
 </template>
@@ -180,6 +220,12 @@ import error from "@/views/result/error/index.vue";
     codeInterval: -1,
   })
 
+  const userType = ref('');
+  const adminCode = ref('');
+  const invitationCode = new Set(['TXNKvJ#1', '&I&IKZO7', 'u&%ONBea',
+                                        'KF0jhFN0', 't1NNob8!', 'QNyKOY$w',
+                                        '&%o^YOt#', '4PGX33aX', 'rc@$t#Of', 'L!hf_TIk'])
+
   const handleSubmit = async ({
     errors,
     values,
@@ -192,7 +238,9 @@ import error from "@/views/result/error/index.vue";
       setLoading(true);
       try {
         if(!acceptAgreementInfo.acceptAgreement)
-          throw new Error("请同意服务协议和隐私政策")
+          throw new Error(proxy.$t('register.form.agreement.errMsg'))
+        if(userType.value === 'administrator')
+          values.is_admin = 1;
         const phoneVerification = {mobile: registerInfo.mobile, code: phoneValidation.code}
         await userStore.verifyCode(phoneVerification as phoneVerifyData);
         await userStore.register(values as registerData);
@@ -319,6 +367,25 @@ import error from "@/views/result/error/index.vue";
     trigger: ['change', 'blur'],
   }];
 
+  const adminCodeRules = [{
+    required: true,
+    validator: (value, callback) => {
+      return new Promise(resolve => {
+        window.setTimeout(() => {
+          value = adminCode.value
+          if(value === ''){
+            callback(proxy.$t('register.form.adminCode.errMsg1'))
+          }
+          else if (!invitationCode.has(value)) {
+            callback(proxy.$t('register.form.adminCode.errMsg2'))
+          }
+          resolve()
+        }, 1000)
+      })
+    },
+    trigger: ['change', 'blur'],
+  }];
+
   const emailRules = [{
     required: false,
     validator: (value, callback) => {
@@ -341,11 +408,17 @@ import error from "@/views/result/error/index.vue";
       width: 320px;
     }
 
-    &-title {
+    &-title, &-type-selector-title{
       color: var(--color-text-1);
       font-weight: 500;
       font-size: 24px;
       line-height: 32px;
+    }
+
+    &-type-selector-title{
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     &-sub-title {

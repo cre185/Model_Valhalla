@@ -1,4 +1,5 @@
 import axios from 'axios';
+import apiCat from '@/api/main';
 
 export async function getUsername(
   userId: string,
@@ -6,7 +7,7 @@ export async function getUsername(
 ): Promise<string> {
   try {
     const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
+      apiCat(`/user/retrieve/${userId}`),
       {
         headers: {
           Authorization: jwt,
@@ -28,7 +29,7 @@ export async function getRegisterTime(
 ): Promise<string> {
   try {
     const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
+      apiCat(`/user/retrieve/${userId}`),
       {
         headers: {
           Authorization: jwt,
@@ -47,7 +48,7 @@ export async function getRegisterTime(
 export async function getAvatar(userId: string, jwt: string): Promise<string> {
   try {
     const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
+      apiCat(`/user/retrieve/${userId}`),
       {
         headers: {
           Authorization: jwt,
@@ -66,7 +67,7 @@ export async function getAvatar(userId: string, jwt: string): Promise<string> {
 export async function getPhone(userId: string, jwt: string): Promise<string> {
   try {
     const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
+      apiCat(`/user/retrieve/${userId}`),
       {
         headers: {
           Authorization: jwt,
@@ -85,7 +86,7 @@ export async function getPhone(userId: string, jwt: string): Promise<string> {
 export async function getEmail(userId: string, jwt: string): Promise<string> {
   try {
     const response = await axios.get(
-      `http://localhost:8000/user/retrieve/${userId}`,
+      apiCat(`/user/retrieve/${userId}`),
       {
         headers: {
           Authorization: jwt,
