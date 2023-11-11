@@ -72,16 +72,10 @@ export function queryCertification() {
   return axios.post<UnitCertification>('/api/user/certification');
 }
 
-export function userUploadApi(
-  data: {
-    img: FormData;
-    jwt: string;
-  },
-  config: {
-    controller: AbortController;
-    onUploadProgress?: (progressEvent: any) => void;
-  }
-) {
-  // const controller = new AbortController();
-  return axios.post('http://localhost:8000/user/update_avatar', data);
+export function userUploadApi(data: FormData, jwt: string) {
+  return axios.post('http://localhost:8000/user/update_avatar', data, {
+    headers: {
+      Authorization: jwt,
+    },
+  });
 }

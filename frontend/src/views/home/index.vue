@@ -5,7 +5,7 @@
       <h1>这里是模型竞技场 Model Valhalla</h1>
       <h3>面向<span id="multiple-text"></span></h3>
       <p> 我们致力于搭建一个公平、可靠、直观的大模型能力众测平台 </p>
-      <a href="#" class="btn">Get Started</a>
+      <a class="btn" @click="Login">Get Started</a>
     </div>
     <a-space direction="vertical" :size="40" style="display: block">
       <a-row class="grid-demo">
@@ -95,8 +95,18 @@
 
 <script>
   import Typed from 'typed.js';
+  import { useRouter } from 'vue-router';
 
   export default {
+    setup() {
+      const router = useRouter();
+      const Login = () => {
+        router.push({
+          name: 'Login',
+        });
+      };
+      return { Login };
+    },
     mounted() {
       const typed = new Typed('#multiple-text', {
         strings: ['模型开发者', '数据集提供者', '业界工程师', '科研工作者'],
