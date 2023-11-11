@@ -14,7 +14,6 @@ export async function getUsername(
         },
       }
     );
-
     const responseJson = response.data;
     return responseJson.username;
   } catch (error) {
