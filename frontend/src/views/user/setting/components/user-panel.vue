@@ -60,6 +60,7 @@
   const props = defineProps(['name']);
   const username = ref(props.name);
   const userAvatar = ref('');
+  const jwt = getToken();
 
   const file = {
     uid: '-2',
@@ -111,12 +112,8 @@
       try {
         // https://github.com/axios/axios/issues/1630
         // https://github.com/nuysoft/Mock/issues/127
-
-        const data = { img: formData, jwt: getToken()! };
-        const res = await userUploadApi(data, {
-          controller,
-          onUploadProgress,
-        });
+        // const jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTk3MTYwODIsInVzZXJfaWQiOjIsInVzZXJuYW1lIjoidGVzdHVzZXIyIn0.cLylHhCqtP2xuMu90OlWEeunZ5vpVKMGcXzxAlxVp9U';
+        const res = await userUploadApi(formData, jwt!);
         onSuccess(res);
       } catch (error) {
         onError(error);
@@ -131,14 +128,18 @@
 
   const fetchData = () => {
     axios
-      .get(`http://localhost:8000/user/retrieve/${userId}`)
+      .get(`http://localhost:8000/user/retrieve/${userId}`, {
+        headers: {
+          Authorization: jwt!,
+        },
+      })
       .then((response) => {
         const responseJson = response.data;
+        console.log(responseJson);
         // 请求成功，处理响应数据
         username.value = responseJson.username;
         addTime.value = responseJson.add_time;
         userAvatar.value = responseJson.avatar;
-        console.log(responseJson);
       })
       .catch((error) => {
         // 请求失败，处理错误
