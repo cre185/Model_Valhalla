@@ -213,13 +213,13 @@
         let avatar;
         let phone;
         let email;
-        await getUsername(userID!, jwt!).then((returnValue) => { name = returnValue; console.log(name)});
+        await getUsername(userID!, jwt!).then((returnValue) => { name = returnValue });
         await getRegisterTime(userID!, jwt!).then((returnValue) => { registrationDate = returnValue });
         await getAvatar(userID!, jwt!).then((returnValue) => { avatar = returnValue });
         await getPhone(userID!, jwt!).then((returnValue) => { phone = returnValue });
         await getEmail(userID!, jwt!).then((returnValue) => { email = returnValue });
         userStore.setInfo({username: name, avatar, registrationDate, phone, email });
-        localStorage.setItem('userStore', JSON.stringify(userStore));
+        localStorage.setItem('userStore', JSON.stringify(userStore.$state));
         router.push({
           name: (redirect as string) || 'Index',
           query: {

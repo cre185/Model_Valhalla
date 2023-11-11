@@ -108,7 +108,8 @@
   import { getPhone, getEmail, getUsername } from '@/api/user-info';
   import { getToken } from '@/utils/auth';
 
-  const userStore = JSON.parse(localStorage.getItem('userStore')!);
+  const userStore = useUserStore();
+  userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   // const username = ref('');
   // const phone = ref('');
   const maskedPhone = ref('');
@@ -165,6 +166,7 @@
       username: newUsername,
     };
     userStore.setInfo({ username: newUsername });
+    localStorage.setItem('userStore', JSON.stringify(userStore.$state));
     // 发送 PATCH 请求
     axios
       .patch(`http://localhost:8000/user/update/${userStore.accountId}`, updatedData)
