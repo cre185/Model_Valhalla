@@ -81,7 +81,10 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     serializer_class = UserSerializer
     lookup_field = "id"
 
+    @login_required
     def put(self, request, *args, **kwargs):
+        if self.user.id != int(kwargs['id']):
+            return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         result = self.update(request, *args, **kwargs)
         data = result.data
         data['message'] = 'ok'
@@ -89,7 +92,10 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
     
+    @login_required
     def patch(self, request, *args, **kwargs):
+        if self.user.id != int(kwargs['id']):
+            return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         result = self.partial_update(request, *args, **kwargs)
         data = result.data
         data['message'] = 'ok'
@@ -102,7 +108,10 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = UserSerializer
     lookup_field = "id"
     
+    @login_required
     def get(self, request, *args, **kwargs):
+        if self.user.id != int(kwargs['id']):
+            return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         result = self.retrieve(request, *args, **kwargs)
         data = result.data
         data['message'] = 'ok'
