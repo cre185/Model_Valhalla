@@ -1,118 +1,369 @@
 <template>
-  <div class="container">
-    <a-grid :cols="24" :row-gap="16">
-      <a-grid-item :span="24">
-        <div class="panel moduler-wrap">
-          <QuickOperation />
-        </div>
-      </a-grid-item>
-      <a-grid-item class="panel" :span="24">
-        <Announcement />
-      </a-grid-item>
-      <a-grid-item class="panel" :span="24">
-        <Docs />
-      </a-grid-item>
-    </a-grid>
-  </div>
+  <section class="home">
+    <div class="home-content">
+      <h3>你好</h3>
+      <h1>这里是模型竞技场 Model Valhalla</h1>
+      <h3>面向<span id="multiple-text"></span></h3>
+      <p> 我们致力于搭建一个公平、可靠、直观的大模型能力众测平台 </p>
+      <a href="#" class="btn">Get Started</a>
+    </div>
+    <a-space direction="vertical" :size="40" style="display: block">
+      <a-row class="grid-demo">
+        <a-col :span="11">
+          <a-card
+            id="card1"
+            class="card"
+            :body-style="{
+              color: '#1f242d',
+            }"
+            :bordered="false"
+          >
+            丰富的数据集操作
+          </a-card>
+        </a-col>
+        <a-col :span="2"></a-col>
+        <a-col :span="11">
+          <a-card
+            id="card2"
+            class="card"
+            :body-style="{
+              color: '#1f242d',
+            }"
+            :bordered="false"
+          >
+            直观的排行榜
+          </a-card>
+        </a-col>
+      </a-row>
+      <a-row class="grid-demo">
+        <a-col :span="11">
+          <a-card
+            id="card3"
+            class="card"
+            :body-style="{
+              color: '#1f242d',
+            }"
+            :bordered="false"
+          >
+            详细的模型信息
+          </a-card>
+        </a-col>
+        <a-col :span="2"></a-col>
+        <a-col :span="11">
+          <a-card
+            id="card4"
+            class="card"
+            :body-style="{
+              color: '#1f242d',
+            }"
+            :bordered="false"
+          >
+            合理的测试规则
+          </a-card>
+        </a-col>
+      </a-row>
+      <a-row class="grid-demo">
+        <a-col :span="11">
+          <a-card
+            id="card5"
+            class="card"
+            :body-style="{
+              color: '#1f242d',
+            }"
+            :bordered="false"
+          >
+            自由的讨论区
+          </a-card>
+        </a-col>
+        <a-col :span="2"></a-col>
+        <a-col :span="11">
+          <a-card
+            id="card6"
+            class="card"
+            :body-style="{
+              color: '#1f242d',
+            }"
+            :bordered="false"
+          >
+            安全的用户管理
+          </a-card>
+        </a-col>
+      </a-row>
+    </a-space>
+  </section>
 </template>
 
-<script lang="ts" setup>
-  import QuickOperation from './components/quick-operation.vue';
-  import Announcement from './components/announcement.vue';
-  import Docs from './components/docs.vue';
-</script>
+<script>
+  import Typed from 'typed.js';
 
-<script lang="ts">
   export default {
-    name: 'Dashboard', // If you want the include property of keep-alive to take effect, you must name the component
+    mounted() {
+      const typed = new Typed('#multiple-text', {
+        strings: ['模型开发者', '数据集提供者', '业界工程师', '科研工作者'],
+        typeSpeed: 100,
+        backSpeed: 100,
+        backDelay: 1000,
+        loop: true,
+      });
+    },
   };
 </script>
 
-<!--
-<style lang="less" scoped>
-  .container {
-    background-color: var(--color-fill-2);
-    padding: 16px 20px;
-    padding-bottom: 0;
+<style scoped>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .home {
+    position: relative;
+    background: whitesmoke;
+    width: 100%;
+    height: 100%;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 70px 5% 0 5%;
   }
 
-  .left-side {
-    flex: 1;
-    overflow: auto;
+  .home-content {
+    max-width: 600px;
+    transform: translateY(-3%);
   }
 
-  .right-side {
-    width: 280px;
-    margin-left: 16px;
+  .home-content h3 {
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 2em;
+    opacity: 0;
+    animation: slideBottom 1s ease forwards;
+    animation-delay: 0.7s;
   }
 
-  .panel {
-    background-color: var(--color-bg-2);
-    border-radius: 4px;
-    overflow: auto;
+  .home-content h3:nth-of-type(2) {
+    margin-bottom: 30px;
+    opacity: 0;
+    animation: slideTop 1s ease forwards;
+    animation-delay: 0.7s;
   }
-  :deep(.panel-border) {
-    margin-bottom: 0;
-    border-bottom: 1px solid rgb(var(--gray-2));
+
+  .home-content h3 span {
+    color: #1c61ff;
   }
-  .moduler-wrap {
-    border-radius: 4px;
-    background-color: var(--color-bg-2);
-    :deep(.text) {
-      font-size: 12px;
-      text-align: center;
-      color: rgb(var(--gray-8));
+
+  .home-content h1 {
+    font-size: 70px;
+    font-weight: 700;
+    margin: -3px 0;
+    opacity: 0;
+    animation: slideRight 1s ease forwards;
+    animation-delay: 1s;
+  }
+
+  .home-content p {
+    font-size: 20px;
+    opacity: 0;
+    animation: slideLeft 1s ease forwards;
+    animation-delay: 0.7s;
+  }
+
+  .home-img img {
+    max-width: 450px;
+    border-radius: 50%;
+    margin-right: -20px;
+    box-shadow: 0 0 20px #b7b2a9;
+    opacity: 0;
+    animation: zoomIn 1s ease forwards, floatImage 4s ease-in-out infinite;
+    animation-delay: 2s, 3s;
+  }
+
+  .btn {
+    display: inline-block;
+    margin-top: 7%;
+    padding: 18px 50px;
+    background: #1c61ff;
+    text-decoration: none;
+    border-radius: 40px;
+    box-shadow: 0 0 10px royalblue;
+    font-size: 16px;
+    color: white;
+    letter-spacing: 1px;
+    font-weight: 600;
+    transition: 0.5s ease;
+    opacity: 0;
+    animation: slideTop 1s ease forwards;
+    animation-delay: 2s;
+  }
+
+  .btn:hover {
+    background: white;
+    color: black;
+    box-shadow: 0 0 10px #1c61ff;
+  }
+
+  @keyframes slideRight {
+    0% {
+      transform: translateX(-100px);
     }
 
-    :deep(.wrapper) {
-      margin-bottom: 8px;
-      text-align: center;
-      cursor: pointer;
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
 
-      &:last-child {
-        .text {
-          margin-bottom: 0;
-        }
-      }
-      &:hover {
-        .icon {
-          color: rgb(var(--arcoblue-6));
-          background-color: #e8f3ff;
-        }
-        .text {
-          color: rgb(var(--arcoblue-6));
-        }
-      }
+  @keyframes slideLeft {
+    0% {
+      transform: translateX(100px);
     }
 
-    :deep(.icon) {
-      display: inline-block;
-      width: 32px;
-      height: 32px;
-      margin-bottom: 4px;
-      color: rgb(var(--dark-gray-1));
-      line-height: 32px;
-      font-size: 16px;
-      text-align: center;
-      background-color: rgb(var(--gray-1));
-      border-radius: 4px;
+    100% {
+      transform: translateX(0);
+      opacity: 1;
     }
+  }
+
+  @keyframes slideTop {
+    0% {
+      transform: translateY(100px);
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideBottom {
+    0% {
+      transform: translateY(-100px);
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes zoomIn {
+    0% {
+      transform: scale(0);
+    }
+
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes zoomInMove {
+    0% {
+      transform: translateX(-20%) scale(0);
+    }
+
+    100% {
+      transform: translateX(-20%) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes floatImage {
+    0% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-24px);
+    }
+
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes floatImageMove {
+    0% {
+      transform: translate(-20%, 0);
+    }
+
+    50% {
+      transform: translate(-20%, -24px);
+    }
+
+    100% {
+      transform: translate(-20%, 0);
+    }
+  }
+
+  .card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px 30px 30px 30px;
+    width: 250px;
+    height: 150px;
+    font-family: DouYin;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  #card1 {
+    background: url('../../assets/images/index_1.jpg');
+    background-size: 250px 200px;
+    box-shadow: 0 0 20px #b7b2a9;
+    opacity: 0;
+    animation: zoomIn 1s ease forwards, floatImage 4s ease-in-out infinite;
+    animation-delay: 2s, 3s;
+  }
+
+  #card2 {
+    background: url('../../assets/images/index_2.jpg');
+    background-size: 250px 200px;
+    box-shadow: 0 0 20px #b7b2a9;
+    opacity: 0;
+    animation: zoomIn 1s ease forwards, floatImage 4s ease-in-out infinite;
+    animation-delay: 2s, 3s;
+  }
+
+  #card3 {
+    background: url('../../assets/images/index_3.jpg');
+    background-size: 250px 200px;
+    box-shadow: 0 0 20px #b7b2a9;
+    opacity: 0;
+    animation: zoomInMove 1s ease forwards,
+      floatImageMove 4s ease-in-out infinite;
+    animation-delay: 2s, 3s;
+  }
+
+  #card4 {
+    background: url('../../assets/images/index_4.jpg');
+    background-size: 250px 200px;
+    box-shadow: 0 0 20px #b7b2a9;
+    opacity: 0;
+    animation: zoomInMove 1s ease forwards,
+      floatImageMove 4s ease-in-out infinite;
+    animation-delay: 2s, 3s;
+  }
+
+  #card5 {
+    background: url('../../assets/images/index_5.jpg');
+    background-size: 250px 200px;
+    box-shadow: 0 0 20px #b7b2a9;
+    opacity: 0;
+    animation: zoomIn 1s ease forwards, floatImage 4s ease-in-out infinite;
+    animation-delay: 2s, 3s;
+  }
+
+  #card6 {
+    background: url('../../assets/images/index_6.jpg');
+    background-size: 250px 200px;
+    box-shadow: 0 0 20px #b7b2a9;
+    opacity: 0;
+    animation: zoomIn 1s ease forwards, floatImage 4s ease-in-out infinite;
+    animation-delay: 2s, 3s;
   }
 </style>
-
-<style lang="less" scoped>
-  // responsive
-  .mobile {
-    .container {
-      display: block;
-    }
-    .right-side {
-      // display: none;
-      width: 100%;
-      margin-left: 0;
-      margin-top: 16px;
-    }
-  }
-</style>
--->

@@ -73,12 +73,15 @@ export function queryCertification() {
 }
 
 export function userUploadApi(
-  data: FormData,
+  data: {
+    img: FormData;
+    jwt: string;
+  },
   config: {
     controller: AbortController;
     onUploadProgress?: (progressEvent: any) => void;
   }
 ) {
   // const controller = new AbortController();
-  return axios.post('/api/user/upload', data, config);
+  return axios.post('http://localhost:8000/user/update_avatar', data);
 }
