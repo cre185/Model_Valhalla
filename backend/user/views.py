@@ -24,7 +24,7 @@ class loginView(APIView):
             user = User.objects.get(username=data['username'], password=data['password'])
         except:
             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-        jwt = generate_jwt({"user_id": user.id, "username": user.username})
+        jwt = generate_jwt({"user_id": user.id, "is_admin": user.is_admin})
         return Response({"jwt": jwt, 
                         "userId": user.id,
                         "username": user.username,
@@ -39,7 +39,7 @@ class login_with_verify_codeView(APIView):
                 user = User.objects.get(mobile=data['mobile'])
             except:
                 return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-            jwt = generate_jwt({"user_id": user.id, "username": user.username})
+            jwt = generate_jwt({"user_id": user.id, "is_admin": user.is_admin})
             return Response({"jwt": jwt, 
                             "userId": user.id,
                             "username": user.username,
@@ -88,9 +88,9 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
 
     @login_required
     def put(self, request, *args, **kwargs):
+        result = self.update(request, *args, **kwargs)
         if request.user.id != int(kwargs['id']):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
-        result = self.update(request, *args, **kwargs)
         data = result.data
         data['message'] = 'ok'
         data['password'] = '********'
@@ -99,9 +99,9 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     
     @login_required
     def patch(self, request, *args, **kwargs):
+        result = self.partial_update(request, *args, **kwargs)
         if request.user.id != int(kwargs['id']):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
-        result = self.partial_update(request, *args, **kwargs)
         data = result.data
         data['message'] = 'ok'
         data['password'] = '********'
@@ -115,9 +115,9 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     
     @login_required
     def get(self, request, *args, **kwargs):
+        result = self.retrieve(request, *args, **kwargs)
         if request.user.id != int(kwargs['id']):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
-        result = self.retrieve(request, *args, **kwargs)
         data = result.data
         data['message'] = 'ok'
         data['password'] = '********'
@@ -136,6 +136,18 @@ class updateAvatarView(APIView):
 class logoutView(APIView):
     @login_required
     def post(self, request):
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+    
+class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = "id"
+    
+    @login_required
+    def delete(self, request, *args, **kwargs):
+        if request.user.id != int(kwargs['id']) and not request.user.is_admin:
+            return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
+        result = self.destroy(request, *args, **kwargs)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
     
 class send_emailView(APIView):
@@ -164,7 +176,7 @@ class verify_emailView(APIView):
             add_time = verify_email.add_time
             due_time = datetime.datetime.now() - datetime.timedelta(minutes=10)
             if add_time <= due_time:
-                return Response({'message':'Code expired'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'message': 'Code expired'}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
