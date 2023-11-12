@@ -183,7 +183,6 @@ status=201
 ```python
 status=401
 ```
-**特殊说明**：实际发送功能暂未实现  
 #### update  
 **请求方式**：PUT/PATCH  
 **请求URL**：`/user/update/<id>`  
