@@ -10,13 +10,15 @@
         <template #description>
           <div class="content">
             <a-input
-              v-if="changeUsername"
+              v-show="changeUsername"
               id="input"
+              ref="inputRef"
               v-model="userStore.username"
               :placeholder="userStore.username"
               @press-enter="saveUsername"
+              @blur="saveUsername"
             />
-            <a-typography-paragraph v-else>
+            <a-typography-paragraph v-show="!changeUsername">
               {{ userStore.username }}
             </a-typography-paragraph>
           </div>
@@ -101,13 +103,14 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onBeforeMount, defineEmits } from 'vue';
+  import { ref, defineEmits, nextTick, watch } from 'vue';
   import axios from 'axios';
   import { useUserStore } from '@/store';
   import { getToken } from '@/utils/auth';
 
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
+  let oldUsername = userStore.username;
   const maskedPhone = ref('');
   const start = userStore.phone!.slice(0, 3); // 前三位
   const middle = '*'.repeat(6); // 中间六位替换成星号
@@ -118,30 +121,37 @@
   const emit = defineEmits<{
     (event: 'changeName', payload: string): void;
   }>();
+  const inputRef = ref();
 
   const changeUsernameFunc = () => {
     changeUsername.value = true;
+    nextTick(() => {
+      inputRef.value.focus();
+    });
   };
   const saveUsername = () => {
     changeUsername.value = false;
     // 定义要更新的数据
     const newUsername = userStore.username;
-    emit('changeName', newUsername!);
-    const updatedData = {
-      username: newUsername,
-    };
-    userStore.setInfo({ username: newUsername });
-    localStorage.setItem('userStore', JSON.stringify(userStore.$state));
-    // 发送 PATCH 请求
-    axios
-      .patch(
-        `http://localhost:8000/user/update/${userStore.accountId}`,
-        updatedData
-      )
-      .then((response) => {})
-      .catch((error) => {
-        console.error(error);
-      });
+    if (newUsername !== oldUsername) {
+      emit('changeName', newUsername!);
+      const updatedData = {
+        username: newUsername,
+      };
+      userStore.setInfo({ username: newUsername });
+      localStorage.setItem('userStore', JSON.stringify(userStore.$state));
+      oldUsername = newUsername;
+      // 发送 PATCH 请求
+      axios
+        .patch(
+          `http://localhost:8000/user/update/${userStore.accountId}`,
+          updatedData
+        )
+        .then((response) => {})
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   };
 </script>
 

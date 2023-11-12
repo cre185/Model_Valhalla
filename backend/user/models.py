@@ -26,3 +26,11 @@ class VerifyEmail(models.Model):
     add_time = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.email
+
+class ResetPassword(models.Model): # 用户重设密码，邮箱地址后端可以直接获得，理论上前端只需要发请求即可
+    email = models.CharField(max_length=127)
+    code = models.CharField(max_length=6)
+    add_time = models.DateTimeField(auto_now_add=True)
+    new_password = models.CharField(max_length=32)
+    def __str__(self):
+        return self.email

@@ -1,10 +1,10 @@
 import datetime
 import random
-from .models import User, VerifyMsg, VerifyEmail
+from .models import User, VerifyMsg, VerifyEmail, ResetPassword
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from .serializers import UserSerializer, VerifyMsgSerializer, VerifyEmailSerializer
+from .serializers import UserSerializer, VerifyMsgSerializer, VerifyEmailSerializer, VerifyResetSerializer
 from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
 from django.core.mail import send_mail
@@ -177,6 +177,44 @@ class verify_emailView(APIView):
             due_time = datetime.datetime.now() - datetime.timedelta(minutes=10)
             if add_time <= due_time:
                 return Response({'message': 'Code expired'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
+
+class send_resetEmailView(APIView):
+    @login_required
+    def post(self, request):
+        user_email = request.user.email
+        data = JSONParser().parse(request)
+        data["code"] = random.randint(100000, 999999)
+        data["email"] = user_email
+        serializer = VerifyResetSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            send_mail(
+                subject="Model_Valhalla 重置密码验证码",
+                message=("您的验证码为：" + str(data["code"]) + "，请于十分钟内填写"),
+                from_email=settings.EMAIL_FROM,
+                recipient_list=[data["email"]],
+                fail_silently=False
+            )
+            return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class reset_passwordView(APIView):
+    @login_required
+    def post(self, request):
+        data = JSONParser().parse(request)
+        try:
+            verify_email = ResetPassword.objects.get(email=data['email'], code=data['code'])
+            add_time = verify_email.add_time
+            due_time = datetime.datetime.now() - datetime.timedelta(minutes=10)
+            if add_time <= due_time:
+                return Response({'message':'Code expired'}, status=status.HTTP_400_BAD_REQUEST)
+            now_user = User.objects.get(email=data['email'])
+            now_user.password = data['new_password']
+            # verify_email.delete()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)

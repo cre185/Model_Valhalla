@@ -14,4 +14,6 @@ urlpatterns = [
     path("delete/<int:id>", views.deleteView.as_view(), name="delete"),
     path("send_email", views.send_emailView.as_view(), name="send_email"),
     path("verify_email", views.verify_emailView.as_view(), name="verify_email"),
+    path("send_resetEmail/<int:id>", views.send_resetEmailView.as_view(), name="send_resetEmail"),
+    path("reset_password/<int:id>", views.reset_passwordView.as_view(), name="reset_password"),
 ]

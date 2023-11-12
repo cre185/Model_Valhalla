@@ -1,6 +1,6 @@
 import datetime
 from rest_framework import serializers
-from .models import User, VerifyMsg, VerifyEmail
+from .models import User, VerifyMsg, VerifyEmail, ResetPassword
 import re
 from utils.validation_error import ValidationErrorWithMsg
 
@@ -85,3 +85,15 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
             history_records.delete()
 
         return email
+
+class VerifyResetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResetPassword
+        fields = ('email', 'code', 'add_time')
+
+    def validate_password(self, password): # 暂时设定的是前端不传邮箱，所以只需要检验传入密码的正确性即可
+        # if password is valid
+        if re.match(r'^[a-zA-Z0-9_-]{6,32}$', password) is None:
+            raise ValidationErrorWithMsg(detail={'message':'Password is invalid'})
+        
+        return password 
