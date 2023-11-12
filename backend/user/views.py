@@ -56,7 +56,7 @@ class send_messageView(APIView):
         if serializer.is_valid():
             serializer.save()
             send = send_msg()
-            # send.send_sms(data["code"], data["mobile"])
+            send.send_sms(data["code"], data["mobile"])
             return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
