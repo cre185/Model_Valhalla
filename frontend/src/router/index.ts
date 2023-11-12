@@ -31,6 +31,14 @@ const router = createRouter({
         requiresAuth: false,
       },
     },
+    {
+      path: '/change_password',
+      name: 'changePassword',
+      component: () => import('@/views/changePassword/index.vue'),
+      meta: {
+        requiresAuth: false,
+      },
+    },
     ...appRoutes,
     REDIRECT_MAIN,
     NOT_FOUND_ROUTE,
