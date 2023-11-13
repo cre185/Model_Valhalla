@@ -1,7 +1,7 @@
 import localeMessageBox from '@/components/message-box/locale/zh-CN';
 import localeLogin from '@/views/login/locale/zh-CN';
 import localeRegister from '@/views/register/locale/zh-CN';
-import localeChange from '@/views/changePassword/locale/zh-CN';
+import localeChange from '@/views/changeInfo/locale/zh-CN';
 
 import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 

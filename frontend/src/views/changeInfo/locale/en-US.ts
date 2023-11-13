@@ -39,4 +39,7 @@ export default {
   'login.banner.slogan3': 'Join the assignment in person',
   'login.banner.subSlogan3':
     'Help up improve and perfect the website by subjective assigment',
+  'change.email.form.title': 'Change your verified email',
+  'change.email.form.subtitle1': 'Please verify your security phone',
+  'change.email.form.subtitle2': 'Please input your new security email and receiver the verify code',
 };

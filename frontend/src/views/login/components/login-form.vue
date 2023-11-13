@@ -172,17 +172,13 @@
     username: 'admin', // 演示默认值
     password: 'admin', // demo default value
   });
-  const loginByCodeConfig = useStorage('login-by-code-config', {
-    mobile: '18678901234',
-    code: '',
-  });
   const userPassInfo = reactive({
     username: loginByPasswordConfig.value.username,
     password: loginByPasswordConfig.value.password,
   });
   const userCodeInfo = reactive({
-    mobile: loginByCodeConfig.value.mobile,
-    code: loginByCodeConfig.value.code,
+    mobile: '',
+    code: '',
   });
 
   const codeInterval = reactive({
@@ -293,7 +289,7 @@
           window.setTimeout(() => {
             if (value === '') {
               callback(proxy.$t('login.form.phone.errMsg1'));
-            } else if (!/1[3,4,5,7,8][0-9]{9}/.test(value)) {
+            } else if (!/1[3,4578][0-9]{9}/.test(value)) {
               callback(proxy.$t('login.form.phone.errMsg2'));
             }
             resolve();
@@ -323,7 +319,6 @@
     },
   ];
 </script>
-
 <style lang="less" scoped>
   .login-form {
     &-wrapper {

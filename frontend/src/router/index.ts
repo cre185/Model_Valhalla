@@ -32,9 +32,9 @@ const router = createRouter({
       },
     },
     {
-      path: '/change_password',
-      name: 'changePassword',
-      component: () => import('@/views/changePassword/index.vue'),
+      path: '/change_info/:toChange',
+      name: 'ChangeInfo',
+      component: () => import('@/views/changeInfo/index.vue'),
       meta: {
         requiresAuth: false,
       },

@@ -1,7 +1,7 @@
 import localeMessageBox from '@/components/message-box/locale/en-US';
 import localeLogin from '@/views/login/locale/en-US';
 import localeRegister from '@/views/register/locale/en-US';
-import localeChange from '@/views/changePassword/locale/en-US';
+import localeChange from '@/views/changeInfo/locale/en-US';
 
 import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
