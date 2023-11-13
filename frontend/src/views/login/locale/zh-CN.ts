@@ -25,5 +25,5 @@ export default {
   'login.banner.slogan2': '实用的数据集管理',
   'login.banner.subSlogan2': '查看并详细了解数据集，上传你自己的数据集',
   'login.banner.slogan3': '亲自参与评测',
-  'login.banner.subSlogan3': '通过您的对抗评测是我们的网站内容更加完善',
+  'login.banner.subSlogan3': '通过您的对抗评测使我们的网站内容更加完善',
 };

@@ -65,7 +65,7 @@
             </a-typography-paragraph>
           </div>
           <div class="operation">
-            <a-link>
+            <a-link @click="changePhoneFunc">
               {{ $t('userSetting.SecuritySettings.button.update') }}
             </a-link>
           </div>
@@ -89,7 +89,7 @@
             <a-typography-paragraph> 未绑定邮箱 </a-typography-paragraph>
           </div>
           <div v-if="userStore.email" class="operation">
-            <a-link>
+            <a-link @click="changeEmailFunc">
               {{ $t('userSetting.SecuritySettings.button.update') }}
             </a-link>
           </div>
@@ -156,7 +156,13 @@
     }
   };
   const changePasswordFunc = () => {
-    router.push({ name: 'changePassword' });
+    router.push({ name: 'ChangeInfo', params: { toChange: 'password'}});
+  };
+  const changePhoneFunc = () => {
+    router.push({ name: 'ChangeInfo', params: { toChange: 'phone'}});
+  };
+  const changeEmailFunc = () => {
+    router.push({ name: 'ChangeInfo', params: { toChange: 'email'}});
   };
 </script>
 

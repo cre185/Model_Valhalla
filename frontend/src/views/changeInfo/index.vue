@@ -4,10 +4,12 @@
       <img alt="logo" src="@/assets/images/logo.png" />
       <div class="logo-text">Model Valhalla</div>
     </div>
-    <ChangeBanner />
+    <Banner />
     <div class="content">
       <div class="content-inner">
-        <ChangeForm />
+        <ChangePasswordForm v-if="$route.params.toChange === 'password'"/>
+        <ChangePhoneForm v-if="$route.params.toChange === 'phone'"/>
+        <ChangeEmailForm v-if="$route.params.toChange === 'email'"/>
       </div>
       <div class="footer">
         <Footer />
@@ -18,8 +20,10 @@
 
 <script lang="ts" setup>
   import Footer from '@/components/footer/index.vue';
-  import ChangeBanner from './components/banner.vue';
-  import ChangeForm from './components/change-form.vue';
+  import Banner from '@/views/login/components/banner.vue';
+  import ChangePasswordForm from './components/change-password-form.vue';
+  import ChangePhoneForm from './components/change-phone-form.vue';
+  import ChangeEmailForm from './components/change-email-form.vue';
 </script>
 
 <style lang="less" scoped>

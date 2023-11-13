@@ -27,5 +27,8 @@ export default {
   'login.banner.slogan2': '实用的数据集管理',
   'login.banner.subSlogan2': '查看并详细了解数据集，上传你自己的数据集',
   'login.banner.slogan3': '亲自参与评测',
-  'login.banner.subSlogan3': '通过您的对抗评测是我们的网站内容更加完善',
+  'login.banner.subSlogan3': '通过您的对抗评测使我们的网站内容更加完善',
+  'change.email.form.title': '修改您的安全验证邮箱',
+  'change.email.form.subtitle1': '请验证您的安全手机',
+  'change.email.form.subtitle2': '请输入您新的安全邮箱并接受验证码',
 };
