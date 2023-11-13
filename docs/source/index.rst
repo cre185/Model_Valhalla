@@ -13,6 +13,12 @@ Welcome to Model Valhalla documentation!
    
 .. toctree::
    :maxdepth: 2
+   :caption: 标准
+   
+   standard.md
+
+.. toctree::
+   :maxdepth: 2
    :caption: 测试
    
    test.md

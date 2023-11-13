@@ -3,8 +3,8 @@
     <div class="login-form-title">{{ $t('change.form.title') }}</div>
     <div class="login-form-error-msg">{{ errorMessage }}</div>
     <a-form
-      ref="loginForm"
-      :model="userCodeInfo"
+      ref="changeForm"
+      :model="userChangeInfo"
       class="login-form"
       layout="vertical"
       @submit="handleSubmit"
@@ -16,7 +16,7 @@
         hide-label
       >
         <a-input
-          v-model="userCodeInfo.mobile"
+          v-model="userChangeInfo.mobile"
           :placeholder="$t('change.form.phone.placeholder')"
         >
           <template #prefix>
@@ -31,8 +31,8 @@
         hide-label
       >
         <a-input
-          v-model="userCodeInfo.code"
-          :placeholder="$t('login.form.code.placeholder')"
+          v-model="userChangeInfo.code"
+          :placeholder="$t('change.form.code.placeholder')"
           allow-clear
         >
           <template #prefix>
@@ -44,45 +44,46 @@
               type="primary"
               @click="handleSendCode"
             >
-              {{ $t('login.form.code.buttonText1') }}
+              {{ $t('change.form.code.buttonText1') }}
             </a-button>
             <a-button v-if="codeInterval.codeInterval >= 0">
               {{
-                codeInterval.codeInterval + $t('register.form.code.buttonText2')
+                codeInterval.codeInterval + $t('change.form.code.buttonText2')
               }}
             </a-button>
           </template>
         </a-input>
       </a-form-item>
       <a-form-item
-        field="mobile"
-        :rules="phoneRules"
+        field="firstPassword"
+        :rules="firstPasswordRules"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
-        <a-input
-          v-model="userCodeInfo.mobile"
+        <a-input-password
+          v-model="userChangeInfo.firstPassword"
           :placeholder="$t('change.form.password.placeholder')"
         >
           <template #prefix>
             <icon-lock />
           </template>
-        </a-input>
+        </a-input-password>
       </a-form-item>
       <a-form-item
-        field="mobile"
-        :rules="phoneRules"
+        field="secondPassword"
+        :rules="secondPasswordRules"
         :validate-trigger="['change', 'blur']"
         hide-label
       >
-        <a-input
-          v-model="userCodeInfo.mobile"
+        <a-input-password
+          v-model="userChangeInfo.secondPassword"
+          type="password"
           :placeholder="$t('change.form.password_again.placeholder')"
         >
           <template #prefix>
             <icon-safe />
           </template>
-        </a-input>
+        </a-input-password>
       </a-form-item>
       <a-space :size="5" direction="vertical">
         <a-row class="row">
@@ -104,11 +105,9 @@
       </a-space>
       <a-space :size="16" direction="vertical">
         <div id="codeMargin"></div>
-        <router-link to="../login">
-          <a-button type="primary" html-type="submit" long :loading="loading">
-            {{ $t('change.form.acknowledge') }}
-          </a-button>
-        </router-link>
+        <a-button type="primary" html-type="submit" long :loading="loading">
+          {{ $t('change.form.acknowledge') }}
+        </a-button>
         <a-button
           type="text"
           long
@@ -123,55 +122,39 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, getCurrentInstance, inject } from 'vue';
+  import { ref, reactive, getCurrentInstance, onMounted } from 'vue';
   import { useRouter } from 'vue-router';
-  import { Message } from '@arco-design/web-vue';
+  import { Modal } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
   import { useI18n } from 'vue-i18n';
-  import { useStorage } from '@vueuse/core';
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
-  import type { LoginData, phoneVerifyData } from '@/api/user';
-  import {
-    getUsername,
-    getRegisterTime,
-    getPhone,
-    getAvatar,
-    getEmail,
-  } from '@/api/user-info';
+  import { getPassword, updateInfo } from '@/api/user-info';
   import { getToken } from '@/utils/auth';
+  import { phoneVerifyData } from '@/api/user';
 
   const router = useRouter();
   const { t } = useI18n();
   const errorMessage = ref('');
   const { loading, setLoading } = useLoading();
   const userStore = useUserStore();
+  userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   const { proxy } = getCurrentInstance();
 
-  const loginByPasswordConfig = useStorage('login-by-password-config', {
-    rememberPassword: true,
-    username: 'admin', // 演示默认值
-    password: 'admin', // demo default value
-  });
-  const loginByCodeConfig = useStorage('login-by-code-config', {
-    mobile: '18678901234',
+  const userChangeInfo = reactive({
+    mobile: userStore.phone,
     code: '',
-  });
-  const userPassInfo = reactive({
-    username: loginByPasswordConfig.value.username,
-    password: loginByPasswordConfig.value.password,
-  });
-  const userCodeInfo = reactive({
-    mobile: loginByCodeConfig.value.mobile,
-    code: loginByCodeConfig.value.code,
+    firstPassword: '',
+    secondPassword: '',
   });
 
+  const oldPassword = ref('');
+  const changeForm = ref();
   const codeInterval = reactive({
     codeTimer: null as null | ReturnType<typeof setInterval>,
     codeInterval: -1,
   });
 
-  const loginWay = ref('1');
   const handleSubmit = async ({
     errors,
     values,
@@ -183,62 +166,48 @@
     if (!errors) {
       setLoading(true);
       try {
-        if (loginWay.value === '1') {
-          await userStore.login(values as LoginData);
-        } else {
-          await userStore.loginByPhone(values as phoneVerifyData);
-        }
-        const { redirect, ...othersQuery } = router.currentRoute.value.query;
-        const jwt = getToken();
-        const userID = userStore.$state.accountId;
-        let name;
-        let registrationDate;
-        let avatar;
-        let phone;
-        let email;
-        await getUsername(userID!, jwt!).then((returnValue) => {
-          name = returnValue;
-        });
-        await getRegisterTime(userID!, jwt!).then((returnValue) => {
-          registrationDate = returnValue;
-        });
-        await getAvatar(userID!, jwt!).then((returnValue) => {
-          avatar = returnValue;
-        });
-        await getPhone(userID!, jwt!).then((returnValue) => {
-          phone = returnValue;
-        });
-        await getEmail(userID!, jwt!).then((returnValue) => {
-          email = returnValue;
-        });
-        userStore.setInfo({
-          username: name,
-          avatar,
-          registrationDate,
-          phone,
-          email,
-        });
-        localStorage.setItem('userStore', JSON.stringify(userStore.$state));
-        router.push({
-          name: (redirect as string) || 'Index',
-          query: {
-            ...othersQuery,
+        const phoneVerification = {
+          mobile: userChangeInfo.mobile,
+          code: userChangeInfo.code,
+        };
+        await userStore.verifyCode(phoneVerification as phoneVerifyData);
+        await updateInfo(
+          userStore.accountId!,
+          getToken()!,
+          {
+            key: userChangeInfo.firstPassword,
+          },
+          'password'
+        );
+        let returnInterval = 3;
+        let returnTimer: ReturnType<typeof setInterval> | undefined;
+        const modal = Modal.success({
+          title: t('change.form.change.success'),
+          content: '',
+          okText: t('change.form.return'),
+          onOpen: () => {
+            returnTimer = setInterval(() => {
+              if (returnInterval >= 0) {
+                console.log(returnInterval);
+                returnInterval -= 1;
+              } else {
+                clearInterval(returnTimer);
+                router.back();
+                modal.close();
+              }
+            }, 1000);
+          },
+          onOk: () => {
+            clearInterval(returnTimer);
+            router.back();
+            modal.close();
           },
         });
-        Message.success(t('login.form.login.success'));
-        if (loginWay.value === '1') {
-          const { rememberPassword } = loginByPasswordConfig.value;
-          const { username, password } = values;
-          // 实际生产环境需要进行加密存储。
-          loginByPasswordConfig.value.username = rememberPassword
-            ? username
-            : '';
-          loginByPasswordConfig.value.password = rememberPassword
-            ? password
-            : '';
-        }
       } catch (err) {
-        errorMessage.value = (err as Error).message;
+        errorMessage.value = t('change.form.change.error');
+        setTimeout(() => {
+          errorMessage.value = '';
+        }, 5000);
       } finally {
         setLoading(false);
       }
@@ -253,18 +222,14 @@
           codeInterval.codeInterval -= 1;
         } else {
           clearInterval(codeInterval.codeTimer);
-        }
+        } //
       }, 1000);
-      const res = await userStore.verifyPhone(userCodeInfo.mobile);
+      const res = await userStore.verifyPhone(userChangeInfo.mobile!);
     } catch (err) {
       errorMessage.value = (err as Error).message;
     } finally {
       setLoading(false);
     }
-  };
-
-  const setRememberPassword = (value: boolean) => {
-    loginByPasswordConfig.value.rememberPassword = value;
   };
 
   const phoneRules = [
@@ -278,7 +243,9 @@
             if (value === undefined) {
               callback(proxy.$t('change.form.phone.errMsg1'));
             } else if (!/^1[3-9]\d{9}$/.test(value)) {
-              callback(proxy.$t('login.form.phone.errMsg2'));
+              callback(proxy.$t('change.form.phone.errMsg3'));
+            } else if (value !== userStore.phone) {
+              callback(proxy.$t('change.form.phone.errMsg2'));
             }
             resolve(undefined);
           }, 1000);
@@ -289,27 +256,72 @@
 
   const codeRules = [
     {
-      required: true,
-      validator: (value, callback) => {
+      validator: (
+        value: string | undefined,
+        callback: (argument: string) => void
+      ) => {
         return new Promise((resolve) => {
           window.setTimeout(() => {
-            value = userCodeInfo.code;
-            if (value === '') {
-              callback(proxy.$t('register.form.code.errMsg1'));
+            if (value === undefined) {
+              callback(proxy.$t('change.form.code.errMsg1'));
             } else if (!/\d{6}/.test(value)) {
-              callback(proxy.$t('login.form.code.errMsg2'));
+              callback(proxy.$t('change.form.code.errMsg2'));
             }
-            resolve();
+            resolve(undefined);
           }, 1000);
         });
       },
-      trigger: ['change', 'blur'],
+    },
+  ];
+
+  const firstPasswordRules = [
+    {
+      validator: (
+        value: string | undefined,
+        callback: (argument: string) => void
+      ) => {
+        return new Promise((resolve) => {
+          window.setTimeout(() => {
+            if (value === undefined) {
+              callback(proxy.$t('change.form.password.errMsg1'));
+            } else if (!/^[a-zA-Z0-9_-]{6,32}$/.test(value)) {
+              callback(proxy.$t('change.form.password.errMsg2'));
+            } else if (value === oldPassword.value) {
+              callback(proxy.$t('change.form.password.errMsg3'));
+            }
+            resolve(undefined);
+          }, 1000);
+        });
+      },
+    },
+  ];
+
+  const secondPasswordRules = [
+    {
+      validator: (
+        value: string | undefined,
+        callback: (argument: string) => void
+      ) => {
+        return new Promise((resolve) => {
+          window.setTimeout(() => {
+            if (value === undefined) {
+              callback(proxy.$t('change.form.password_again.errMsg1'));
+            } else if (value !== userChangeInfo.firstPassword) {
+              callback(proxy.$t('change.form.password_again.errMsg2'));
+            }
+            resolve(undefined);
+          }, 1000);
+        });
+      },
     },
   ];
 
   const goBack = () => {
-    router.go(-1);
+    router.back();
   };
+  onMounted(async () => {
+    oldPassword.value = await getPassword(userStore.accountId!, getToken()!);
+  });
 </script>
 
 <style lang="less" scoped>

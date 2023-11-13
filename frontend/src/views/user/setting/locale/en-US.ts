@@ -50,7 +50,7 @@ export default {
   'userSetting.SecuritySettings.placeholder.username': 'LiHao',
   'userSetting.SecuritySettings.form.label.password': 'Login Password',
   'userSetting.SecuritySettings.placeholder.password':
-    'Has been set. The password must contain at least six letters, digits, and special characters except Spaces. The password must contain both uppercase and lowercase letters.',
+    'Has been set. The password must be composed of 6-32 characters, including numbers, letters, or symbols (_ and -)',
   'userSetting.SecuritySettings.form.label.securityQuestion':
     'Security Question',
   'userSetting.SecuritySettings.placeholder.securityQuestion':
