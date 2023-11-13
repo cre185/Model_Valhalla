@@ -127,7 +127,3 @@ export async function updateInfo(
     throw error;
   }
 }
-
-export async function updateUserInfo(updateData: any){
-
-}
