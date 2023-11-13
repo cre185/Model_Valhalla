@@ -50,7 +50,7 @@ class send_msg():
         runtime = util_models.RuntimeOptions()
         try:
             # 复制代码运行请自行打印 API 的返回值
-            print(client.send_sms_with_options(send_sms_request, runtime))
+            client.send_sms_with_options(send_sms_request, runtime)
         except Exception as error:
             # 如有需要，请打印 error
             UtilClient.assert_as_string(error.message)

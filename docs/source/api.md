@@ -2,6 +2,7 @@
 本部分文档用于记录开发过程中的API设计以及使用方法。   
 所有API的url均可以使用OPTIONS进行访问，会返回CORS相关信息，以支持Vue.js的跨域访问，下面不再说明。  
 文档中的返回参数中，带有大括号`{}`的部分为确定的data键值对内容，未带有该部分说明该api返回的data可能因情况而异（如参数格式错误说明等），不应作为绝对的判定标准。  
+有关额外需求的说明参见文章末尾额外需求部分。  
 *** 
 **目录**  
 - [API参考文档](#api参考文档)
@@ -19,8 +20,12 @@
     - [verify\_code](#verify_code)
     - [verify\_email](#verify_email)
   - [数据集部分](#数据集部分)
+    - [create](#create)
+    - [upload](#upload)
   - [排行榜部分](#排行榜部分)
   - [模型测试部分](#模型测试部分)
+  - [额外需求](#额外需求)
+    - [jwt](#jwt)
 ***
 ### 用户账号部分  
 #### delete  
@@ -35,13 +40,6 @@
     "message": "ok"
 }, 
 status=200
-```
-* jwt错误  
-```python
-{
-    "message": "User must be authorized."
-}, 
-status=401
 ```
 #### login  
 **请求方式**：POST  
@@ -106,13 +104,6 @@ status=401
     "message": "ok"
 }, 
 status=200
-```
-* jwt错误    
-```python
-{
-    "message": "User must be authorized."
-}, 
-status=401
 ```
 #### register  
 **请求方式**：POST  
@@ -204,13 +195,6 @@ status=200
 ```python
 status=404
 ```
-* jwt错误  
-```python
-{
-    "message": "User must be authorized."
-}, 
-status=401
-```
 #### update_avatar  
 **请求方式**：POST  
 **请求URL**：`/user/update_avatar/<id>`  
@@ -227,13 +211,6 @@ status=200
 * 未找到用户  
 ```python
 status=404
-```
-* jwt错误  
-```python
-{
-    "message": "User must be authorized."
-}, 
-status=401
 ```
 #### verify_code  
 **请求方式**：POST  
@@ -275,7 +252,57 @@ status=401
 ```
 ***
 ### 数据集部分  
+#### create  
+**请求方式**：POST  
+**请求URL**：`/dataset/create`  
+**请求参数**：字符串name  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "datasetId": "数据集id"
+},
+status=201
+```
+* 参数异常  
+```python
+status=400
+```
+#### upload  
+**请求方式**：POST  
+**请求URL**：`/dataset/upload`  
+**请求参数**：文件file，字符串datasetId  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "datasetId": "数据集id"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 ***
 ### 排行榜部分  
 ***
 ### 模型测试部分  
+***
+### 额外需求  
+此部分专门论述上述api中的额外需求要求明细。  
+#### jwt  
+jwt是一种用于身份验证的token，用于验证用户身份。大部分需要身份验证的api均需要提供jwt作为身份验证。  
+**获取方式**：在用户正确登录后会获得jwt，其中压缩包含了用户的id。  
+**返回情况**：  
+在所有需要jwt的接口中，如果jwt错误，会返回如下信息：  
+```python
+{
+    "message": "User must be authorized."
+},
+status=401
+```

@@ -1,10 +1,10 @@
 import datetime
 import random
-from .models import User, VerifyMsg, VerifyEmail, ResetPassword
+from .models import User, VerifyMsg, VerifyEmail
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from .serializers import UserSerializer, VerifyMsgSerializer, VerifyEmailSerializer, VerifyResetSerializer
+from .serializers import UserSerializer, VerifyMsgSerializer, VerifyEmailSerializer
 from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
 from django.core.mail import send_mail

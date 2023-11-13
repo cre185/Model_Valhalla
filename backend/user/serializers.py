@@ -1,13 +1,13 @@
 import datetime
 from rest_framework import serializers
-from .models import User, VerifyMsg, VerifyEmail, ResetPassword
+from .models import User, VerifyMsg, VerifyEmail
 import re
 from utils.validation_error import ValidationErrorWithMsg
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'mobile', 'add_time', 'email', 'is_admin', 'avatar')
+        fields = '__all__'
 
     def validate_username(self, username):
         # if username already exists
@@ -49,7 +49,7 @@ class UserSerializer(serializers.ModelSerializer):
 class VerifyMsgSerializer(serializers.ModelSerializer):
     class Meta:
         model = VerifyMsg
-        fields = ('mobile', 'code', 'add_time')
+        fields = '__all__'
 
     def validate_mobile(self, mobile):
         # if mobile is valid
@@ -69,7 +69,7 @@ class VerifyMsgSerializer(serializers.ModelSerializer):
 class VerifyEmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = VerifyEmail
-        fields = ('email', 'code', 'add_time')
+        fields = '__all__'
 
     def validate_email(self, email):
         # if email is valid
@@ -85,15 +85,3 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
             history_records.delete()
 
         return email
-
-class VerifyResetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ResetPassword
-        fields = ('email', 'code', 'add_time')
-
-    def validate_password(self, password): # 暂时设定的是前端不传邮箱，所以只需要检验传入密码的正确性即可
-        # if password is valid
-        if re.match(r'^[a-zA-Z0-9_-]{6,32}$', password) is None:
-            raise ValidationErrorWithMsg(detail={'message':'Password is invalid'})
-        
-        return password 
