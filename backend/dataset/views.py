@@ -31,7 +31,6 @@ class uploadView(APIView):
         target = Dataset.objects.get(id=request.data['id'])
         if not target:
             return Response({"message": "Invalid dataset id"}, status=status.HTTP_400_BAD_REQUEST)
-        print(request.headers)
         dict = request.FILES
         dataset = dict['file']
         target.data_file = dataset

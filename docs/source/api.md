@@ -23,9 +23,13 @@
     - [create](#create)
     - [upload](#upload)
   - [排行榜部分](#排行榜部分)
+    - [list](#list)
+    - [update](#update-1)
   - [模型测试部分](#模型测试部分)
+    - [create](#create-1)
   - [额外需求](#额外需求)
     - [jwt](#jwt)
+    - [admin\_required](#admin_required)
 ***
 ### 用户账号部分  
 #### delete  
@@ -41,6 +45,7 @@
 }, 
 status=200
 ```
+**特殊说明**：该api在传入的jwt对应一般用户时只允许删除用户自己，而在传入的jwt对应管理员时允许删除任意用户。  
 #### login  
 **请求方式**：POST  
 **请求URL**：`/user/login`  
@@ -290,8 +295,64 @@ status=400
 ```
 ***
 ### 排行榜部分  
+#### list  
+**请求方式**：GET  
+**请求URL**：`/ranking/list`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "data": [
+        {
+            "LLM": "模型id",
+            "dataset": "数据集id",
+            "add_time": "添加时间(未格式化)",
+            "credit": "分数",
+        },
+        ...
+    ]
+},
+status=200
+```
+#### update  
+**请求方式**：POST  
+**请求URL**：`/ranking/update`  
+**请求参数**：字符串datasetId，字符串llmId，字符串score  
+**额外需求**：admin_required    
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 ***
 ### 模型测试部分  
+#### create  
+**请求方式**：POST  
+**请求URL**：`/testing/create`  
+**请求参数**：字符串name  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "llmId": "模型id"
+},
+status=201
+```
+* 参数异常  
+```python
+status=400
+```
 ***
 ### 额外需求  
 此部分专门论述上述api中的额外需求要求明细。  
@@ -303,6 +364,17 @@ jwt是一种用于身份验证的token，用于验证用户身份。大部分需
 ```python
 {
     "message": "User must be authorized."
+},
+status=401
+```
+#### admin_required  
+admin_required标签仅用于管理员专用接口，其本质为强化版的jwt，在返回之前会检验用户是否具有管理员权限，故不需要跟jwt一起使用。  
+**获取方式**：只需正常传入jwt即可。  
+**返回情况**：  
+在需要管理员权限的接口中，如果jwt对应用户并非管理员，会返回以下信息：  
+```python
+{
+    "message": "User must be admin."
 },
 status=401
 ```
