@@ -85,3 +85,7 @@ export async function getEmail(userId: string, jwt: string): Promise<string> {
     throw error;
   }
 }
+
+export async function updateUserInfo(updateData: any){
+
+}

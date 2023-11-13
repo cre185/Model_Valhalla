@@ -44,7 +44,7 @@
             </a-typography-paragraph>
           </div>
           <div class="operation">
-            <a-link>
+            <a-link @click="changePasswordFunc">
               {{ $t('userSetting.SecuritySettings.button.update') }}
             </a-link>
           </div>
@@ -65,7 +65,7 @@
             </a-typography-paragraph>
           </div>
           <div class="operation">
-            <a-link>
+            <a-link @click="changePhoneFunc">
               {{ $t('userSetting.SecuritySettings.button.update') }}
             </a-link>
           </div>
@@ -89,7 +89,7 @@
             <a-typography-paragraph> 未绑定邮箱 </a-typography-paragraph>
           </div>
           <div v-if="userStore.email" class="operation">
-            <a-link>
+            <a-link @click="changeEmailFunc">
               {{ $t('userSetting.SecuritySettings.button.update') }}
             </a-link>
           </div>
@@ -103,10 +103,11 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, defineEmits, nextTick, watch } from 'vue';
+  import { ref, defineEmits, nextTick } from 'vue';
   import axios from 'axios';
   import { useUserStore } from '@/store';
   import { getToken } from '@/utils/auth';
+  import { useRouter } from 'vue-router';
 
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
@@ -122,6 +123,7 @@
     (event: 'changeName', payload: string): void;
   }>();
   const inputRef = ref();
+  const router = useRouter();
 
   const changeUsernameFunc = () => {
     changeUsername.value = true;
@@ -152,6 +154,15 @@
           console.error(error);
         });
     }
+  };
+  const changePasswordFunc = () => {
+    router.push({ name: 'ChangeInfo', params: { toChange: 'password'}});
+  };
+  const changePhoneFunc = () => {
+    router.push({ name: 'ChangeInfo', params: { toChange: 'phone'}});
+  };
+  const changeEmailFunc = () => {
+    router.push({ name: 'ChangeInfo', params: { toChange: 'email'}});
   };
 </script>
 

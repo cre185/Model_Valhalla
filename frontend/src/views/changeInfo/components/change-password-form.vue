@@ -1,148 +1,129 @@
 <template>
   <div class="login-form-wrapper">
-    <div class="login-form-title">{{ $t('login.form.title') }}</div>
-    <a-tabs v-model:active-key="loginWay">
-      <a-tab-pane key="1">
-        <template #title>
-          {{ $t('login.form.loginWay.password') }}
-        </template>
-        <div class="login-form-error-msg">{{ errorMessage }}</div>
-        <a-form
-          ref="loginForm"
-          :model="userPassInfo"
-          class="login-form"
-          layout="vertical"
-          @submit="handleSubmit"
+    <div class="login-form-title">{{ $t('change.form.title') }}</div>
+    <div class="login-form-error-msg">{{ errorMessage }}</div>
+    <a-form
+      ref="loginForm"
+      :model="userCodeInfo"
+      class="login-form"
+      layout="vertical"
+      @submit="handleSubmit"
+    >
+      <a-form-item
+        field="mobile"
+        :rules="phoneRules"
+        :validate-trigger="['change', 'blur']"
+        hide-label
+      >
+        <a-input
+          v-model="userCodeInfo.mobile"
+          :placeholder="$t('change.form.phone.placeholder')"
         >
-          <a-form-item
-            field="username"
-            :rules="[
-              { required: true, message: $t('login.form.userName.errMsg') },
-            ]"
-            :validate-trigger="['change', 'blur']"
-            hide-label
-          >
-            <a-input
-              v-model="userPassInfo.username"
-              :placeholder="$t('login.form.userName.placeholder')"
-            >
-              <template #prefix>
-                <icon-user />
-              </template>
-            </a-input>
-          </a-form-item>
-          <a-form-item
-            field="password"
-            :rules="[
-              { required: true, message: $t('login.form.password.errMsg') },
-            ]"
-            :validate-trigger="['change', 'blur']"
-            hide-label
-          >
-            <a-input-password
-              v-model="userPassInfo.password"
-              :placeholder="$t('login.form.password.placeholder')"
-              allow-clear
-            >
-              <template #prefix>
-                <icon-lock />
-              </template>
-            </a-input-password>
-          </a-form-item>
-          <a-space :size="16" direction="vertical">
-            <div class="login-form-password-actions">
-              <a-checkbox
-                checked="rememberPassword"
-                :model-value="loginByPasswordConfig.rememberPassword"
-                @change="setRememberPassword as any"
-              >
-                {{ $t('login.form.rememberPassword') }}
-              </a-checkbox>
-              <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
-            </div>
-            <a-button type="primary" html-type="submit" long :loading="loading">
-              {{ $t('login.form.login') }}
-            </a-button>
-            <router-link to="/register">
-              <a-button type="text" long class="login-form-register-btn">
-                {{ $t('login.form.register') }}
-              </a-button>
-            </router-link>
-          </a-space>
-        </a-form>
-      </a-tab-pane>
-      <a-tab-pane key="2">
-        <template #title>
-          {{ $t('login.form.loginWay.code') }}
-        </template>
-        <div class="login-form-error-msg">{{ errorMessage }}</div>
-        <a-form
-          ref="loginForm"
-          :model="userCodeInfo"
-          class="login-form"
-          layout="vertical"
-          @submit="handleSubmit"
+          <template #prefix>
+            <icon-phone />
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item
+        field="code"
+        :rules="codeRules"
+        :validate-trigger="['change', 'blur']"
+        hide-label
+      >
+        <a-input
+          v-model="userCodeInfo.code"
+          :placeholder="$t('login.form.code.placeholder')"
+          allow-clear
         >
-          <a-form-item
-            field="mobile"
-            :rules="phoneRules"
-            :validate-trigger="['change', 'blur']"
-            hide-label
-          >
-            <a-input
-              v-model="userCodeInfo.mobile"
-              :placeholder="$t('login.form.phone.placeholder')"
+          <template #prefix>
+            <icon-message />
+          </template>
+          <template #append>
+            <a-button
+              v-if="codeInterval.codeInterval < 0"
+              type="primary"
+              @click="handleSendCode"
             >
-              <template #prefix>
-                <icon-phone />
-              </template>
-            </a-input>
-          </a-form-item>
-          <a-form-item field="code" :rules="codeRules" hide-label>
-            <a-input
-              v-model="userCodeInfo.code"
-              :placeholder="$t('login.form.code.placeholder')"
-              allow-clear
-            >
-              <template #prefix>
-                <icon-message />
-              </template>
-              <template #append>
-                <a-button
-                  v-if="codeInterval.codeInterval < 0"
-                  type="primary"
-                  @click="handleSendCode"
-                >
-                  {{ $t('login.form.code.buttonText1') }}
-                </a-button>
-                <a-button v-if="codeInterval.codeInterval >= 0">
-                  {{
-                    codeInterval.codeInterval +
-                    $t('register.form.code.buttonText2')
-                  }}
-                </a-button>
-              </template>
-            </a-input>
-          </a-form-item>
-          <a-space :size="16" direction="vertical">
-            <div id="codeMargin"></div>
-            <a-button type="primary" html-type="submit" long :loading="loading">
-              {{ $t('login.form.login') }}
+              {{ $t('login.form.code.buttonText1') }}
             </a-button>
-            <router-link to="../register">
-              <a-button type="text" long class="login-form-register-btn">
-                {{ $t('login.form.register') }}
-              </a-button>
-            </router-link>
-          </a-space>
-        </a-form>
-      </a-tab-pane>
-    </a-tabs>
+            <a-button v-if="codeInterval.codeInterval >= 0">
+              {{
+                codeInterval.codeInterval + $t('register.form.code.buttonText2')
+              }}
+            </a-button>
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item
+        field="mobile"
+        :rules="phoneRules"
+        :validate-trigger="['change', 'blur']"
+        hide-label
+      >
+        <a-input
+          v-model="userCodeInfo.mobile"
+          :placeholder="$t('change.form.password.placeholder')"
+        >
+          <template #prefix>
+            <icon-lock />
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-form-item
+        field="mobile"
+        :rules="phoneRules"
+        :validate-trigger="['change', 'blur']"
+        hide-label
+      >
+        <a-input
+          v-model="userCodeInfo.mobile"
+          :placeholder="$t('change.form.password_again.placeholder')"
+        >
+          <template #prefix>
+            <icon-safe />
+          </template>
+        </a-input>
+      </a-form-item>
+      <a-space :size="5" direction="vertical">
+        <a-row class="row">
+          <a-col :span="2">
+            <icon-check-circle-fill />
+          </a-col>
+          <a-col :span="22">
+            <span> 密码由6-32位数字、字母或符号(_和-)组成 </span>
+          </a-col>
+        </a-row>
+        <a-row class="row">
+          <a-col :span="2">
+            <icon-check-circle-fill />
+          </a-col>
+          <a-col :span="22">
+            <span> 安全提示：新密码请勿与旧密码过于相似 </span>
+          </a-col>
+        </a-row>
+      </a-space>
+      <a-space :size="16" direction="vertical">
+        <div id="codeMargin"></div>
+        <router-link to="../login">
+          <a-button type="primary" html-type="submit" long :loading="loading">
+            {{ $t('change.form.acknowledge') }}
+          </a-button>
+        </router-link>
+        <a-button
+          type="text"
+          long
+          class="login-form-register-btn"
+          @click="goBack"
+        >
+          {{ $t('change.form.return') }}
+        </a-button>
+      </a-space>
+    </a-form>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, getCurrentInstance } from 'vue';
+  import { ref, reactive, getCurrentInstance, inject } from 'vue';
   import { useRouter } from 'vue-router';
   import { Message } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
@@ -172,13 +153,17 @@
     username: 'admin', // 演示默认值
     password: 'admin', // demo default value
   });
+  const loginByCodeConfig = useStorage('login-by-code-config', {
+    mobile: '18678901234',
+    code: '',
+  });
   const userPassInfo = reactive({
     username: loginByPasswordConfig.value.username,
     password: loginByPasswordConfig.value.password,
   });
   const userCodeInfo = reactive({
-    mobile: '',
-    code: '',
+    mobile: loginByCodeConfig.value.mobile,
+    code: loginByCodeConfig.value.code,
   });
 
   const codeInterval = reactive({
@@ -284,15 +269,18 @@
 
   const phoneRules = [
     {
-      validator: (value, callback) => {
+      validator: (
+        value: string | undefined,
+        callback: (argument: string) => void
+      ) => {
         return new Promise((resolve) => {
           window.setTimeout(() => {
-            if (value === '') {
-              callback(proxy.$t('login.form.phone.errMsg1'));
-            } else if (!/1[3,4578][0-9]{9}/.test(value)) {
+            if (value === undefined) {
+              callback(proxy.$t('change.form.phone.errMsg1'));
+            } else if (!/^1[3-9]\d{9}$/.test(value)) {
               callback(proxy.$t('login.form.phone.errMsg2'));
             }
-            resolve();
+            resolve(undefined);
           }, 1000);
         });
       },
@@ -318,7 +306,12 @@
       trigger: ['change', 'blur'],
     },
   ];
+
+  const goBack = () => {
+    router.go(-1);
+  };
 </script>
+
 <style lang="less" scoped>
   .login-form {
     &-wrapper {
@@ -358,5 +351,10 @@
   }
   ::v-deep(.arco-input-append) {
     padding: 0;
+  }
+
+  .row {
+    color: grey;
+    align-items: baseline;
   }
 </style>

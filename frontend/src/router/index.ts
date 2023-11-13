@@ -31,6 +31,14 @@ const router = createRouter({
         requiresAuth: false,
       },
     },
+    {
+      path: '/change_info/:toChange',
+      name: 'ChangeInfo',
+      component: () => import('@/views/changeInfo/index.vue'),
+      meta: {
+        requiresAuth: false,
+      },
+    },
     ...appRoutes,
     REDIRECT_MAIN,
     NOT_FOUND_ROUTE,
