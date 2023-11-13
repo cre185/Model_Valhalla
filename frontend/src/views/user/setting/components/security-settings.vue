@@ -1,5 +1,5 @@
 <template>
-  <a-list :bordered="false">
+  <a-list :bordered="false" class="list">
     <a-list-item>
       <a-list-item-meta>
         <template #avatar>
@@ -108,6 +108,7 @@
   import { useUserStore } from '@/store';
   import { getToken } from '@/utils/auth';
   import { useRouter } from 'vue-router';
+  import { updateInfo } from '@/api/user-info';
 
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
@@ -137,22 +138,17 @@
     const newUsername = userStore.username;
     if (newUsername !== oldUsername) {
       emit('changeName', newUsername!);
-      const updatedData = {
-        username: newUsername,
-      };
       userStore.setInfo({ username: newUsername });
       localStorage.setItem('userStore', JSON.stringify(userStore.$state));
       oldUsername = newUsername;
-      // 发送 PATCH 请求
-      axios
-        .patch(
-          `http://localhost:8000/user/update/${userStore.accountId}`,
-          updatedData
-        )
-        .then((response) => {})
-        .catch((error) => {
-          console.error(error);
-        });
+      updateInfo(
+        userStore.accountId!,
+        getToken()!,
+        {
+          key: newUsername!,
+        },
+        'username'
+      );
     }
   };
   const changePasswordFunc = () => {
@@ -161,6 +157,9 @@
 </script>
 
 <style scoped lang="less">
+  .list {
+    width: 50%;
+  }
   #input {
     margin-bottom: 20px;
   }

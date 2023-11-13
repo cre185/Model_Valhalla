@@ -48,7 +48,7 @@ export default {
   'userSetting.SecuritySettings.placeholder.username': '李好',
   'userSetting.SecuritySettings.form.label.password': '登录密码',
   'userSetting.SecuritySettings.placeholder.password':
-    '已设置。密码至少6位字符，支持数字、字母和除空格外的特殊字符，且必须同时包含数字和大小写字母。',
+    '已设置。密码由6-32位数字、字母或符号(_和-)组成',
   'userSetting.SecuritySettings.form.label.securityQuestion': '密保问题',
   'userSetting.SecuritySettings.placeholder.securityQuestion':
     '您暂未设置密保问题，密保问题可以有效的保护账号的安全。',
