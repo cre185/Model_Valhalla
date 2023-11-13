@@ -93,7 +93,6 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         data = result.data
         data['message'] = 'ok'
-        data['password'] = '********'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
     
@@ -104,7 +103,6 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         data = result.data
         data['message'] = 'ok'
-        data['password'] = '********'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
     
@@ -120,7 +118,6 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         data = result.data
         data['message'] = 'ok'
-        data['password'] = '********'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
     
@@ -160,7 +157,7 @@ class send_emailView(APIView):
             serializer.save()
             send_mail(
                 subject="Model_Valhalla 验证码",
-                message=("您的验证码为：" + str(data["code"])),
+                message=("您的验证码为：" + str(data["code"]+"，如果不是本人操作，请忽略此消息。")),
                 from_email=settings.EMAIL_FROM,
                 recipient_list=[data["email"]],
                 fail_silently=False
