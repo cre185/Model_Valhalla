@@ -31,4 +31,13 @@ export default {
   'change.email.form.title': '修改您的安全验证邮箱',
   'change.email.form.subtitle1': '请验证您的安全手机',
   'change.email.form.subtitle2': '请输入您新的安全邮箱并接受验证码',
+  'change.email.form.verify': '验证',
+  'change.email.form.back': '返回',
+  'change.phone.form.title': '修改您的安全验证手机',
+  'change.phone.form.subtitle1': '请验证您的安全手机',
+  'change.phone.form.subtitle2': '请输入您新的安全邮箱并接受验证码',
+  'change.phone.form.verify': '验证',
+  'change.phone.form.back': '返回',
+  'change.phone.form.change': '修改',
+  'change.phone.form.success': '修改成功',
 };

@@ -4,13 +4,34 @@
       :rules="phoneRules"
       :validate-trigger="['change', 'blur']"
       hide-label
+      v-if="props.input_type === 'mobile'"
   >
     <a-input
         v-model="model.mobile"
         :placeholder="$t('login.form.phone.placeholder')"
+        :style="{ 'pointer-events': props.mobile_read_only ? 'none' : 'auto' }"
+        @update:modelValue="modelListeners.updateMobile"
     >
       <template #prefix>
         <icon-phone />
+      </template>
+    </a-input>
+  </a-form-item>
+  <a-form-item
+      field="email"
+      :rules="emailRules"
+      :validate-trigger="['change', 'blur']"
+      hide-label
+      v-if="props.input_type === 'email'"
+  >
+    <a-input
+        v-model="model.email"
+        :placeholder="$t('register.form.email.placeholder')"
+        :style="{ 'pointer-events': props.email_read_only ? 'none' : 'auto' }"
+        @update:modelValue="modelListeners.updateEmail"
+    >
+      <template #prefix>
+        <icon-email />
       </template>
     </a-input>
   </a-form-item>
@@ -19,6 +40,7 @@
         v-model="model.code"
         :placeholder="$t('login.form.code.placeholder')"
         allow-clear
+        @update:modelValue="modelListeners.updateCode"
     >
       <template #prefix>
         <icon-message />
@@ -43,26 +65,37 @@
 </template>
 
 <script lang="ts" setup>
-import {getCurrentInstance, reactive} from "vue";
+import { getCurrentInstance, reactive } from "vue";
   import { useI18n } from 'vue-i18n';
   import useLoading from "@/hooks/loading";
-  import {useUserStore} from "@/store";
+  import { useUserStore } from "@/store";
 
-  const props = defineProps(['mobile', 'code', 'error_message']);
+  const props = defineProps(['input_type', 'mobile', 'email', 'mobile_read_only',
+                                    'email_read_only', 'code', 'error_message']);
   const { loading, setLoading } = useLoading();
   const { t } = useI18n();
   const userStore = useUserStore();
   const { proxy } = getCurrentInstance()!;
-  const emits = defineEmits(['update:mobile', 'update:code', 'update:error_message']);
 
   const model = reactive({
-    mobile: props.mobile,
+    mobile: props.mobile_read_only ? `${props.mobile.slice(0, 3)}${'*'.repeat(6)}${props.mobile.slice(-2)}` : props.mobile,
+    email: props.email_read_only ? `${props.mobile.slice(0, 3)}${'*'.repeat(props.email.length)}` : props.email,
     code: props.code
   });
 
   const modelListeners = {
-    updateMobile: (value: string) => emits('update:mobile', value),
-    updateCode: (value: string) => emits('update:code', value)
+    updateMobile (value: string) {
+      model.mobile = value;
+      proxy!.$emit('update:mobile', value);
+    },
+    updateEmail (value: string) {
+      model.email = value;
+      proxy!.$emit('update:email', value);
+    },
+    updateCode (value: string) {
+      model.code = value;
+      proxy!.$emit('update:code', value);
+    }
   };
 
   const codeInterval = reactive({
@@ -80,7 +113,12 @@ import {getCurrentInstance, reactive} from "vue";
           clearInterval(codeInterval.codeTimer);
         }
       }, 1000);
-      const res = await userStore.verifyPhone(props.mobile);
+      if(props.input_type === 'mobile'){
+        await userStore.verifyPhone(props.mobile);
+      }
+      else if(props.input_type === 'email'){
+        await userStore.verifyEmail(props.email);
+      }
     } catch (err) {
       proxy!.$emit('update:error_message.value', '(err as Error).message');
     } finally {
@@ -92,11 +130,30 @@ import {getCurrentInstance, reactive} from "vue";
     {
       validator: (value, callback) => {
         return new Promise((resolve) => {
+          if(props.mobile_read_only)
+            return;
           window.setTimeout(() => {
             if (value === '') {
               callback(t('login.form.phone.errMsg1'));
             } else if (!/1[3,4578][0-9]{9}/.test(value)) {
               callback(t('login.form.phone.errMsg2'));
+            }
+            resolve();
+          }, 1000);
+        });
+      },
+    },
+  ];
+
+  const emailRules = [
+    {
+      required: false,
+      validator: (value, callback) => {
+        return new Promise((resolve) => {
+          value = model.email;
+          window.setTimeout(() => {
+            if (!/.+@.+\..+/.test(value) && value !== '') {
+              callback(proxy.$t('register.form.email.invalid'));
             }
             resolve();
           }, 1000);
@@ -111,20 +168,22 @@ import {getCurrentInstance, reactive} from "vue";
       validator: (value, callback) => {
         return new Promise((resolve) => {
           window.setTimeout(() => {
+            value = model.code;
             if (value === '') {
               callback(t('register.form.code.errMsg1'));
             } else if (!/\d{6}/.test(value)) {
-              callback(t('login.form.code.errMsg2'));
+              callback(t('register.form.code.errMsg2'));
             }
             resolve();
           }, 1000);
         });
       },
-      trigger: ['change', 'blur'],
     },
   ];
 </script>
 
 <style scoped>
-
+  ::v-deep(.arco-input-append) {
+    padding: 0;
+  }
 </style>

@@ -318,6 +318,23 @@
       trigger: ['change', 'blur'],
     },
   ];
+
+  const emailRules = [
+    {
+      required: false,
+      validator: (value, callback) => {
+        return new Promise((resolve) => {
+          value = registerInfo.email;
+          window.setTimeout(() => {
+            if (!/.+@.+\..+/.test(value) && value !== '') {
+              callback(proxy.$t('register.form.email.invalid'));
+            }
+            resolve();
+          }, 1000);
+        });
+      },
+    },
+  ];
 </script>
 <style lang="less" scoped>
   .login-form {

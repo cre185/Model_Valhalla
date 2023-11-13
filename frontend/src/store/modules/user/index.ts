@@ -6,10 +6,12 @@ import {
   getUserInfo,
   verifyPhone as registerVerifyPhone,
   verifyCode as registerVerifyCode,
+  verifyEmail as registerVerifyEmail,
+  verifyEmailCode as registerVerifyEmailCode,
   LoginData,
   phoneVerifyData,
   registerData,
-  register,
+  register, emailVerifyData,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
@@ -99,11 +101,20 @@ const useUserStore = defineStore('user', {
     // Verify phone number
     async verifyPhone(phone: string) {
       const data = { mobile: phone };
-      const res = await registerVerifyPhone(data);
+      await registerVerifyPhone(data);
+    },
+
+    async verifyEmail(emailAddress: string) {
+      const data = { email: emailAddress };
+      await registerVerifyEmail(data);
     },
 
     async verifyCode(data: phoneVerifyData) {
-      const res = await registerVerifyCode(data);
+      await registerVerifyCode(data);
+    },
+
+    async verifyEmailCode(data: emailVerifyData) {
+      await registerVerifyEmailCode(data);
     },
 
     async register(data: registerData) {

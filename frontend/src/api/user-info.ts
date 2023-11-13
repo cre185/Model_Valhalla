@@ -86,6 +86,18 @@ export async function getEmail(userId: string, jwt: string): Promise<string> {
   }
 }
 
-export async function updateUserInfo(updateData: any){
+export async function updateUserInfo(userId: string, jwt: string, data: any){
+  try {
+    const response = await axios.patch(apiCat(`/user/update/${userId}`),
+        data,
+        {
+        headers: {
+          Authorization: jwt,
+      },
+    });
 
+  } catch (error) {
+    console.error('Error changing user info:', error);
+    throw error;
+  }
 }

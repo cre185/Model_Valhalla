@@ -13,6 +13,11 @@ export interface phoneVerifyData {
   code: string;
 }
 
+export interface emailVerifyData {
+  email: string;
+  code: string;
+}
+
 export interface registerData {
   username: string;
   password: string;
@@ -51,8 +56,16 @@ export function verifyPhone(data: { mobile: string }) {
   return axios.post(apiCat('/user/send_message'), data);
 }
 
+export function verifyEmail(data: { email: string }) {
+  return axios.post(apiCat('/user/send_email'), data);
+}
+
 export function verifyCode(data: phoneVerifyData) {
   return axios.post(apiCat('/user/verify_code'), data);
+}
+
+export function verifyEmailCode(data: emailVerifyData) {
+  return axios.post(apiCat('/user/verify_email'), data);
 }
 
 export function register(data: any) {
