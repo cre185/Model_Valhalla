@@ -25,11 +25,11 @@ class loginView(APIView):
         except:
             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
         jwt = generate_jwt({"user_id": user.id, "is_admin": user.is_admin})
-        return Response({"jwt": jwt, 
+        return Response({"jwt": jwt,
                         "userId": user.id,
                         "username": user.username,
                         "message": "ok"}, status=status.HTTP_200_OK)
-    
+
 class login_with_verify_codeView(APIView):
     def post(self, request):
         data = JSONParser().parse(request)
@@ -40,7 +40,7 @@ class login_with_verify_codeView(APIView):
             except:
                 return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
             jwt = generate_jwt({"user_id": user.id, "is_admin": user.is_admin})
-            return Response({"jwt": jwt, 
+            return Response({"jwt": jwt,
                             "userId": user.id,
                             "username": user.username,
                             "message": "ok"}, status=status.HTTP_200_OK)
@@ -52,7 +52,7 @@ class send_messageView(APIView):
         data = JSONParser().parse(request)
         data["code"] = random.randint(100000, 999999)
         serializer = VerifyMsgSerializer(data=data)
-        
+
         if serializer.is_valid():
             serializer.save()
             send = send_msg()
@@ -90,7 +90,7 @@ class registerView(mixins.CreateModelMixin, generics.GenericAPIView):
     def post(self, request):
         headers = self.create(request)
         return Response({"message": "ok"}, status=status.HTTP_201_CREATED, headers=headers)
-    
+
 class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -105,7 +105,7 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
-    
+
     @login_required
     def patch(self, request, *args, **kwargs):
         result = self.partial_update(request, *args, **kwargs)
@@ -115,12 +115,12 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
-    
+
 class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "id"
-    
+
     @login_required
     def get(self, request, *args, **kwargs):
         result = self.retrieve(request, *args, **kwargs)
@@ -130,7 +130,7 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
-    
+
 class updateAvatarView(APIView):
     @login_required
     def post(self, request):
@@ -144,30 +144,30 @@ class logoutView(APIView):
     @login_required
     def post(self, request):
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
-    
+
 class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = "id"
-    
+
     @login_required
     def delete(self, request, *args, **kwargs):
         if request.user.id != int(kwargs['id']) and not request.user.is_admin:
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         result = self.destroy(request, *args, **kwargs)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
-    
+
 class send_emailView(APIView):
     def post(self, request):
         data = JSONParser().parse(request)
         data["code"] = random.randint(100000, 999999)
         serializer = VerifyEmailSerializer(data=data)
-        
+
         if serializer.is_valid():
             serializer.save()
             send_mail(
                 subject="Model_Valhalla 验证码",
-                message=("您的验证码为：" + str(data["code"]+"，如果不是本人操作，请忽略此消息。")),
+                message=("您的验证码为：" + str(data["code"])+"，如果不是本人操作，请忽略此消息。"),
                 from_email=settings.EMAIL_FROM,
                 recipient_list=[data["email"]],
                 fail_silently=False
