@@ -26,7 +26,7 @@
   >
     <a-input
         v-model="model.email"
-        :placeholder="$t('register.form.email.placeholder')"
+        :placeholder="$t('change.form.email.placeholder')"
         :style="{ 'pointer-events': props.email_read_only ? 'none' : 'auto' }"
         @update:modelValue="modelListeners.updateEmail"
     >
@@ -71,14 +71,18 @@ import { getCurrentInstance, reactive } from "vue";
   import { useUserStore } from "@/store";
 
   const props = defineProps(['input_type', 'mobile', 'email', 'mobile_read_only',
-                                    'email_read_only', 'code', 'error_message']);
+    'email_read_only', 'code', 'error_message']);
   const { loading, setLoading } = useLoading();
   const { t } = useI18n();
   const userStore = useUserStore();
   const { proxy } = getCurrentInstance()!;
+  let modifiedMobile = props.mobile
+  if(props.mobile !== undefined){
+    modifiedMobile = `${props.mobile.slice(0, 3)}${'*'.repeat(6)}${props.mobile.slice(-2)}`;
+  }
 
   const model = reactive({
-    mobile: props.mobile_read_only ? `${props.mobile.slice(0, 3)}${'*'.repeat(6)}${props.mobile.slice(-2)}` : props.mobile,
+    mobile: props.mobile_read_only ? modifiedMobile : props.mobile,
     email: props.email_read_only ? `${props.mobile.slice(0, 3)}${'*'.repeat(props.email.length)}` : props.email,
     code: props.code
   });

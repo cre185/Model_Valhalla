@@ -3,6 +3,8 @@ import localeLogin from '@/views/login/locale/en-US';
 import localeRegister from '@/views/register/locale/en-US';
 import localeChange from '@/views/changeInfo/locale/en-US';
 
+import localeRanking from '@/views/ranking/locale/en-US';
+
 import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
 import localeMonitor from '@/views/dashboard/monitor/locale/en-US';
@@ -31,6 +33,10 @@ import localeUserSetting from '@/views/user/setting/locale/en-US';
 import localeSettings from './en-US/settings';
 
 export default {
+  'menu.home': 'Homepage',
+  'menu.home.profile': 'Homepage-Details',
+  'menu.ranking': 'Leaderboard',
+  'menu.ranking.profile': 'Leaderboard-Details',
   'menu.dashboard': 'Dashboard',
   'menu.server.dashboard': 'Dashboard-Server',
   'menu.server.workplace': 'Workplace-Server',
@@ -51,6 +57,7 @@ export default {
   ...localeLogin,
   ...localeRegister,
   ...localeChange,
+  ...localeRanking,
   ...localeWorkplace,
 
   ...localeMonitor,

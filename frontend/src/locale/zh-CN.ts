@@ -3,6 +3,8 @@ import localeLogin from '@/views/login/locale/zh-CN';
 import localeRegister from '@/views/register/locale/zh-CN';
 import localeChange from '@/views/changeInfo/locale/zh-CN';
 
+import localeRanking from '@/views/ranking/locale/zh-CN';
+
 import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
 
 import localeMonitor from '@/views/dashboard/monitor/locale/zh-CN';
@@ -33,6 +35,10 @@ import localeUserSetting from '@/views/user/setting/locale/zh-CN';
 import localeSettings from './zh-CN/settings';
 
 export default {
+  'menu.home': '主页',
+  'menu.home.profile': '主页详情',
+  'menu.ranking': '排行榜',
+  'menu.ranking.profile': '排行榜详情',
   'menu.dashboard': '仪表盘',
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
@@ -53,6 +59,7 @@ export default {
   ...localeLogin,
   ...localeRegister,
   ...localeChange,
+  ...localeRanking,
   ...localeWorkplace,
 
   ...localeMonitor,

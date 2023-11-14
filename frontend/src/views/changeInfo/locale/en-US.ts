@@ -1,6 +1,7 @@
 export default {
   'change.form.title': 'Set your new password',
   'change.form.phone.placeholder': 'Please input your phone number',
+  'change.form.email.placeholder': 'Please input your email address',
   'login.form.loginWay.code': 'By code',
   'login.form.userName.errMsg': 'Username or email cannot be empty',
   'login.form.password.errMsg': 'Password cannot be empty',

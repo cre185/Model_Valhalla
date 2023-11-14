@@ -1,6 +1,7 @@
 export default {
   'change.form.title': '设置新密码',
   'change.form.phone.placeholder': '请输入手机号',
+  'change.form.email.placeholder': '请输入您的邮箱',
   'login.form.loginWay.password': '密码登录',
   'login.form.loginWay.code': '验证码登录',
   'login.form.userName.errMsg': '用户名或邮箱不能为空',

@@ -58,7 +58,7 @@
               >
                 {{ $t('login.form.rememberPassword') }}
               </a-checkbox>
-              <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+              <a-link @click="router.push({name:'ChangeInfo', params:{toChange:'password', mobileReadOnly:0}})">{{ $t('login.form.forgetPassword') }}</a-link>
             </div>
             <a-button type="primary" html-type="submit" long :loading="loading">
               {{ $t('login.form.login') }}
@@ -319,22 +319,6 @@
     },
   ];
 
-  const emailRules = [
-    {
-      required: false,
-      validator: (value, callback) => {
-        return new Promise((resolve) => {
-          value = registerInfo.email;
-          window.setTimeout(() => {
-            if (!/.+@.+\..+/.test(value) && value !== '') {
-              callback(proxy.$t('register.form.email.invalid'));
-            }
-            resolve();
-          }, 1000);
-        });
-      },
-    },
-  ];
 </script>
 <style lang="less" scoped>
   .login-form {

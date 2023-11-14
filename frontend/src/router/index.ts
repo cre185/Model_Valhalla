@@ -32,9 +32,10 @@ const router = createRouter({
       },
     },
     {
-      path: '/change_info/:toChange',
+      path: '/change_info/:toChange/:mobileReadOnly?',
       name: 'ChangeInfo',
       component: () => import('@/views/changeInfo/index.vue'),
+      props: true,
       meta: {
         requiresAuth: false,
       },
