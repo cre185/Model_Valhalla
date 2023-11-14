@@ -18,7 +18,9 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = LLMs.objects.all()
     serializer_class = LLMsSerializer
 
+    @login_required
     def post(self, request):
+        request.data['author'] = request.user.id
         headers = self.create(request)
         llm = LLMs.objects.get(id=headers.data['id'])
         for data in dataset.Dataset.objects.all():
@@ -37,7 +39,41 @@ class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid llm id"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
+    queryset = LLMs.objects.all()
+    serializer_class = LLMsSerializer
+    lookup_field = "id"
+
+    @admin_required
+    def put(self, request, *args, **kwargs):
+        result = self.update(request, *args, **kwargs)
+        data = result.data
+        data['message'] = 'ok'
+        data['add_time'] = data['add_time'].split('T')[0]
+        return Response(data, status=status.HTTP_200_OK)
     
+    @admin_required
+    def patch(self, request, *args, **kwargs):
+        result = self.partial_update(request, *args, **kwargs)
+        data = result.data
+        data['message'] = 'ok'
+        data['add_time'] = data['add_time'].split('T')[0]
+        return Response(data, status=status.HTTP_200_OK)
+    
+class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = LLMs.objects.all()
+    serializer_class = LLMsSerializer
+    lookup_field = "id"
+    
+    @login_required
+    def get(self, request, *args, **kwargs):
+        result = self.retrieve(request, *args, **kwargs)
+        data = result.data
+        data['message'] = 'ok'
+        data['add_time'] = data['add_time'].split('T')[0]
+        return Response(data, status=status.HTTP_200_OK)
+
 class testingView(APIView):
     @login_required
     def post(self, request):

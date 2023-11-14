@@ -42,6 +42,7 @@ class LLMsModelTests(TestCase):
         self.assertEqual(json_data['llmId'], 1)
         self.assertEqual(LLMs.objects.count(), 1)
         self.assertEqual(LLMs.objects.get(id=1).name, "sometesting")
+        self.assertEqual(LLMs.objects.get(id=1).author, User.objects.get(username="testuser"))
         # name already exists
         response=self.client.post(
             '/testing/create', 
@@ -92,3 +93,104 @@ class LLMsModelTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(LLMs.objects.count(), 0)
+
+    def test_update(self):
+        # the correct case
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/testing/create', 
+            {
+                "name":"sometesting",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response=self.client.patch(
+            '/testing/update/1', 
+            {
+                "name":"sometesting2",
+                "description":"somedescription",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(LLMs.objects.count(), 1)
+        self.assertEqual(LLMs.objects.get(id=1).name, "sometesting2")
+        self.assertEqual(LLMs.objects.get(id=1).description, "somedescription")
+        # llm does not exist
+        response=self.client.patch(
+            '/testing/update/2', 
+            {
+                "name":"sometesting2",
+                "description":"somedescription",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 404)
+
+    def test_retrieve(self):
+        # the correct case
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/testing/create', 
+            {
+                "name":"sometesting",
+                "description":"somedescription",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response=self.client.get(
+            '/testing/retrieve/1', 
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(LLMs.objects.count(), 1)
+        self.assertEqual(json_data['name'], "sometesting")
+        self.assertEqual(json_data['description'], "somedescription")
+        # llm does not exist
+        response=self.client.get(
+            '/testing/retrieve/2', 
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 404)
+
+class TestingModelTests(TestCase):
+    def setUp(self):
+        user=User(
+            username="testuser",
+            password="testpassword",
+            mobile="12345678901",
+            is_admin=True,
+        )
+        user.save()
+        self.client=APIClient()
+    
+    def test_testing(self):
+        pass

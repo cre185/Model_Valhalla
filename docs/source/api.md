@@ -22,15 +22,20 @@
   - [数据集部分](#数据集部分)
     - [create](#create)
     - [delete](#delete-1)
+    - [retrieve](#retrieve-1)
+    - [update](#update-1)
     - [upload](#upload)
   - [排行榜部分](#排行榜部分)
     - [clear](#clear)
     - [list](#list)
-    - [retrieve](#retrieve-1)
-    - [update](#update-1)
+    - [retrieve](#retrieve-2)
+    - [update](#update-2)
   - [模型测试部分](#模型测试部分)
     - [create](#create-1)
     - [delete](#delete-2)
+    - [retrieve](#retrieve-3)
+    - [testing](#testing)
+    - [update](#update-3)
   - [额外需求](#额外需求)
     - [jwt](#jwt)
     - [admin\_required](#admin_required)
@@ -296,6 +301,39 @@ status=200
 ```python
 status=400
 ```
+#### retrieve  
+**请求方式**：GET  
+**请求URL**：`/dataset/retrieve/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* ID异常  
+```python
+status=404
+```
+#### update  
+**请求方式**：PUT/PATCH  
+**请求URL**：`/dataset/update/<id>`  
+**请求参数**：使用PUT时为字符串name，字符串description等字段；使用PATCH时字段均为可选  
+**额外需求**：admin_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* ID异常  
+```python
+status=404
+```
 #### upload  
 **请求方式**：POST  
 **请求URL**：`/dataset/upload`  
@@ -421,6 +459,55 @@ status=200
 * ID异常  
 ```python
 status=400
+```
+#### retrieve  
+**请求方式**：GET  
+**请求URL**：`/testing/retrieve/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* ID异常  
+```python
+status=404
+```
+#### testing  
+**请求方式**：POST  
+**请求URL**：`/testing/testing`  
+**请求参数**：均为可选：字符串llmId，字符串datasetId，测试筛选样式style  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+**特殊说明**：测试筛选样式style支持以下值：  
+* `fill`：在llmId和datasetId筛选后，仅针对表格中还未被测试（也即credit为null）的单元格进行测试。  
+
+另外，该函数仍在试验阶段。  
+#### update  
+**请求方式**：PUT/PATCH  
+**请求URL**：`/testing/update/<id>`  
+**请求参数**：使用PUT时为字符串name，字符串api_url等字段；使用PATCH时字段均为可选  
+**额外需求**：admin_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* ID异常  
+```python
+status=404
 ```
 ***
 ### 额外需求  

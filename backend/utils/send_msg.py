@@ -9,6 +9,7 @@ from alibabacloud_dysmsapi20170525 import models as dysmsapi_20170525_models
 from alibabacloud_tea_util import models as util_models
 from alibabacloud_tea_util.client import Client as UtilClient
 
+from Model_Valhalla.settings import ACCESS_KEY_ID, ACCESS_KEY_SECRET
 
 class send_msg():
     def __init__(self):
@@ -40,7 +41,7 @@ class send_msg():
     def send_sms(
         code, mobile
     ) -> None:
-        client = send_msg.create_client('LTAI5tHGsxM3XG7zoCaJHH7K', '9tl5euDkZcI727MF5gUw92IXIhiBIW')
+        client = send_msg.create_client(ACCESS_KEY_ID, ACCESS_KEY_SECRET)
         send_sms_request = dysmsapi_20170525_models.SendSmsRequest(
             phone_numbers=mobile,
             sign_name='模型竞技场',
