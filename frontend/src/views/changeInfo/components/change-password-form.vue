@@ -9,51 +9,16 @@
       layout="vertical"
       @submit="handleSubmit"
     >
-      <a-form-item
-        field="mobile"
-        :rules="phoneRules"
-        :validate-trigger="['change', 'blur']"
-        hide-label
-      >
-        <a-input
-          v-model="userChangeInfo.mobile"
-          :placeholder="$t('change.form.phone.placeholder')"
-        >
-          <template #prefix>
-            <icon-phone />
-          </template>
-        </a-input>
-      </a-form-item>
-      <a-form-item
-        field="code"
-        :rules="codeRules"
-        :validate-trigger="['change', 'blur']"
-        hide-label
-      >
-        <a-input
-          v-model="userChangeInfo.code"
-          :placeholder="$t('change.form.code.placeholder')"
-          allow-clear
-        >
-          <template #prefix>
-            <icon-message />
-          </template>
-          <template #append>
-            <a-button
-              v-if="codeInterval.codeInterval < 0"
-              type="primary"
-              @click="handleSendCode"
-            >
-              {{ $t('change.form.code.buttonText1') }}
-            </a-button>
-            <a-button v-if="codeInterval.codeInterval >= 0">
-              {{
-                codeInterval.codeInterval + $t('change.form.code.buttonText2')
-              }}
-            </a-button>
-          </template>
-        </a-input>
-      </a-form-item>
+      <PhoneInputForm :input_type="'mobile'"
+                      v-model:mobile="userChangeInfo.mobile"
+                      :mobile_read_only="$route.params.mobileReadOnly === '1'"
+                      :email_read_only="false"
+                      v-model:code="userChangeInfo.code"
+                      v-model:error_message="errorMessage"
+                      @update:mobile="(value: string) => { userChangeInfo.mobile = value;}"
+                      @update:code="(value: string) => { userChangeInfo.code = value;}"
+                      @update:error_message="(value: string) => { errorMessage = value;}"
+      />
       <a-form-item
         field="firstPassword"
         :rules="firstPasswordRules"
@@ -123,6 +88,7 @@
 
 <script lang="ts" setup>
   import { ref, reactive, getCurrentInstance, onMounted } from 'vue';
+  import PhoneInputForm from "@/views/changeInfo/components/verification-input-form.vue";
   import { useRouter } from 'vue-router';
   import { Modal } from '@arco-design/web-vue';
   import { ValidatedError } from '@arco-design/web-vue/es/form/interface';
@@ -214,66 +180,6 @@
     }
   };
 
-  const handleSendCode = async () => {
-    try {
-      codeInterval.codeInterval = 60;
-      codeInterval.codeTimer = setInterval(() => {
-        if (codeInterval.codeInterval >= 0) {
-          codeInterval.codeInterval -= 1;
-        } else {
-          clearInterval(codeInterval.codeTimer);
-        } //
-      }, 1000);
-      const res = await userStore.verifyPhone(userChangeInfo.mobile!);
-    } catch (err) {
-      errorMessage.value = (err as Error).message;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const phoneRules = [
-    {
-      validator: (
-        value: string | undefined,
-        callback: (argument: string) => void
-      ) => {
-        return new Promise((resolve) => {
-          window.setTimeout(() => {
-            if (value === undefined) {
-              callback(proxy.$t('change.form.phone.errMsg1'));
-            } else if (!/^1[3-9]\d{9}$/.test(value)) {
-              callback(proxy.$t('change.form.phone.errMsg3'));
-            } else if (value !== userStore.phone) {
-              callback(proxy.$t('change.form.phone.errMsg2'));
-            }
-            resolve(undefined);
-          }, 1000);
-        });
-      },
-    },
-  ];
-
-  const codeRules = [
-    {
-      validator: (
-        value: string | undefined,
-        callback: (argument: string) => void
-      ) => {
-        return new Promise((resolve) => {
-          window.setTimeout(() => {
-            if (value === undefined) {
-              callback(proxy.$t('change.form.code.errMsg1'));
-            } else if (!/\d{6}/.test(value)) {
-              callback(proxy.$t('change.form.code.errMsg2'));
-            }
-            resolve(undefined);
-          }, 1000);
-        });
-      },
-    },
-  ];
-
   const firstPasswordRules = [
     {
       validator: (
@@ -286,7 +192,7 @@
               callback(proxy.$t('change.form.password.errMsg1'));
             } else if (!/^[a-zA-Z0-9_-]{6,32}$/.test(value)) {
               callback(proxy.$t('change.form.password.errMsg2'));
-            } else if (value === oldPassword.value) {
+            } else if (oldPassword.value !== '' && value === oldPassword.value) {
               callback(proxy.$t('change.form.password.errMsg3'));
             }
             resolve(undefined);
@@ -320,7 +226,10 @@
     router.back();
   };
   onMounted(async () => {
-    oldPassword.value = await getPassword(userStore.accountId!, getToken()!);
+    if (userStore.accountId !== undefined)
+    {
+      oldPassword.value = await getPassword(userStore.accountId, getToken()!);
+    }
   });
 </script>
 

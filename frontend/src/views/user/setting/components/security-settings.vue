@@ -152,7 +152,7 @@
     }
   };
   const changePasswordFunc = () => {
-    router.push({ name: 'ChangeInfo', params: { toChange: 'password'}});
+    router.push({ name: 'ChangeInfo', params: { toChange: 'password', mobileReadOnly:1}});
   };
   const changePhoneFunc = () => {
     router.push({ name: 'ChangeInfo', params: { toChange: 'phone'}});

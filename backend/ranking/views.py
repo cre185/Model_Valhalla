@@ -1,5 +1,5 @@
-from backend.utils.jwt import login_required
-from backend.utils.admin_required import admin_required
+from utils.jwt import login_required
+from utils.admin_required import admin_required
 from .serializers import CreditSerializer
 from .models import Credit
 from rest_framework import status
