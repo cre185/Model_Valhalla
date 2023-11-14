@@ -10,6 +10,7 @@ class DatasetModelTests(TestCase):
             username="testuser",
             password="testpassword",
             mobile="12345678901",
+            is_admin=True,
         )
         user.save()
         self.client=APIClient()
@@ -45,6 +46,43 @@ class DatasetModelTests(TestCase):
             {
                 "name":"somedataset",
             },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code,400)
+
+    def test_delete(self):
+        # the correct case
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/dataset/create', 
+            {
+                "name":"somedataset",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response=self.client.delete(
+            '/dataset/delete/1', 
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(len(Dataset.objects.all()),0)
+        # the dataset doesn't exist
+        response=self.client.delete(
+            '/dataset/delete/1', 
             HTTP_AUTHORIZATION=jwt,
             format="json"
         )

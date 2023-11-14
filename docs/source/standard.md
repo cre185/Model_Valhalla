@@ -26,3 +26,17 @@ string,string,string,string,string,string
 该示例包含两个实际的测试数据，第一个问题的答案为B，第二个问题的答案为D。  
 #### 主观题数据集  
 待续  
+### 语言模型   
+项目中的语言模型需要提供以下内容：  
+* api_url：一个url，用于访问模型的生成功能  
+* api_headers：模型接口必需的headers，为JSON格式  
+* api_data：模型接口的请求内容格式，为JSON格式，其中应该包含一个值为"$PROMPT"的键，该键应该是语言模型生成回答基于的字串      
+* api_RPM：可选，一个整数，表示模型每分钟可以被请求进行生成的次数，不指定时默认无限制  
+
+作为示例，下面给出chatgpt3.5的api接口在上述字段中的对应值：  
+```python
+api_url = 'https://api.openai.com/v1/chat/completions'
+api_headers = '{"Authorization":"Bearer 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"}'
+api_data = '{"model": "gpt-3.5-turbo","messages": [{"role": "user", "content": "$PROMPT"}],"temperature": 0.7}'
+api_RPM = 3
+```

@@ -34,3 +34,28 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
     def get(self, request):
         result = self.list(request)
         return Response({'message': 'ok', 'data': result.data}, status=status.HTTP_200_OK)
+    
+class retrieveView(APIView):
+    def post(self, request):
+        data = request.data
+        dataset_id = data['datasetId']
+        llm_id = data['llmId']
+        try:
+            target = Credit.objects.get(dataset_id=dataset_id, LLM_id=llm_id)
+            return Response({"message": "ok", "credit": target.credit}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid datasetId or llmId"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class clearView(APIView):
+    @admin_required
+    def post(self, request):
+        data = request.data
+        dataset_id = data['datasetId']
+        llm_id = data['llmId']
+        try:
+            target = Credit.objects.get(dataset_id=dataset_id, LLM_id=llm_id)
+            target.credit = None
+            target.save()
+        except:
+            return Response({"message": "Invalid datasetId or llmId"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
