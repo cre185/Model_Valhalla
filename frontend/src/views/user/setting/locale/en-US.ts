@@ -62,6 +62,7 @@ export default {
     'You have not set a mailbox yet. The mailbox binding can be used to retrieve passwords and receive notifications.',
   'userSetting.SecuritySettings.button.settings': 'Settings',
   'userSetting.SecuritySettings.button.update': 'Update',
+  'userSetting.SecuritySettings.button.bind': 'Bind',
   'userSetting.certification.title.enterprise':
     'Enterprise Real Name Authentication',
   'userSetting.certification.extra.enterprise':
@@ -91,4 +92,6 @@ export default {
   'userSetting.certification.columns.operation': 'Operation',
   'userSetting.certification.button.check': 'Check',
   'userSetting.certification.button.withdraw': 'Withdraw',
+  'userSetting.certification.button.bound': 'Already bound: ',
+  'userSetting.certification.button.email.not_bound': 'Email not bound yet',
 };

@@ -59,6 +59,7 @@ export default {
     '已绑定：li***@mails.tsinghua.edu.cn',
   'userSetting.SecuritySettings.button.settings': '设置',
   'userSetting.SecuritySettings.button.update': '修改',
+  'userSetting.SecuritySettings.button.bind': '修改',
   'userSetting.certification.title.enterprise': '企业实名认证',
   'userSetting.certification.extra.enterprise': '修改认证主体',
   'userSetting.certification.label.accountType': '账号类型',
@@ -81,4 +82,6 @@ export default {
   'userSetting.certification.columns.operation': '操作',
   'userSetting.certification.button.check': '查看',
   'userSetting.certification.button.withdraw': '撤回',
+  'userSetting.certification.button.bound': '已绑定：',
+  'userSetting.certification.button.email.not_bound': '邮箱未绑定',
 };

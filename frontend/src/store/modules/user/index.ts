@@ -118,16 +118,7 @@ const useUserStore = defineStore('user', {
     },
 
     async register(data: registerData) {
-      const modifiedData =
-        data.email === ''
-          ? {
-              username: data.username,
-              password: data.password,
-              mobile: data.mobile,
-              is_admin: data.is_admin,
-            }
-          : data;
-      const res = await register(modifiedData);
+      await register(data);
     },
   },
 });

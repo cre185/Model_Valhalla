@@ -82,11 +82,11 @@
         <template #description>
           <div v-if="userStore.email" class="content">
             <a-typography-paragraph v-model="userStore.email">
-              已绑定：{{ userStore.email }}
+              {{ $t('userSetting.certification.button.bound') + userStore.email }}
             </a-typography-paragraph>
           </div>
-          <div v-else class="content">
-            <a-typography-paragraph> 未绑定邮箱 </a-typography-paragraph>
+          <div v-else class="content">$t('userSetting.certification.button.email.not_bound')
+            <a-typography-paragraph> {{  }} </a-typography-paragraph>
           </div>
           <div v-if="userStore.email" class="operation">
             <a-link @click="changeEmailFunc">
@@ -94,7 +94,7 @@
             </a-link>
           </div>
           <div v-else class="operation">
-            <a-link @click="changeEmailFunc"> 绑定 </a-link>
+            <a-link @click="changeEmailFunc"> {{ $t('userSetting.SecuritySettings.button.update') }} </a-link>
           </div>
         </template>
       </a-list-item-meta>

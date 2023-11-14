@@ -139,17 +139,6 @@
           </template>
         </a-input>
       </a-form-item>
-      <a-form-item field="email" :rules="emailRules" hide-label>
-        <a-input
-          v-model="registerInfo.email"
-          :placeholder="$t('register.form.email.placeholder')"
-          allow-clear
-        >
-          <template #prefix>
-            <icon-email />
-          </template>
-        </a-input>
-      </a-form-item>
       <a-space :size="16" direction="vertical">
         <div class="register-form-password-actions">
           <a-checkbox
@@ -204,13 +193,11 @@
     username: '',
     password: '',
     mobile: '',
-    email: '',
   });
   const registerInfo = reactive({
     username: registerConfig.value.username,
     password: registerConfig.value.password,
     mobile: registerConfig.value.mobile,
-    email: registerConfig.value.email,
   });
   const acceptAgreementInfo = reactive({
     acceptAgreement: false,
@@ -411,22 +398,6 @@
     },
   ];
 
-  const emailRules = [
-    {
-      required: false,
-      validator: (value, callback) => {
-        return new Promise((resolve) => {
-          value = registerInfo.email;
-          window.setTimeout(() => {
-            if (!/.+@.+\..+/.test(value) && value !== '') {
-              callback(proxy.$t('register.form.email.invalid'));
-            }
-            resolve();
-          }, 1000);
-        });
-      },
-    },
-  ];
 </script>
 
 <style lang="less" scoped>

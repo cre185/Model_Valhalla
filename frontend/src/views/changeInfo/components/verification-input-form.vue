@@ -76,9 +76,13 @@ import { getCurrentInstance, reactive } from "vue";
   const { t } = useI18n();
   const userStore = useUserStore();
   const { proxy } = getCurrentInstance()!;
+  let modifiedMobile = props.mobile
+  if(props.mobile !== undefined){
+    modifiedMobile = `${props.mobile.slice(0, 3)}${'*'.repeat(6)}${props.mobile.slice(-2)}`;
+  }
 
   const model = reactive({
-    mobile: props.mobile_read_only ? `${props.mobile.slice(0, 3)}${'*'.repeat(6)}${props.mobile.slice(-2)}` : props.mobile,
+    mobile: props.mobile_read_only ? modifiedMobile : props.mobile,
     email: props.email_read_only ? `${props.mobile.slice(0, 3)}${'*'.repeat(props.email.length)}` : props.email,
     code: props.code
   });
