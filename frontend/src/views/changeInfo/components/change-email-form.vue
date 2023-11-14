@@ -67,7 +67,7 @@
   import { useUserStore } from '@/store';
   import useLoading from '@/hooks/loading';
   import {phoneVerifyData, emailVerifyData, verifyCode, verifyEmailCode } from '@/api/user';
-  import {updateUserInfo} from "@/api/user-info";
+  import { updateInfo } from "@/api/user-info";
   import {getToken} from "@/utils/auth";
   import { Modal } from '@arco-design/web-vue';
 
@@ -120,7 +120,7 @@
       setLoading(true);
       try {
         await verifyEmailCode({email: changedSecurityEmailVerification.email, code: changedSecurityEmailVerification.code} as emailVerifyData);
-        await updateUserInfo(userStore.accountId!, getToken()!, {email: changedSecurityEmailVerification.email});
+        await updateInfo(userStore.accountId!, getToken()!, {key: changedSecurityEmailVerification.email}, 'email');
         userStore.email = changedSecurityEmailVerification.email;
         localStorage.setItem('userStore', JSON.stringify(userStore.$state));
         let returnInterval = 3;
