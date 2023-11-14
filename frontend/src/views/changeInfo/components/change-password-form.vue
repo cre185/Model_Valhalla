@@ -182,8 +182,8 @@
         let returnInterval = 3;
         let returnTimer: ReturnType<typeof setInterval> | undefined;
         const modal = Modal.success({
-          title: t('change.form.change.success'),
-          content: '',
+          title: '',
+          content: t('change.form.change.success'),
           okText: t('change.form.return'),
           onOpen: () => {
             returnTimer = setInterval(() => {

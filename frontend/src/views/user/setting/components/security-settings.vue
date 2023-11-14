@@ -94,7 +94,7 @@
             </a-link>
           </div>
           <div v-else class="operation">
-            <a-link> 绑定 </a-link>
+            <a-link @click="changeEmailFunc"> 绑定 </a-link>
           </div>
         </template>
       </a-list-item-meta>
