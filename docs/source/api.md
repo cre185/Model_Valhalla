@@ -21,12 +21,16 @@
     - [verify\_email](#verify_email)
   - [数据集部分](#数据集部分)
     - [create](#create)
+    - [delete](#delete-1)
     - [upload](#upload)
   - [排行榜部分](#排行榜部分)
+    - [clear](#clear)
     - [list](#list)
+    - [retrieve](#retrieve-1)
     - [update](#update-1)
   - [模型测试部分](#模型测试部分)
     - [create](#create-1)
+    - [delete](#delete-2)
   - [额外需求](#额外需求)
     - [jwt](#jwt)
     - [admin\_required](#admin_required)
@@ -275,6 +279,23 @@ status=201
 ```python
 status=400
 ```
+#### delete  
+**请求方式**：DELETE  
+**请求URL**：`/dataset/delete/<id>`  
+**请求参数**：无  
+**额外需求**：admin_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* ID异常  
+```python
+status=400
+```
 #### upload  
 **请求方式**：POST  
 **请求URL**：`/dataset/upload`  
@@ -295,6 +316,23 @@ status=400
 ```
 ***
 ### 排行榜部分  
+#### clear  
+**请求方式**：POST  
+**请求URL**：`/ranking/clear`  
+**请求参数**：字符串datasetId，字符串llmId  
+**额外需求**：admin_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 #### list  
 **请求方式**：GET  
 **请求URL**：`/ranking/list`  
@@ -313,6 +351,19 @@ status=400
         },
         ...
     ]
+},
+status=200
+```
+#### retrieve  
+**请求方式**：POST  
+**请求URL**：`/ranking/retrieve`  
+**请求参数**：字符串datasetId，字符串llmId  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "credit": "分数 or null"
 },
 status=200
 ```
@@ -338,7 +389,7 @@ status=400
 #### create  
 **请求方式**：POST  
 **请求URL**：`/testing/create`  
-**请求参数**：字符串name  
+**请求参数**：字符串name，字符串api_url，字符串api_headers，字符串api_data，可选整数api_RPM  
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
@@ -350,6 +401,24 @@ status=400
 status=201
 ```
 * 参数异常  
+```python
+status=400
+```
+**特殊说明**：关于上面列出的参数详细信息请查阅标准部分。  
+#### delete  
+**请求方式**：DELETE  
+**请求URL**：`/testing/delete/<id>`  
+**请求参数**：无  
+**额外需求**：admin_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* ID异常  
 ```python
 status=400
 ```

@@ -12,12 +12,14 @@ class CreditModelTests(TestCase):
             username="testuser",
             password="testpassword",
             mobile="12345678901",
+            is_admin=True,
         )
         user.save()
         self.client=APIClient()
 
-    def test_update(self):
-        # create two datasets and two LLMs first
+    def create_basics(self):
+        # create two datasets and two LLMs, can be
+        # used in other tests
         response=self.client.post(
             '/user/login',
             {
@@ -63,6 +65,10 @@ class CreditModelTests(TestCase):
             format="json"
         )
         llm_id2=response.json()['llmId']
+        return jwt, dataset_id, dataset_id2, llm_id, llm_id2
+
+    def test_update(self):
+        jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
         # update credits
         response=self.client.post(
             '/ranking/update', 
@@ -135,3 +141,51 @@ class CreditModelTests(TestCase):
         json_data=response.json()
         self.assertEqual(json_data['message'], "Invalid datasetId or llmId")
         self.assertEqual(response.status_code, 400)
+
+    def test_list(self):
+        jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
+        # list credits
+        response=self.client.get(
+            '/ranking/list', 
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_data['data']), 4)
+        self.assertEqual(json_data['data'][0]['dataset'], dataset_id)
+        for i in range(4):
+            self.assertEqual(json_data['data'][i]['credit'], None)
+        # update credits
+        response=self.client.post(
+            '/ranking/update', 
+            {
+                "datasetId":dataset_id,
+                "llmId":llm_id,
+                "credit":60,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response=self.client.post(
+            '/ranking/update', 
+            {
+                "datasetId":dataset_id2,
+                "llmId":llm_id2,
+                "credit":40,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        # list credits again
+        response=self.client.get(
+            '/ranking/list', 
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['data'][0]['credit'], 60)
+        self.assertEqual(json_data['data'][1]['credit'], None)
+        self.assertEqual(json_data['data'][2]['credit'], None)
+        self.assertEqual(json_data['data'][3]['credit'], 40)

@@ -1,10 +1,10 @@
 from utils.jwt import login_required
+from utils.admin_required import admin_required
 from .serializers import DatasetSerializer
 from .models import Dataset
 from testing import models as testing
 from ranking import models as ranking
 from rest_framework import status
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import mixins
@@ -37,3 +37,15 @@ class uploadView(APIView):
         target.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
+class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
+    queryset = Dataset.objects.all()
+    serializer_class = DatasetSerializer
+
+    @admin_required
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = Dataset.objects.get(id=int(kwargs['id']))
+            self.perform_destroy(instance)
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid dataset id"}, status=status.HTTP_400_BAD_REQUEST)
