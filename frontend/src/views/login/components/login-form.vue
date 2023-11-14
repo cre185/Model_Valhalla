@@ -58,7 +58,7 @@
               >
                 {{ $t('login.form.rememberPassword') }}
               </a-checkbox>
-              <a-link>{{ $t('login.form.forgetPassword') }}</a-link>
+              <a-link @click="router.push({name:'ChangeInfo', params:{toChange:'password', mobileReadOnly:0}})">{{ $t('login.form.forgetPassword') }}</a-link>
             </div>
             <a-button type="primary" html-type="submit" long :loading="loading">
               {{ $t('login.form.login') }}
@@ -318,6 +318,7 @@
       trigger: ['change', 'blur'],
     },
   ];
+
 </script>
 <style lang="less" scoped>
   .login-form {

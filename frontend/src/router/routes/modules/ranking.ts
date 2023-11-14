@@ -2,22 +2,22 @@ import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
 
 const HOME: AppRouteRecordRaw = {
-  path: '/home',
-  name: 'home',
+  path: '/leaderboard',
+  name: 'Leaderboard',
   component: DEFAULT_LAYOUT,
   meta: {
-    locale: 'menu.home',
+    locale: 'menu.ranking',
     requiresAuth: true,
-    icon: 'icon-home',
+    icon: 'icon-bar-chart',
     order: 0,
   },
   children: [
     {
-      path: 'index',
-      name: 'Index',
-      component: () => import('@/views/home/index.vue'),
+      path: 'details',
+      name: 'leaderboardDetails',
+      component: () => import('@/views/ranking/index.vue'),
       meta: {
-        locale: 'menu.home.profile',
+        locale: 'menu.ranking.profile',
         requiresAuth: true,
         roles: ['*'],
       },

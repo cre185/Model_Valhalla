@@ -1,4 +1,4 @@
-from backend.utils.jwt import login_required
+from utils.jwt import login_required
 from .serializers import DatasetSerializer
 from .models import Dataset
 from testing import models as testing
