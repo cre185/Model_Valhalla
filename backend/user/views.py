@@ -1,6 +1,7 @@
 import datetime
 import random
-from .models import User, VerifyMsg, VerifyEmail
+from .models import *
+from testing.models import LLMs
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -187,3 +188,15 @@ class verify_emailView(APIView):
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid code"}, status=status.HTTP_401_UNAUTHORIZED)
+
+class subscribeView(APIView):
+    @login_required
+    def post(self, request):
+        data = JSONParser().parse(request)
+        try:
+            llm = LLMs.objects.get(id=data['llm_id'])
+            subscription = Subscription.objects.create(user=request.user, llm=llm)
+            subscription.save()
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid llmId"}, status=status.HTTP_400_BAD_REQUEST)

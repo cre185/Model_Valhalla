@@ -1,6 +1,6 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from .models import User, VerifyMsg
+from .models import *
 # Create your tests here.
 
 class UserModelTests(TestCase):
@@ -325,6 +325,73 @@ class UserDataModelTests(TestCase):
         self.assertEqual(response.status_code,200)
         self.assertEqual(json_data['username'],"testuser4")
         self.assertEqual(json_data['mobile'],"12345678902")
+
+    def test_subscribe(self):
+        # the correct case
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testuser"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        jwt=json_data['jwt']
+        response=self.client.post(
+            '/testing/create',
+            {
+                "name":"testllm",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        self.assertEqual(response.status_code,201)
+        response=self.client.post(
+            '/user/subscribe',
+            {
+                "llm_id":1
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(User.objects.get(id=1).subscribed_llm.all()[0].name,"testllm")
+        # request with wrong llm_id
+        response=self.client.post(
+            '/user/subscribe',
+            {
+                "llm_id":2
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code,400)
+        # delete the user
+        user = User.objects.create(username="testuser2", password="testuser2", mobile="12345678902", is_admin=True)
+        user.save()
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser2",
+                "password":"testuser2"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        jwt=json_data['jwt']
+        response=self.client.delete(
+            '/user/delete/1',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(Subscription.objects.all().count(),0)
 
 class UserAdminModelTests(TestCase):
     def setUp(self):

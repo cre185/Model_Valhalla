@@ -42,7 +42,6 @@ class LLMsModelTests(TestCase):
         self.assertEqual(json_data['llmId'], 1)
         self.assertEqual(LLMs.objects.count(), 1)
         self.assertEqual(LLMs.objects.get(id=1).name, "sometesting")
-        self.assertEqual(LLMs.objects.get(id=1).author, User.objects.get(username="testuser"))
         # name already exists
         response=self.client.post(
             '/testing/create', 

@@ -14,4 +14,5 @@ urlpatterns = [
     path("delete/<int:id>", views.deleteView.as_view(), name="delete"),
     path("send_email", views.send_emailView.as_view(), name="send_email"),
     path("verify_email", views.verify_emailView.as_view(), name="verify_email"),
+    path("subscribe", views.subscribeView.as_view(), name="subscribe"),
 ]

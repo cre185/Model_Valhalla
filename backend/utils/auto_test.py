@@ -102,8 +102,7 @@ class AutoTest():
             # print(result['choices'][0]['message']['content'])
             for c in result['choices'][0]['message']['content']:
                 if c in ['A','B','C','D']:
-                    return c
-
+                    return c 
         else:
             print(response.status_code)
             print(response.text)

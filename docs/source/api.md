@@ -15,6 +15,7 @@
     - [retrieve](#retrieve)
     - [send\_email](#send_email)
     - [send\_message](#send_message)
+    - [subscribe](#subscribe)
     - [update](#update)
     - [update\_avatar](#update_avatar)
     - [verify\_code](#verify_code)
@@ -187,6 +188,23 @@ status=201
 * 参数异常  
 ```python
 status=401
+```
+#### subscribe  
+**请求方式**：POST  
+**请求URL**：`/user/subscribe`  
+**请求参数**：字符串llm_id  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
 ```
 #### update  
 **请求方式**：PUT/PATCH  
