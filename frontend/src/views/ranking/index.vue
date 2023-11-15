@@ -159,9 +159,6 @@
           :size="size"
           @page-change="onPageChange"
       >
-        <template #index="{ rowIndex }">
-          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
-        </template>
         <template #contentType="{ record }">
           <a-space>
             <a-avatar
@@ -270,11 +267,6 @@ const densityList = computed(() => [
   },
 ]);
 const columns = computed<TableColumnData[]>(() => [
-  {
-    title: t('searchTable.columns.index'),
-    dataIndex: 'index',
-    slotName: 'index',
-  },
   {
     title: t('searchTable.columns.number'),
     dataIndex: 'number',

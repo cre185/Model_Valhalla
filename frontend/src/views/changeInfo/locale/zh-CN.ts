@@ -41,6 +41,7 @@ export default {
   'change.email.form.subtitle2': '请输入您新的安全邮箱并接受验证码',
   'change.email.form.verify': '验证',
   'change.email.form.back': '返回',
+  'change.email.form.errMsg': '新输入的邮箱和已绑定的邮箱相同',
   'change.phone.form.title': '修改您的安全验证手机',
   'change.phone.form.subtitle1': '请验证您的安全手机',
   'change.phone.form.subtitle2': '请输入您新的安全邮箱并接受验证码',
