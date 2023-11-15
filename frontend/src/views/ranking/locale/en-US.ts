@@ -6,4 +6,8 @@ export default {
   'rankings.llm.data.eloScore': 'Elo Adversarial Score',
   'rankings.llm.data.detail': 'Details',
   'rankings.llm.data.license': 'License',
+  'ranking.profile.info.description': 'Model Description',
+  'ranking.profile.info.paper': 'Relevant Papers',
+  'ranking.profile.info.license': 'License',
+  'ranking.profile.info.index': 'Official Website',
 };
