@@ -128,7 +128,7 @@
             {{ $t('searchTable.operation.download') }}
           </a-button>
           <a-tooltip :content="$t('searchTable.actions.refresh')">
-            <div class="action-icon" @click="search"
+            <div class="action-icon"
             ><icon-refresh size="18"
             /></div>
           </a-tooltip>
@@ -157,58 +157,42 @@
           :data="renderData"
           :bordered="false"
           :size="size"
-          @page-change="onPageChange"
       >
-        <template #index="{ rowIndex }">
-          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
+        <template #ranking="{ record }">
+          {{ record.ranking }}
         </template>
-        <template #contentType="{ record }">
-          <a-space>
-            <a-avatar
-                v-if="record.contentType === 'img'"
-                :size="16"
-                shape="square"
-            >
-              <img
-                  alt="avatar"
-                  src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/581b17753093199839f2e327e726b157.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            <a-avatar
-                v-else-if="record.contentType === 'horizontalVideo'"
-                :size="16"
-                shape="square"
-            >
-              <img
-                  alt="avatar"
-                  src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/77721e365eb2ab786c889682cbc721c1.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            <a-avatar v-else :size="16" shape="square">
-              <img
-                  alt="avatar"
-                  src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/ea8b09190046da0ea7e070d83c5d1731.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            {{ $t(`searchTable.form.contentType.${record.contentType}`) }}
-          </a-space>
+        <template #name="{ record }">
+          {{ record.name }}
         </template>
-        <template #filterType="{ record }">
-          {{ $t(`searchTable.form.filterType.${record.filterType}`) }}
+        <template #averageMsgLength="{ record }">
+          {{ record.averageMsgLength }}
         </template>
-        <template #status="{ record }">
-          <span v-if="record.status === 'offline'" class="circle"></span>
-          <span v-else class="circle pass"></span>
-          {{ $t(`searchTable.form.status.${record.status}`) }}
+        <template #datasetScore="{ record }">
+          {{ record.datasetScore }}
         </template>
-        <template #operations>
-          <a-button v-permission="['admin']" type="text" size="small">
-            {{ $t('searchTable.columns.operations.view') }}
+        <template #eloScore="{ record }">
+          {{ record.eloScore }}
+        </template>
+        <template #details="{ record }">
+          <a-button type="text" size="small" v-if="record" @click="handleClick">
+            {{ $t('ranking.view.btn') }}
           </a-button>
+        </template>
+        <template #license="{ record }">
+          {{ record.license }}
         </template>
       </a-table>
     </a-card>
   </div>
+  <a-drawer :width="1000" :visible="visible" unmountOnClose>
+    <template #title>
+      Title
+    </template>
+    <div>
+      <ModelProfile>
+      </ModelProfile>
+    </div>
+  </a-drawer>
 </template>
 
 <script lang="ts" setup>
@@ -216,14 +200,23 @@ import { computed, ref, reactive, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import useLoading from '@/hooks/loading';
 import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
+import { LLMRankingData } from "@/api/model-list";
 import { Pagination } from '@/types/global';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
-import cloneDeep from 'lodash/cloneDeep';
 import Sortable from 'sortablejs';
+import cloneDeep from 'lodash/cloneDeep';
+import ModelProfile from './components/model-profile.vue';
 
 type SizeProps = 'mini' | 'small' | 'medium' | 'large';
 type Column = TableColumnData & { checked?: true };
+
+const visible = ref(false);
+
+const handleClick = () => {
+  visible.value = true;
+};
+
 
 const generateFormModel = () => {
   return {
@@ -235,9 +228,9 @@ const generateFormModel = () => {
     status: '',
   };
 };
-const { loading, setLoading } = useLoading(true);
+const { loading, setLoading } = useLoading(false);
 const { t } = useI18n();
-const renderData = ref<PolicyRecord[]>([]);
+const renderData = ref<LLMRankingData[]>([{name: 'GPT-4', ranking: 1, averageMsgLength: 86.4, datasetScore: 8.99, eloScore: 1181, license: 'Proprietary'}]);
 const formModel = ref(generateFormModel());
 const cloneColumns = ref<Column[]>([]);
 const showColumns = ref<Column[]>([]);
@@ -271,44 +264,46 @@ const densityList = computed(() => [
 ]);
 const columns = computed<TableColumnData[]>(() => [
   {
-    title: t('searchTable.columns.index'),
-    dataIndex: 'index',
-    slotName: 'index',
+    title: t('rankings.llm.data.ranking'),
+    dataIndex: 'ranking',
+    slotName: 'ranking',
+    align: "center",
   },
   {
-    title: t('searchTable.columns.number'),
-    dataIndex: 'number',
-  },
-  {
-    title: t('searchTable.columns.name'),
+    title: t('rankings.llm.data.name'),
     dataIndex: 'name',
+    slotName: 'name',
+    align: "center",
   },
   {
-    title: t('searchTable.columns.contentType'),
-    dataIndex: 'contentType',
-    slotName: 'contentType',
+    title: t('rankings.llm.data.averageMsgLength'),
+    dataIndex: 'averageMsgLength',
+    slotName: 'averageMsgLength',
+    align: "center",
   },
   {
-    title: t('searchTable.columns.filterType'),
-    dataIndex: 'filterType',
+    title: t('rankings.llm.data.datasetScore'),
+    dataIndex: 'datasetScore',
+    slotName: 'dataScore',
+    align: "center",
   },
   {
-    title: t('searchTable.columns.count'),
-    dataIndex: 'count',
+    title: t('rankings.llm.data.eloScore'),
+    dataIndex: 'eloScore',
+    slotName: 'eloScore',
+    align: "center",
   },
   {
-    title: t('searchTable.columns.createdTime'),
-    dataIndex: 'createdTime',
+    title: t('rankings.llm.data.details'),
+    dataIndex: 'details',
+    slotName: 'details',
+    align: "center",
   },
   {
-    title: t('searchTable.columns.status'),
-    dataIndex: 'status',
-    slotName: 'status',
-  },
-  {
-    title: t('searchTable.columns.operations'),
-    dataIndex: 'operations',
-    slotName: 'operations',
+    title: t('rankings.llm.data.license'),
+    dataIndex: 'license',
+    slotName: 'license',
+    align: "center",
   },
 ]);
 const contentTypeOptions = computed<SelectOptionData[]>(() => [
@@ -371,7 +366,6 @@ const onPageChange = (current: number) => {
   fetchData({ ...basePagination, current });
 };
 
-fetchData();
 const reset = () => {
   formModel.value = generateFormModel();
 };

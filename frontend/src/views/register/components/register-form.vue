@@ -125,12 +125,12 @@
       </a-form-item>
       <a-form-item
         v-if="userType === 'administrator'"
-        field="adminCode"
+        field="secret"
         :rules="adminCodeRules"
         hide-label
       >
         <a-input
-          v-model="adminCode"
+            v-model="registerInfo.secret"
           :placeholder="$t('register.form.adminCode.placeholder')"
           allow-clear
         >
@@ -193,11 +193,13 @@
     username: '',
     password: '',
     mobile: '',
+    secret: '',
   });
   const registerInfo = reactive({
     username: registerConfig.value.username,
     password: registerConfig.value.password,
     mobile: registerConfig.value.mobile,
+    secret: registerConfig.value.secret,
   });
   const acceptAgreementInfo = reactive({
     acceptAgreement: false,
@@ -217,20 +219,6 @@
   });
 
   const userType = ref('');
-  const adminCode = ref('');
-  const invitationCode = new Set([
-    'TXNKvJ#1',
-    '&I&IKZO7',
-    'u&%ONBea',
-    'KF0jhFN0',
-    't1NNob8!',
-    'QNyKOY$w',
-    '&%o^YOt#',
-    '4PGX33aX',
-    'rc@$t#Of',
-    'L!hf_TIk',
-  ]);
-
   const handleSubmit = async ({
     errors,
     values,
@@ -244,7 +232,6 @@
       try {
         if (!acceptAgreementInfo.acceptAgreement)
           throw new Error(proxy.$t('register.form.agreement.errMsg'));
-        if (userType.value === 'administrator') values.is_admin = 1;
         const phoneVerification = {
           mobile: registerInfo.mobile,
           code: phoneValidation.code,
@@ -384,10 +371,9 @@
       validator: (value, callback) => {
         return new Promise((resolve) => {
           window.setTimeout(() => {
-            value = adminCode.value;
             if (value === '') {
               callback(proxy.$t('register.form.adminCode.errMsg1'));
-            } else if (!invitationCode.has(value)) {
+            } else if (value.length !== 8) {
               callback(proxy.$t('register.form.adminCode.errMsg2'));
             }
             resolve();

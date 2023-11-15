@@ -45,6 +45,7 @@ export default {
   'change.email.form.subtitle2': 'Please input your new security email and receive the verify code',
   'change.email.form.verify': 'Verify',
   'change.email.form.back': 'Back',
+  'change.email.form.errMsg': 'The email to be changed is the same as the bounded one',
   'change.phone.form.title': 'Change your security phone',
   'change.phone.form.subtitle1': 'Please verify your security phone',
   'change.phone.form.subtitle2': 'Please input your new security phone and receiver the verify code',

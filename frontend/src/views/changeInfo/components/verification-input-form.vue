@@ -159,6 +159,9 @@ import { getCurrentInstance, reactive } from "vue";
             if (!/.+@.+\..+/.test(value) && value !== '') {
               callback(proxy.$t('register.form.email.invalid'));
             }
+            else if (value === userStore.email){
+              callback(proxy.$t('change.email.form.errMsg'));
+            }
             resolve();
           }, 1000);
         });
