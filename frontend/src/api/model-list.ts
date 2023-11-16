@@ -4,7 +4,7 @@ import type { DescData } from '@arco-design/web-vue/es/descriptions/interface';
 export interface LLMRankingData{
     ranking: number;
     name: string;
-    averageMsgLength: number;
+    mmluScore: number;
     datasetScore: number;
     eloScore: number;
     license: string;
