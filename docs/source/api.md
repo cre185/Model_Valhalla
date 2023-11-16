@@ -8,6 +8,7 @@
 - [API参考文档](#api参考文档)
   - [用户账号部分](#用户账号部分)
     - [delete](#delete)
+    - [list\_subscription](#list_subscription)
     - [login](#login)
     - [login\_with\_verify\_code](#login_with_verify_code)
     - [logout](#logout)
@@ -56,6 +57,26 @@
 status=200
 ```
 **特殊说明**：该api在传入的jwt对应一般用户时只允许删除用户自己，而在传入的jwt对应管理员时允许删除任意用户。  
+#### list_subscription  
+**请求方式**：GET  
+**请求URL**：`/user/list_subscription/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "llms": [
+        "llm信息等",
+        ...
+    ]
+},
+status=200
+```
+* id异常  
+```python
+status=400
+```
 #### login  
 **请求方式**：POST  
 **请求URL**：`/user/login`  

@@ -5,13 +5,12 @@ from testing.models import LLMs
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from .serializers import UserSerializer, VerifyMsgSerializer, VerifyEmailSerializer
+from .serializers import *
+from testing.serializers import *
 from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
 from django.core.mail import send_mail
 from django.conf import settings
-from django.core.cache import cache
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework import generics
@@ -195,8 +194,26 @@ class subscribeView(APIView):
         data = JSONParser().parse(request)
         try:
             llm = LLMs.objects.get(id=data['llm_id'])
+            if Subscription.objects.filter(user=request.user, llm=llm).exists():
+                subscription = Subscription.objects.get(user=request.user, llm=llm)
+                subscription.delete()
+                return Response({"message": "ok"}, status=status.HTTP_200_OK)
             subscription = Subscription.objects.create(user=request.user, llm=llm)
             subscription.save()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid llmId"}, status=status.HTTP_400_BAD_REQUEST)
+
+class list_subscriptionView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(id=kwargs['id'])
+            subscriptions = Subscription.objects.filter(user=user)
+            llms = []
+            for subscription in subscriptions:
+                serializer = LLMsSerializer(subscription.llm)
+                llms.append(serializer.data)
+            return Response({"message": "ok", "llms": llms}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid userId"}, status=status.HTTP_400_BAD_REQUEST)
+        

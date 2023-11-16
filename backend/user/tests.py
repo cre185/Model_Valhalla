@@ -370,7 +370,32 @@ class UserDataModelTests(TestCase):
         )
         json_data=response.json()
         self.assertEqual(response.status_code,400)
-        # delete the user
+        # request again to unsubscribe
+        response=self.client.post(
+            '/user/subscribe',
+            {
+                "llm_id":1
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(User.objects.get(id=1).subscribed_llm.all().count(),0)
+        # auto remove subscription when user is deleted
+        response=self.client.post(
+            '/user/subscribe',
+            {
+                "llm_id":1
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(User.objects.get(id=1).subscribed_llm.all().count(),1)
         user = User.objects.create(username="testuser2", password="testuser2", mobile="12345678902", is_admin=True)
         user.save()
         response=self.client.post(
@@ -392,6 +417,54 @@ class UserDataModelTests(TestCase):
         self.assertEqual(json_data['message'],"ok")
         self.assertEqual(response.status_code,200)
         self.assertEqual(Subscription.objects.all().count(),0)
+    
+    def test_sublist(self):
+        # the correct case
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testuser"
+            },
+            format="json"
+        )
+        json_data=response.json()
+        jwt=json_data['jwt']
+        response=self.client.post(
+            '/testing/create',
+            {
+                "name":"testllm",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        self.assertEqual(response.status_code,201)
+        response=self.client.post(
+            '/user/subscribe',
+            {
+                "llm_id":1
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(response.status_code,200)
+        response=self.client.get(
+            '/user/list_subscription/1',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'],"ok")
+        self.assertEqual(len(json_data['llms']),1)
+        self.assertEqual(response.status_code,200)
+        # request with wrong id
+        response=self.client.get(
+            '/user/list_subscription/3',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code,400)
 
 class UserAdminModelTests(TestCase):
     def setUp(self):
