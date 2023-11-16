@@ -1,5 +1,4 @@
 Question,A,B,C,D,Answer
-string,string,string,string,string,string
 设 A，B 为n阶矩阵， 则 $|-2(\begin{array}{cc}A^T & O \\ O & B^{-1}\end{array})|$ 等于(),$-2|A^T||B|$,$(-2)^{2n}|A||B|^{-1}$,$(-2)^n|A||B|^{-1}$,$-2|A||B|^{-1}$,B
 设函数 $f(x)=\frac{1}{e^{\frac{x}{x-1}}-1}$， 则 ( ),$x=0， x=1$ 都是 $f(x)$ 的第一类间断点;,$x=0$ 是 $f(x)$ 的第一类间断点， $x=1$ 是 $f(x)$ 的第二类间断点;,$x=0， x=1$ 都是 $f(x)$ 的第二类间断点;,$x=0$ 是 $f(x)$ 的第二类间断点， $x=1$ 是 $f(x)$ 的第一类间断点,D
 下列各对函数中， ( ) 是相同的.,$f(x)=\ln x^3，g(x)=3 \ln x$,$f(x)=\ln x^2， g(x)=2 \ln x$,$f(x)=\sqrt{x^2}， g(x)=x$,$f(x)=\frac{x^2-1}{x+1}， g(x)=x-1$,A

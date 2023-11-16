@@ -78,7 +78,7 @@ class testingView(APIView):
     @login_required
     def post(self, request):
         data = request.data
-        target = ranking.Credit.objects.all()
+        target = ranking.Credit.objects.filter(subjective=False)
         if 'llmId' in data:
             target = target.filter(LLM_id=int(data['llmId']))
         if 'datasetId' in data:

@@ -12,19 +12,32 @@ class AutoTest():
         header = data_lines[0].decode('utf-8')[:-1].split(',')
         for i in range(len(header)):
             target_column[header[i].upper()] = i
-        data_lines = data_lines[2:]
-        for i in range(len(data_lines)):
+        data_lines = data_lines[1:]
+        i=0
+        while i < len(data_lines):
             data.append([])
             data_lines[i] = data_lines[i].decode('utf-8')
             is_inside=False
+            rec_i=i
+            i-=1
+            index=0
             last_index=0
-            for index, chr in enumerate(data_lines[i]):
-                if chr == '"':
-                    is_inside = not is_inside
-                if chr == ',' and not is_inside:
-                    data[i].append(data_lines[i][last_index:index])
-                    last_index = index+1
-            data[i].append(data_lines[i][last_index:-1])
+            while len(data[rec_i]) < len(header)-1 or is_inside:
+                i+=1
+                if i >= len(data_lines):
+                    break
+                if i!=rec_i:
+                    data_lines[rec_i]+=data_lines[i].decode('utf-8')
+                while index < len(data_lines[rec_i]):
+                    chr = data_lines[rec_i][index]
+                    if chr == '"':
+                        is_inside = not is_inside
+                    if chr == ',' and not is_inside:
+                        data[rec_i].append(data_lines[rec_i][last_index:index])
+                        last_index = index+1
+                    index+=1
+            data[rec_i].append(data_lines[rec_i][last_index:-1])
+            i+=1
         return data, target_column
     
     def test_with_data(self, data, target_column, api):
@@ -61,6 +74,8 @@ class AutoTest():
                     break
             try:
                 subject = data[i][target_column['SUBJECT']]
+                if not subject:
+                    raise Exception
                 if subject not in subject_amount:
                     subject_amount[subject]=1
                 else:
@@ -70,6 +85,8 @@ class AutoTest():
             if current_result == ans:
                 try:
                     subject = data[i][target_column['SUBJECT']]
+                    if not subject:
+                        raise Exception
                     if subject not in subject_correct_amount:
                         subject_correct_amount[subject]=1
                     else:
@@ -118,3 +135,10 @@ class AutoTest():
             self.RPM = 10^9
         data, target_column = self.generate_test_data(dataPath)
         return self.test_with_data(data, target_column, self.api_url)
+
+if __name__ == '__main__':
+    autotest=AutoTest()
+    autotest.api_url = 'https://api.openai.com/v1/chat/completions'
+    autotest.api_headers = '{"Authorization":"Bearer '+'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'+'"}'
+    autotest.api_data = '{"model": "gpt-3.5-turbo","messages": [{"role": "user", "content": "$PROMPT"}],"temperature": 0.7}'
+    print(autotest.generate_test_data('../static/data/zbench_common copy.csv'))
