@@ -26,7 +26,7 @@
             :title="$t('ranking.profile.info.index')"
         >
         </a-list-item-meta>
-        <a-link>{{props.website}}</a-link>
+        <a-link :href="props.website">{{ props.website }}</a-link>
       </a-list-item>
       <a-list-item>
         <a-list-item-meta
@@ -35,9 +35,7 @@
         </a-list-item-meta>
         <a-list :bordered="false">
           <a-list-item v-for="(value, key) in props.paper" :key="key">
-            <a-list-item-meta
-              :description="value"
-            />
+            <a-link :href="key as string">{{ value }}</a-link>
           </a-list-item>
         </a-list>
       </a-list-item>

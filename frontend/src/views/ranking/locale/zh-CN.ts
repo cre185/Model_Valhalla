@@ -11,4 +11,8 @@ export default {
   'ranking.profile.info.license': '许可',
   'ranking.profile.info.index': '官方网站',
   'ranking.view.btn': '查看',
+  'ranking.profile.discussion.reply': '回复',
+  'ranking.profile.discussion.submit': '发布',
+  'ranking.profile.discussion.reply.placeholder': '发表你的评论',
+  'ranking.profile.discussion.replyEmbed.placeholder': '回复 @',
 };
