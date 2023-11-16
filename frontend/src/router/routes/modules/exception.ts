@@ -25,7 +25,7 @@ const EXCEPTION: AppRouteRecordRaw = {
     {
       path: '404',
       name: '404',
-      component: () => import('@/views/exception/404/index.vue'),
+      component: () => import('@/views/ranking/components/model-discussion-area.vue'),
       meta: {
         locale: 'menu.exception.404',
         requiresAuth: true,

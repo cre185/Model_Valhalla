@@ -12,4 +12,8 @@ export default {
   'ranking.profile.info.license': 'License',
   'ranking.profile.info.index': 'Official Website',
   'ranking.view.btn': 'View',
+  'ranking.profile.discussion.reply': 'Reply',
+  'ranking.profile.discussion.submit': 'Submit',
+  'ranking.profile.discussion.reply.placeholder': 'Post your comment',
+  'ranking.profile.discussion.replyEmbed.placeholder': 'Reply to ',
 };
