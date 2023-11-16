@@ -1,5 +1,5 @@
-from .serializers import LLMsSerializer
-from .models import LLMs
+from .serializers import *
+from .models import *
 from dataset import models as dataset
 from ranking import models as ranking
 from rest_framework import status

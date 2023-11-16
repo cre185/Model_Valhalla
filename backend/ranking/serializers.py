@@ -1,4 +1,4 @@
-from .models import Credit
+from .models import *
 from rest_framework import serializers
 
 class CreditSerializer(serializers.ModelSerializer):
@@ -13,3 +13,27 @@ class CreditSerializer(serializers.ModelSerializer):
             if credit > 100:
                 raise serializers.ValidationError("Credit should be less than 100.")
         return credit
+
+class DatasetCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DatasetComment
+        fields = '__all__'
+
+    def validate_comment(self, comment):
+        if len(comment) > 1000:
+            raise serializers.ValidationError("Comment should be less than 1000 characters.")
+        elif len(comment) == 0:
+            raise serializers.ValidationError("Comment should not be empty.")
+        return comment
+    
+class LLMCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LLMComment
+        fields = '__all__'
+
+    def validate_comment(self, comment):
+        if len(comment) > 1000:
+            raise serializers.ValidationError("Comment should be less than 1000 characters.")
+        elif len(comment) == 0:
+            raise serializers.ValidationError("Comment should not be empty.")
+        return comment

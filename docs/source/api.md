@@ -29,7 +29,12 @@
     - [upload](#upload)
   - [排行榜部分](#排行榜部分)
     - [clear](#clear)
+    - [comment](#comment)
+    - [dataset\_comment](#dataset_comment)
+    - [like\_dataset\_comment](#like_dataset_comment)
+    - [like\_llm\_comment](#like_llm_comment)
     - [list](#list)
+    - [llm\_comment](#llm_comment)
     - [retrieve](#retrieve-2)
     - [update](#update-2)
   - [模型测试部分](#模型测试部分)
@@ -410,6 +415,80 @@ status=200
 ```python
 status=400
 ```
+#### comment  
+**请求方式**：POST  
+**请求URL**：`/ranking/comment`  
+**请求参数**：字符串dataset或llm，字符串comment  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
+#### dataset_comment  
+**请求方式**：GET  
+**请求URL**：`/ranking/dataset_comment/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "comments": [
+        {
+            "comment": "评论内容",
+            "add_time": "添加时间(未格式化)"
+        },
+        ...
+    ]
+},
+status=200
+```
+* ID异常  
+```python
+status=400
+```
+#### like_dataset_comment  
+**请求方式**：POST  
+**请求URL**：`/ranking/like_dataset_comment`  
+**请求参数**：字符串id  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
+#### like_llm_comment  
+**请求方式**：POST  
+**请求URL**：`/ranking/like_llm_comment`  
+**请求参数**：字符串id  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 #### list  
 **请求方式**：GET  
 **请求URL**：`/ranking/list`  
@@ -430,6 +509,29 @@ status=400
     ]
 },
 status=200
+```
+#### llm_comment  
+**请求方式**：GET  
+**请求URL**：`/ranking/llm_comment/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "comments": [
+        {
+            "comment": "评论内容",
+            "add_time": "添加时间(未格式化)"
+        },
+        ...
+    ]
+},
+status=200
+```
+* ID异常  
+```python
+status=400
 ```
 #### retrieve  
 **请求方式**：POST  
