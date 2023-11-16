@@ -193,7 +193,7 @@ class subscribeView(APIView):
     def post(self, request):
         data = JSONParser().parse(request)
         try:
-            llm = LLMs.objects.get(id=data['llm_id'])
+            llm = LLMs.objects.get(id=data['llmId'])
             if Subscription.objects.filter(user=request.user, llm=llm).exists():
                 subscription = Subscription.objects.get(user=request.user, llm=llm)
                 subscription.delete()

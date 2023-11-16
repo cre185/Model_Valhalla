@@ -350,7 +350,7 @@ class UserDataModelTests(TestCase):
         response=self.client.post(
             '/user/subscribe',
             {
-                "llm_id":1
+                "llmId":1
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -363,7 +363,7 @@ class UserDataModelTests(TestCase):
         response=self.client.post(
             '/user/subscribe',
             {
-                "llm_id":2
+                "llmId":2
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -374,7 +374,7 @@ class UserDataModelTests(TestCase):
         response=self.client.post(
             '/user/subscribe',
             {
-                "llm_id":1
+                "llmId":1
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -387,7 +387,7 @@ class UserDataModelTests(TestCase):
         response=self.client.post(
             '/user/subscribe',
             {
-                "llm_id":1
+                "llmId":1
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -442,7 +442,7 @@ class UserDataModelTests(TestCase):
         response=self.client.post(
             '/user/subscribe',
             {
-                "llm_id":1
+                "llmId":1
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"

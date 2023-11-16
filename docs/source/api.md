@@ -213,7 +213,7 @@ status=401
 #### subscribe  
 **请求方式**：POST  
 **请求URL**：`/user/subscribe`  
-**请求参数**：字符串llm_id  
+**请求参数**：字符串llmId  
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
