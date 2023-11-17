@@ -89,7 +89,7 @@ class MyComment {
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         tmp.datetime = `${year}-${month}-${day} ${hours}:${minutes}`;
-        tmp.content = "回复 @" + newComment.toAuthor + " :" + newComment.content;
+        tmp.content = `回复 @ ${newComment.toAuthor} :${newComment.content}`;
         tmp.avatar = newComment.avatar;
         tmp.author = newComment.author;
         item.children.push(tmp)

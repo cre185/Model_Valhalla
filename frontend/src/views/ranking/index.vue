@@ -211,6 +211,7 @@
         <a-tab-pane key="3" title="对抗记录">
         </a-tab-pane>
         <a-tab-pane key="4" title="讨论区">
+          <ModelDiscussionArea />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -228,6 +229,7 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import Sortable from 'sortablejs';
   import cloneDeep from 'lodash/cloneDeep';
+  import ModelDiscussionArea from "./components/model-discussion-area.vue";
   import ModelProfile from './components/model-profile.vue';
   import DatasetProfile from './components/model-datasetbehavior.vue'
   
