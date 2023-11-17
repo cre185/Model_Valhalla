@@ -1,6 +1,7 @@
 <template>
   <!-- 全局评论 -->
   <div style="display: flex; justify-content: center;">
+    <span>6</span>
     <a-comment
         id="globalComment"
         align="right"
