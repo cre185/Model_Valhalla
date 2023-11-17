@@ -206,6 +206,7 @@
           <ModelProfile />
         </a-tab-pane>
         <a-tab-pane key="2" title="数据集表现">
+          <DatasetProfile />
         </a-tab-pane>
         <a-tab-pane key="3" title="对抗记录">
         </a-tab-pane>
@@ -228,7 +229,8 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
   import Sortable from 'sortablejs';
   import cloneDeep from 'lodash/cloneDeep';
   import ModelProfile from './components/model-profile.vue';
-
+  import DatasetProfile from './components/model-datasetbehavior.vue'
+  
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
 
