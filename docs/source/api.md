@@ -14,6 +14,7 @@
     - [logout](#logout)
     - [register](#register)
     - [retrieve](#retrieve)
+    - [retrieve\_password](#retrieve_password)
     - [send\_email](#send_email)
     - [send\_message](#send_message)
     - [subscribe](#subscribe)
@@ -24,6 +25,7 @@
   - [数据集部分](#数据集部分)
     - [create](#create)
     - [delete](#delete-1)
+    - [list](#list)
     - [retrieve](#retrieve-1)
     - [update](#update-1)
     - [upload](#upload)
@@ -35,7 +37,7 @@
     - [dataset\_comment](#dataset_comment)
     - [like\_dataset\_comment](#like_dataset_comment)
     - [like\_llm\_comment](#like_llm_comment)
-    - [list](#list)
+    - [list](#list-1)
     - [llm\_comment](#llm_comment)
     - [retrieve](#retrieve-2)
     - [update](#update-2)
@@ -44,7 +46,7 @@
     - [battle\_result](#battle_result)
     - [create](#create-1)
     - [delete](#delete-2)
-    - [list](#list-1)
+    - [list](#list-2)
     - [retrieve](#retrieve-3)
     - [testing](#testing)
     - [update](#update-3)
@@ -171,7 +173,6 @@ status=400
 **请求方式**：GET  
 **请求URL**：`/user/retrieve/<id>`  
 **请求参数**：无  
-**额外需求**：jwt  
 **返回情况**：
 * 正常返回  
 ```python
@@ -187,6 +188,24 @@ status=200
 * 未找到用户  
 ```python
 status=404
+```
+#### retrieve_password  
+**请求方式**：GET  
+**请求URL**：`/user/retrieve_password`  
+**请求参数**：无  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "password": "password"
+},
+status=200
+```
+* 未找到用户  
+```python
+status=40
 ```
 #### send_email  
 **请求方式**：POST  
@@ -349,6 +368,27 @@ status=200
 * ID异常  
 ```python
 status=400
+```
+#### list  
+**请求方式**：GET  
+**请求URL**：`/testing/list`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "data": [
+        {
+            "id": "数据集id",
+            "name": "数据集名称",
+            "description": "数据集描述",
+            ...
+        },
+        ...
+    ]
+},
+status=200
 ```
 #### retrieve  
 **请求方式**：GET  

@@ -121,15 +121,25 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = UserSerializer
     lookup_field = "id"
 
-    @login_required
     def get(self, request, *args, **kwargs):
         result = self.retrieve(request, *args, **kwargs)
-        if request.user.id != int(kwargs['id']):
+        if kwargs["id"] != int(kwargs['id']):
             return Response({"message": "User must be authorized."}, status=status.HTTP_401_UNAUTHORIZED)
         data = result.data
         data['message'] = 'ok'
+        data['password'] = '**********'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
+    
+class retrievePasswordView(APIView):
+    @login_required
+    def get(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            return Response({"message": "ok", "password": user.password}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+        
 
 class updateAvatarView(APIView):
     @login_required
