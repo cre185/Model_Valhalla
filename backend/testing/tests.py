@@ -182,11 +182,37 @@ class LLMsModelTests(TestCase):
     
     def test_list(self):
         response=self.client.get(
-            'testing/list'
+            '/testing/list'
         )
         json_data=response.json()
         self.assertEqual(response.status_code, 200)
-        print(json_data)
+        self.assertEqual(json_data['message'], "ok")
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/testing/create', 
+            {
+                "name":"sometesting",
+                "description":"somedescription",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response=self.client.get(
+            '/testing/list'
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(len(json_data['data']), 1)
+        self.assertEqual(json_data['data'][0]['name'], "sometesting")
 
 class TestingModelTests(TestCase):
     def setUp(self):
