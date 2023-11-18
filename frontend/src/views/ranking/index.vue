@@ -211,7 +211,7 @@
         <a-tab-pane key="3" title="对抗记录">
         </a-tab-pane>
         <a-tab-pane key="4" title="讨论区">
-          <ModelDiscussionArea />
+          <ModelDiscussionArea :comment-details="commentDetails" @change-comment="handleChangeComment" />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -229,6 +229,7 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import Sortable from 'sortablejs';
   import cloneDeep from 'lodash/cloneDeep';
+  import MyComment from "@/api/comment";
   import ModelDiscussionArea from "./components/model-discussion-area.vue";
   import ModelProfile from './components/model-profile.vue';
   import DatasetProfile from './components/model-datasetbehavior.vue'
@@ -256,6 +257,8 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
   const currentLLM = ref<LLMRankingData>();
 
   const size = ref<SizeProps>('medium');
+
+  const commentDetails = ref([] as MyComment[]);
 
   const handleClick = (data: LLMRankingData) => {
     currentLLM.value = data;
@@ -493,8 +496,16 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
 
     const firstTab = document.querySelector('.arco-tabs-tab:first-of-type')
     if(firstTab){
-      console.log(2)
       firstTab.style.margin = '0 25px 0 60px';
+    }
+  };
+
+  const handleChangeComment = (index:number, content:MyComment) => {
+    if (index === -1) {
+      commentDetails.value.push(content);
+    }
+    else {
+      commentDetails.value[index].children.push(content);
     }
   };
 </script>

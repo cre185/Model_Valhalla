@@ -1,7 +1,6 @@
 <template>
   <!-- 全局评论 -->
   <div style="display: flex; justify-content: center;">
-    <span>6</span>
     <a-comment
         id="globalComment"
         align="right"
@@ -95,14 +94,20 @@
 <script lang="ts" setup>
   import MyComment from '@/api/comment'
   import { useUserStore } from '@/store';
+  import {defineEmits, reactive, Ref, ref, toRef, toRefs} from "vue";
 
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   const props = defineProps({
     commentDetails: Array<MyComment>
-  })
-  const tmpComment = new MyComment(userStore.username!, '', userStore.avatar!, '', '', 0, false, false, false, []);
-  const globalComment = new MyComment(userStore.username!, '', userStore.avatar!, '', '', 0, false, false, false, []);
+  });
+
+  const emit = defineEmits<{
+    (event: 'changeComment', arg1: number, arg2: MyComment): void;
+  }>();
+
+  const tmpComment = ref(new MyComment(userStore.username!, '', userStore.avatar!, '', '', 0, false, false, false, []));
+  const globalComment = ref(new MyComment(userStore.username!, '', userStore.avatar!, '', '', 0, false, false, false, []));
 
   const whoClicked = [];
   for (let i = 0; i < props.commentDetails!.length; i+=1) {
@@ -118,8 +123,8 @@
   }
 
   const handleClick = (item:MyComment, who:number, index:number, target:string) => {
-    tmpComment.toAuthor = target;
-    item.changeReplyState(tmpComment, who);
+    tmpComment.value.toAuthor = target;
+    item.changeReplyState(tmpComment.value, who);
     ensureOneReply(index)
   }
 
@@ -132,9 +137,9 @@
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     tmp.datetime = `${year}-${month}-${day} ${hours}:${minutes}`;
-    tmp.content = globalComment.content;
-    props.commentDetails!.push(tmp);
-    globalComment.content = '';
+    tmp.content = globalComment.value.content;
+    emit('changeComment', -1, tmp);
+    globalComment.value.content = '';
   }
 </script>
 
