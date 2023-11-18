@@ -28,6 +28,8 @@
     - [update](#update-1)
     - [upload](#upload)
   - [排行榜部分](#排行榜部分)
+    - [average](#average)
+    - [average\_list](#average_list)
     - [clear](#clear)
     - [comment](#comment)
     - [dataset\_comment](#dataset_comment)
@@ -40,6 +42,7 @@
   - [模型测试部分](#模型测试部分)
     - [create](#create-1)
     - [delete](#delete-2)
+    - [list](#list-1)
     - [retrieve](#retrieve-3)
     - [testing](#testing)
     - [update](#update-3)
@@ -398,6 +401,40 @@ status=400
 ```
 ***
 ### 排行榜部分  
+#### average  
+**请求方式**：GET  
+**请求URL**：`/ranking/average/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "average": "平均分数"
+},
+status=200
+```
+* ID异常  
+```python
+status=400
+```
+#### average_list  
+**请求方式**：GET  
+**请求URL**：`/ranking/average_list`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "data": [
+        "平均分数1",
+        "平均分数2",
+        ...
+    ]
+},
+status=200
+```
 #### clear  
 **请求方式**：POST  
 **请求URL**：`/ranking/clear`  
@@ -550,7 +587,7 @@ status=200
 **请求方式**：POST  
 **请求URL**：`/ranking/update`  
 **请求参数**：字符串datasetId，字符串llmId，字符串score  
-**额外需求**：admin_required    
+**额外需求**：login_required    
 **返回情况**：  
 * 正常返回  
 ```python
@@ -563,6 +600,7 @@ status=200
 ```python
 status=400
 ```
+**特殊说明**：接口会检查数据集是否为主观题，正常用户仅能对主观题进行评分，管理员则不受限制。  
 ***
 ### 模型测试部分  
 #### create  
@@ -600,6 +638,27 @@ status=200
 * ID异常  
 ```python
 status=400
+```
+#### list  
+**请求方式**：GET  
+**请求URL**：`/testing/list`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "data": [
+        {
+            "id": "模型id",
+            "name": "模型名称",
+            "api_url": "api地址",
+            ...
+        },
+        ...
+    ]
+},
+status=200
 ```
 #### retrieve  
 **请求方式**：GET  

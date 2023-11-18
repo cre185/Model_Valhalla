@@ -14,11 +14,17 @@ from rest_framework import generics
 # Create your views here.
 
 class updateView(APIView):
-    @admin_required
+    @login_required
     def post(self, request):
         data = request.data
         dataset_id = data['datasetId']
         llm_id = data['llmId']
+        try:
+            d = dataset.Dataset.objects.get(id=dataset_id)
+            if not d.subjective and not request.user.is_admin:
+                return Response({"message": "User must be admin."}, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response({"message": "Invalid datasetId or llmId"}, status=status.HTTP_400_BAD_REQUEST)
         try:
             target = Credit.objects.get(dataset_id=dataset_id, LLM_id=llm_id)
             serializer = CreditSerializer(target, data=data, partial=True)
@@ -61,7 +67,37 @@ class clearView(APIView):
         except:
             return Response({"message": "Invalid datasetId or llmId"}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
+class averageView(APIView):
+    def get(self, request, *args, **kwargs):
+        llm_id = kwargs['id']
+        try:
+            testing.LLMs.objects.get(id=llm_id)
+        except:
+            return Response({"message": "Invalid datasetId"}, status=status.HTTP_400_BAD_REQUEST)
+        result = Credit.objects.filter(LLM_id=llm_id)
+        average,count = 0,0
+        for i in result:
+            if i.credit!=None:
+                average+=i.credit
+                count+=1
+        average/=count
+        return Response({'message': 'ok', 'average': average}, status=status.HTTP_200_OK)
     
+class averageListView(APIView):
+    def get(self, request):
+        result = testing.LLMs.objects.all()
+        data=[]
+        for i in result:
+            average,count = 0,0
+            for j in Credit.objects.filter(LLM_id=i.id):
+                if j.credit!=None:
+                    average+=j.credit
+                    count+=1
+            average/=count
+            data.append(average)
+        return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
+
 class commentView(APIView):
     @login_required
     def post(self, request):

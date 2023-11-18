@@ -113,3 +113,22 @@ class testingView(APIView):
             tar.credit = (100*correct_amount)/amount
             tar.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
+class battleView(APIView):
+    @login_required
+    def post(self, request):
+        data = request.data
+        if 'llmId' not in data or 'datasetId' not in data:
+            return Response({"message": "llmId and datasetId are required"}, status=status.HTTP_400_BAD_REQUEST)
+        llm = LLMs.objects.get(id=int(data['llmId']))
+        dataset = dataset.Dataset.objects.get(id=int(data['datasetId']))
+        if not dataset.data_file:
+            return Response({"message": "dataset has no data file"}, status=status.HTTP_400_BAD_REQUEST)
+        if not llm.api_url:
+            return Response({"message": "llm has no api url"}, status=status.HTTP_400_BAD_REQUEST)
+        autoTest = AutoTest()
+        result = autoTest.whole_test(dataset.data_file.path, llm)
+        correct_amount = result[0]
+        amount = result[1]
+        return Response({"message": "ok", "correct_amount": correct_amount, "amount": amount}, status=status.HTTP_200_OK)
+    

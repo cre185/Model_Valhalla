@@ -42,6 +42,7 @@ class CreditModelTests(TestCase):
             '/dataset/create', 
             {
                 "name":"somedataset2",
+                "subjective":True,
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -141,6 +142,34 @@ class CreditModelTests(TestCase):
         json_data=response.json()
         self.assertEqual(json_data['message'], "Invalid datasetId or llmId")
         self.assertEqual(response.status_code, 400)
+        # update objective dataset as a user
+        user2=User(
+            username="testuser2",
+            password="testpassword",
+            mobile="12345678902",
+        )
+        user2.save()
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser2",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/ranking/update',
+            {
+                "datasetId":dataset_id,
+                "llmId":llm_id,
+                "credit":0,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 400)
 
     def test_list(self):
         jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
@@ -189,6 +218,66 @@ class CreditModelTests(TestCase):
         self.assertEqual(json_data['data'][1]['credit'], None)
         self.assertEqual(json_data['data'][2]['credit'], None)
         self.assertEqual(json_data['data'][3]['credit'], 40)
+
+    def test_average(self):
+        # init credits first
+        jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
+        response=self.client.post(
+            '/ranking/update',
+            {
+                "datasetId":dataset_id,
+                "llmId":llm_id,
+                "credit":60,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response=self.client.post(
+            '/ranking/update',
+            {
+                "datasetId":dataset_id2,
+                "llmId":llm_id,
+                "credit":40,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response=self.client.post(
+            '/ranking/update',
+            {
+                "datasetId":dataset_id,
+                "llmId":llm_id2,
+                "credit":80,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        # test average for one llm
+        response=self.client.get(
+            '/ranking/average/1',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['average'], 50)
+        # test average for all llms
+        response=self.client.get(
+            '/ranking/average_list',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_data['data']), 2)
+        self.assertEqual(json_data['data'][1], 80)
+        # test average for invalid llm
+        response=self.client.get(
+            '/ranking/average/114514',
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 400)
 
 class CommentTests(TestCase):
     def setUp(self):
