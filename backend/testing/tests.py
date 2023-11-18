@@ -179,6 +179,14 @@ class LLMsModelTests(TestCase):
         )
         json_data=response.json()
         self.assertEqual(response.status_code, 404)
+    
+    def test_list(self):
+        response=self.client.get(
+            'testing/list'
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        print(json_data)
 
 class TestingModelTests(TestCase):
     def setUp(self):
