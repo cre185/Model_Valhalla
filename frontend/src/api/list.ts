@@ -32,6 +32,35 @@ export function queryPolicyList(params: PolicyParams) {
   });
 }
 
+export interface DatasetRecord {
+  id: string;
+  num: number;
+  name: string;
+  contentType: '书籍' | '图像分割' | '图像分类';
+  contentSize: number;
+  createdTime: string;
+  score: number;
+}
+
+export interface DatasetParams extends Partial<DatasetRecord> {
+  current: number;
+  pageSize: number;
+}
+
+export interface DatasetListRes {
+  list: DatasetRecord[];
+  total: number;
+}
+
+export function queryDatasetList(params: DatasetParams) {
+  return axios.get<DatasetListRes>('/api/list/policy', {
+    params,
+    paramsSerializer: (obj) => {
+      return qs.stringify(obj);
+    },
+  });
+}
+
 export interface ServiceRecord {
   id: number;
   title: string;
