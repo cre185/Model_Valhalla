@@ -40,6 +40,8 @@
     - [retrieve](#retrieve-2)
     - [update](#update-2)
   - [模型测试部分](#模型测试部分)
+    - [battle\_match](#battle_match)
+    - [battle\_result](#battle_result)
     - [create](#create-1)
     - [delete](#delete-2)
     - [list](#list-1)
@@ -603,6 +605,42 @@ status=400
 **特殊说明**：接口会检查数据集是否为主观题，正常用户仅能对主观题进行评分，管理员则不受限制。  
 ***
 ### 模型测试部分  
+#### battle_match  
+**请求方式**：POST  
+**请求URL**：`/testing/battle_match`  
+**请求参数**：字符串llmId  
+**额外需求**：login_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "llmId": "模型id",
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
+**特殊说明**：当数据库中仅有一个数据集时返回值也为200，但不包含llmId。  
+#### battle_result  
+**请求方式**：POST  
+**请求URL**：`/testing/battle_result`  
+**请求参数**：字符串llmId1，字符串llmId2，整数result  
+**额外需求**：login_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 #### create  
 **请求方式**：POST  
 **请求URL**：`/testing/create`  

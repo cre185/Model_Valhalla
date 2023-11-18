@@ -227,3 +227,118 @@ class TestingModelTests(TestCase):
     
     def test_testing(self):
         pass
+
+class BattleModelTests(TestCase):
+    def setUp(self):
+        user=User(
+            username="testuser",
+            password="testpassword",
+            mobile="12345678901",
+            is_admin=True,
+        )
+        user.save()
+        llm1=LLMs(
+            name="llm1",
+        )
+        llm1.save()
+        llm2=LLMs(
+            name="llm2",
+        )
+        llm2.save()
+        llm3=LLMs(
+            name="llm3",
+        )
+        llm3.save()
+        self.client=APIClient()
+    
+    def test_battle(self):
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/testing/battle_result',
+            {
+                "llmId1":1,
+                "llmId2":2,
+                "result":1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(LLMs.objects.get(id=1).elo_credit>1500, True)
+        self.assertEqual(LLMs.objects.get(id=2).elo_credit<1500, True)
+        response=self.client.post(
+            '/testing/battle_result',
+            {
+                "llmId1":2,
+                "llmId2":3,
+                "result":-1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(LLMs.objects.get(id=2).elo_credit<1500, True)
+        self.assertEqual(LLMs.objects.get(id=3).elo_credit>1500, True)
+        # request with same llm  
+        response=self.client.post(
+            '/testing/battle_result',
+            {
+                "llmId1":1,
+                "llmId2":1,
+                "result":-1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 400)
+        # request with invalid llm
+        response=self.client.post(
+            '/testing/battle_result',
+            {
+                "llmId1":1,
+                "llmId2":4,
+                "result":-1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 400)
+        # test battle matching
+        response=self.client.post(
+            '/testing/battle_match',
+            {
+                "llmId":1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(json_data['llmId'], 3)
+        response=self.client.post(
+            '/testing/battle_match',
+            {
+                "llmId":2,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(json_data['llmId'], 3)
