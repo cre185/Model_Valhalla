@@ -82,3 +82,14 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
+    
+class listView(mixins.ListModelMixin, generics.GenericAPIView):
+    queryset = Dataset.objects.all()
+    serializer_class = DatasetSerializer
+    
+    def get(self, request, *args, **kwargs):
+        result = self.list(request, *args, **kwargs)
+        data = result.data
+        for i in range(len(data)):
+            data[i]['add_time'] = data[i]['add_time'].split('T')[0]
+        return Response(data, status=status.HTTP_200_OK)
