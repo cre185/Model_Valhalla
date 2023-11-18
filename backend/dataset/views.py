@@ -92,4 +92,4 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
         data = result.data
         for i in range(len(data)):
             data[i]['add_time'] = data[i]['add_time'].split('T')[0]
-        return Response(data, status=status.HTTP_200_OK)
+        return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
