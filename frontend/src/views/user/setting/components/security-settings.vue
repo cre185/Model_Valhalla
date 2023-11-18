@@ -85,8 +85,8 @@
               {{ $t('userSetting.certification.button.bound') + userStore.email }}
             </a-typography-paragraph>
           </div>
-          <div v-else class="content">$t('userSetting.certification.button.email.not_bound')
-            <a-typography-paragraph> {{  }} </a-typography-paragraph>
+          <div v-else class="content">
+            <a-typography-paragraph> {{ $t('userSetting.certification.button.email.not_bound') }} </a-typography-paragraph>
           </div>
           <div v-if="userStore.email" class="operation">
             <a-link @click="changeEmailFunc">

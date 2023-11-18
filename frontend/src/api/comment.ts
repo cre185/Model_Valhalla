@@ -1,25 +1,25 @@
 class MyComment {
-    author:string
+    public author:string
 
-    toAuthor:string
+    public toAuthor:string
 
-    avatar:string
+    public avatar:string
 
-    content:string
+    public content:string
 
-    datetime:string
+    public datetime:string
 
-    like:number
+    public like:number
 
-    ifLike:boolean
+    public ifLike:boolean
 
-    ifHate:boolean
+    public ifHate:boolean
 
-    ifReply:boolean
+    public ifReply:boolean
 
-    lastClicked:number
+    public lastClicked:number
 
-    children:any[]
+    public children:any[]
 
     constructor(author:string, toAuthor:string, avatar:string, content:string, datetime:string, like:number, ifLike:boolean, ifHate:boolean, ifReply:boolean, children:any[]) {
         this.author = author
