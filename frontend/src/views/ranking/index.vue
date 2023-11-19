@@ -211,7 +211,6 @@
         <a-tab-pane key="3" title="对抗记录">
         </a-tab-pane>
         <a-tab-pane key="4" title="讨论区">
-          <ModelDiscussionArea />
         </a-tab-pane>
       </a-tabs>
     </div>

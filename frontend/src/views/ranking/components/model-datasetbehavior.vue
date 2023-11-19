@@ -50,12 +50,12 @@
                                     :label="$t('ranking.behaviour.dataset.contentsize')"
                                 >   
                                     <a-input
-                                        v-model="SearchFormModel.contentSize"
+                                        v-model="SearchFormModel.contentSize_min"
                                         :placeholder="$t('ranking.behaviour.dataset.size.min.default')"
                                     ></a-input>
                                     <p>~</p>
                                     <a-input
-                                        v-model="SearchFormModel.contentSize"
+                                        v-model="SearchFormModel.contentSize_max"
                                         :placeholder="$t('ranking.behaviour.dataset.size.max.default')"
                                     ></a-input>
                                 </a-form-item>
@@ -155,7 +155,7 @@
                                                 {num: 2, name: 'LVIS', contentType: "图像分割", contentSize: 253, createdTime: "2022-10-11", score: 98},
                                                 {num: 3, name: 'Crowd Segmentation', contentType: "图像分割", contentSize: 895, createdTime: "2022-09-11", score: 96},
                                                 {num: 4, name: 'MNIST', contentType: "图像分类", contentSize: 284, createdTime: "2019-05-21", score: 100},
-                                                {num: 5, name: 'Kaggle', contentType: "图像分类", contentSize: 442, createdTime: "2023-11-11", score: 98},
+                                                {num: 5, name: 'Kaggle', contentType: "图像分类", contentSize: 442, createdTime: "2023-11-19", score: 98},
                                                 {num: 6, name: 'LVIS-II', contentType: "图像分类", contentSize: 666, createdTime: "2019-12-25", score: 60},
                                                 {num: 7, name: 'LVIS-III', contentType: "书籍", contentSize: 359, createdTime: "2022-01-01", score: 99},
                                             ]);
@@ -163,7 +163,7 @@
                                                 {num: 2, name: 'LVIS', contentType: "图像分割", contentSize: 253, createdTime: "2022-10-11", score: 98},
                                                 {num: 3, name: 'Crowd Segmentation', contentType: "图像分割", contentSize: 895, createdTime: "2022-09-11", score: 96},
                                                 {num: 4, name: 'MNIST', contentType: "图像分类", contentSize: 284, createdTime: "2019-05-21", score: 100},
-                                                {num: 5, name: 'Kaggle', contentType: "图像分类", contentSize: 442, createdTime: "2023-11-11", score: 98},
+                                                {num: 5, name: 'Kaggle', contentType: "图像分类", contentSize: 442, createdTime: "2023-11-19", score: 98},
                                                 {num: 6, name: 'LVIS-II', contentType: "图像分类", contentSize: 666, createdTime: "2019-12-25", score: 60},
                                                 {num: 7, name: 'LVIS-III', contentType: "书籍", contentSize: 359, createdTime: "2022-01-01", score: 99},
                                             ]);
@@ -181,8 +181,9 @@
             num: '',
             name: '',
             contentType: '',
-            contentSize: '',
-            createdTime: [],
+            contentSize_min: '',
+            contentSize_max: '',
+            createdTime: ['',''],
             score: '',
         };
     };
@@ -292,7 +293,33 @@
             {
                 result=result.filter(item => item.contentType === SearchFormModel.value.contentType);
             }
+            if(SearchFormModel.value.contentSize_min !== '')
+            {
+                result=result.filter(item => item.contentSize.toString() >= SearchFormModel.value.contentSize_min);
+            }
+            if(SearchFormModel.value.contentSize_max !== '')
+            {
+                result=result.filter(item => item.contentSize.toString() <= SearchFormModel.value.contentSize_max);
+            }
+            if(SearchFormModel.value.score !== '')
+            {
+                result=result.filter(item => item.score.toString() === SearchFormModel.value.score);
+            }
+            if(SearchFormModel.value.createdTime[0] === '' || SearchFormModel.value.createdTime[1] === '')
+            {
+                return result;
+            }
+            if(SearchFormModel.value.createdTime){
+                result=result.filter(item => {
+                    const itemCreatedTime = new Date(item.createdTime);
+                    const dateMin = new Date(SearchFormModel.value.createdTime[0]);
+                    const dateMax = new Date(SearchFormModel.value.createdTime[1]);
+                    const meetsMinCondition = dateMin ? itemCreatedTime >= dateMin : true;
+                    const meetsMaxCondition = dateMax ? itemCreatedTime <= dateMax : true;
 
+                    return meetsMinCondition && meetsMaxCondition;
+                });
+            }
             return result;
         });
         renderData.value = filteredData.value;
