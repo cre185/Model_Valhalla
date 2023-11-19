@@ -1,12 +1,10 @@
 <template>
     <div class="dataset-behaviour">
-        <a-card class="general-card" :title="$t('menu.list.searchTable')">
+        <a-card class="general-card">
             <a-row>
                 <a-col :flex="1">
                     <a-form
                         :model="SearchFormModel"
-                        :label-col-props="{ span: 6}"
-                        :wrapper-col-props="{ span: 18}"
                         label-align="left"
                     >
                         <a-row :gutter="16">
@@ -14,6 +12,8 @@
                                 <a-form-item
                                     field="number"
                                     :label="$t('ranking.behaviour.dataset.num')"
+                                    :label-col-props="{ span: 7 }"
+                                    :wrapper-col-props="{ span: 17 }"
                                 >
                                     <a-input
                                         v-model="SearchFormModel.num"
@@ -25,6 +25,8 @@
                                 <a-form-item
                                     field="name"
                                     :label="$t('ranking.behaviour.dataset.name')"
+                                    :label-col-props="{ span: 7 }"
+                                    :wrapper-col-props="{ span: 17 }"
                                 >
                                     <a-input
                                         v-model="SearchFormModel.name"
@@ -36,6 +38,8 @@
                                 <a-form-item
                                     field="contentType"
                                     :label="$t('ranking.behaviour.dataset.contenttype')"
+                                    :label-col-props="{ span: 7 }"
+                                    :wrapper-col-props="{ span: 17 }"
                                 >
                                     <a-select
                                         v-model="SearchFormModel.contentType"
@@ -48,12 +52,14 @@
                                 <a-form-item
                                     field="contentSize"
                                     :label="$t('ranking.behaviour.dataset.contentsize')"
+                                    :label-col-props="{ span: 7 }"
+                                    :wrapper-col-props="{ span: 17 }"
                                 >   
                                     <a-input
                                         v-model="SearchFormModel.contentSize_min"
                                         :placeholder="$t('ranking.behaviour.dataset.size.min.default')"
                                     ></a-input>
-                                    <p>~</p>
+                                    <span> ~ </span>
                                     <a-input
                                         v-model="SearchFormModel.contentSize_max"
                                         :placeholder="$t('ranking.behaviour.dataset.size.max.default')"
@@ -64,6 +70,8 @@
                                 <a-form-item
                                     field="createdTime"
                                     :label="$t('ranking.behaviour.dataset.createdTime')"
+                                    :label-col-props="{ span: 7 }"
+                                    :wrapper-col-props="{ span: 17 }"
                                 >
                                     <a-range-picker
                                         v-model="SearchFormModel.createdTime"
@@ -75,10 +83,17 @@
                                 <a-form-item
                                     field="score"
                                     :label="$t('ranking.behaviour.dataset.score')"
+                                    :label-col-props="{ span: 7 }"
+                                    :wrapper-col-props="{ span: 17 }"
                                 >   
                                     <a-input
-                                        v-model="SearchFormModel.score"
-                                        :placeholder="$t('ranking.behaviour.dataset.score.default')"
+                                        v-model="SearchFormModel.score_min"
+                                        :placeholder="$t('ranking.behaviour.dataset.score_min.default')"
+                                    ></a-input>
+                                    <span> ~ </span>
+                                    <a-input
+                                        v-model="SearchFormModel.score_max"
+                                        :placeholder="$t('ranking.behaviour.dataset.score_max.default')"
                                     ></a-input>
                                 </a-form-item>
                             </a-col>
@@ -151,21 +166,21 @@
     const { t } = useI18n();
     const {loading, setLoading} = useLoading(false);
     const showColumns = ref<Column[]>([]);
-    const renderData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "书籍", contentSize: 283, createdTime: "2021-02-28", score: 98},
-                                                {num: 2, name: 'LVIS', contentType: "图像分割", contentSize: 253, createdTime: "2022-10-11", score: 98},
-                                                {num: 3, name: 'Crowd Segmentation', contentType: "图像分割", contentSize: 895, createdTime: "2022-09-11", score: 96},
-                                                {num: 4, name: 'MNIST', contentType: "图像分类", contentSize: 284, createdTime: "2019-05-21", score: 100},
-                                                {num: 5, name: 'Kaggle', contentType: "图像分类", contentSize: 442, createdTime: "2023-11-19", score: 98},
-                                                {num: 6, name: 'LVIS-II', contentType: "图像分类", contentSize: 666, createdTime: "2019-12-25", score: 60},
-                                                {num: 7, name: 'LVIS-III', contentType: "书籍", contentSize: 359, createdTime: "2022-01-01", score: 99},
+    const renderData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
+                                                {num: 2, name: 'LVIS', contentType: "全部", contentSize: 253, createdTime: "2022-10-11", score: 98},
+                                                {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
+                                                {num: 4, name: 'MNIST', contentType: "全部", contentSize: 284, createdTime: "2019-05-21", score: 100},
+                                                {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
+                                                {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
+                                                {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
                                             ]);
-    const originData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "书籍", contentSize: 283, createdTime: "2021-02-28", score: 98},
-                                                {num: 2, name: 'LVIS', contentType: "图像分割", contentSize: 253, createdTime: "2022-10-11", score: 98},
-                                                {num: 3, name: 'Crowd Segmentation', contentType: "图像分割", contentSize: 895, createdTime: "2022-09-11", score: 96},
-                                                {num: 4, name: 'MNIST', contentType: "图像分类", contentSize: 284, createdTime: "2019-05-21", score: 100},
-                                                {num: 5, name: 'Kaggle', contentType: "图像分类", contentSize: 442, createdTime: "2023-11-19", score: 98},
-                                                {num: 6, name: 'LVIS-II', contentType: "图像分类", contentSize: 666, createdTime: "2019-12-25", score: 60},
-                                                {num: 7, name: 'LVIS-III', contentType: "书籍", contentSize: 359, createdTime: "2022-01-01", score: 99},
+    const originData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
+                                                {num: 2, name: 'LVIS', contentType: "全部", contentSize: 253, createdTime: "2022-10-11", score: 98},
+                                                {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
+                                                {num: 4, name: 'MNIST', contentType: "全部", contentSize: 284, createdTime: "2019-05-21", score: 100},
+                                                {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
+                                                {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
+                                                {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
                                             ]);
     const cloneColumns = ref<Column[]>([]);
     const basePagination: Pagination = {
@@ -184,34 +199,24 @@
             contentSize_min: '',
             contentSize_max: '',
             createdTime: ['',''],
-            score: '',
+            score_min: '',
+            score_max: '',
         };
     };
 
     const SearchFormModel= ref(generateSearchFormModel());
     const contentTypeOptions = computed<SelectOptionData[]>(() => [
         {
-            label: t('ranking.behaviour.contentType.book'),
-            value: '书籍',
+            label: t('ranking.behaviour.contentType.mix'),
+            value: '全部',
         },
         {
-            label: t('ranking.behaviour.contentType.imageCut'),
-            value: '图像分割',
+            label: t('ranking.behaviour.contentType.subjective'),
+            value: '主观题',
         },
         {
-            label: t('ranking.behaviour.contentType.imageClassify'),
-            value: '图像分类',
-        },
-    ]);
-
-    const labelSearchOptions = computed<SelectOptionData[]>(() => [
-        {
-            label: t('ranking.behaviour.labelSearch.subjective'),
-            value: 'subjective',
-        },
-        {
-            label: t('ranking.behaviour.labelSearch.objective'),
-            value: 'objective',
+            label: t('ranking.behaviour.contentType.objective'),
+            value: '客观题',
         },
     ]);
 
@@ -295,15 +300,19 @@
             }
             if(SearchFormModel.value.contentSize_min !== '')
             {
-                result=result.filter(item => item.contentSize.toString() >= SearchFormModel.value.contentSize_min);
+                result=result.filter(item => item.contentSize >= Number(SearchFormModel.value.contentSize_min));
             }
             if(SearchFormModel.value.contentSize_max !== '')
             {
-                result=result.filter(item => item.contentSize.toString() <= SearchFormModel.value.contentSize_max);
+                result=result.filter(item => item.contentSize <= Number(SearchFormModel.value.contentSize_max));
             }
-            if(SearchFormModel.value.score !== '')
+            if(SearchFormModel.value.score_min !== '')
             {
-                result=result.filter(item => item.score.toString() === SearchFormModel.value.score);
+                result=result.filter(item => item.score >= Number(SearchFormModel.value.score_min));
+            }
+            if(SearchFormModel.value.score_max !== '')
+            {
+                result=result.filter(item => item.score <= Number(SearchFormModel.value.score_max));
             }
             if(SearchFormModel.value.createdTime[0] === '' || SearchFormModel.value.createdTime[1] === '')
             {
@@ -354,6 +363,7 @@
     );
 </script>
 <style scoped lang="less">
+
 .custom-filter {
   padding: 20px;
   background: var(--color-bg-5);
@@ -361,7 +371,10 @@
   border-radius: var(--border-radius-medium);
   box-shadow: 0 2px 5px rgb(0 0 0 / 10%);
 }
-
+.general-card {
+    padding: 10px;
+    
+}
 .custom-filter-footer {
   display: flex;
   justify-content: space-between;
