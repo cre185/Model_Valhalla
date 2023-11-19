@@ -8,4 +8,7 @@ urlpatterns = [
     path('testing', views.testingView.as_view(), name='testing'),
     path('update/<int:id>', views.updateView.as_view(), name='update'),
     path('retrieve/<int:id>', views.retrieveView.as_view(), name='retrieve'),
+    path('list', views.listView.as_view(), name='list'),
+    path('battle_match', views.battleMatchView.as_view(), name='battle_match'),
+    path('battle_result', views.battleResultView.as_view(), name='battle_result'),
 ]

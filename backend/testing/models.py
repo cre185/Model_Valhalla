@@ -9,7 +9,8 @@ class LLMs(models.Model):
     api_data = models.TextField(default='{"model": "gpt-3.5-turbo","messages": [{"role": "user", "content": "$PROMPT"}],"temperature": 0.7}')
     api_RPM = models.IntegerField(null=True, default=3)
     description = models.TextField(default='')
+    elo_credit = models.FloatField(default=1500)
     add_time = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
-    
+

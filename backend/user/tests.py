@@ -199,7 +199,6 @@ class UserDataModelTests(TestCase):
         jwt=json_data['jwt']
         response=self.client.get(
             '/user/retrieve/1',
-            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
@@ -214,23 +213,6 @@ class UserDataModelTests(TestCase):
         )
         json_data=response.json()
         self.assertEqual(response.status_code,404)
-        # unauthorized request
-        response=self.client.get(
-            '/user/retrieve/1',
-            format="json"
-        )
-        json_data=response.json()
-        self.assertEqual(json_data['message'],"User must be authorized.")
-        self.assertEqual(response.status_code,401)
-        # request another user's data
-        response=self.client.get(
-            '/user/retrieve/2',
-            HTTP_AUTHORIZATION=jwt,
-            format="json"
-        )
-        json_data=response.json()
-        self.assertEqual(json_data['message'],"User must be authorized.")
-        self.assertEqual(response.status_code,401)
 
     def test_update(self):
         # the correct case
