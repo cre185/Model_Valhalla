@@ -13,7 +13,7 @@ class Credit(models.Model):
 
 class DatasetComment(models.Model):
     dataset = models.ForeignKey(to=dataset.Dataset, on_delete=models.CASCADE)
-    respond = models.IntegerField(null=True)
+    respond_to = models.IntegerField(null=True)
     like = models.ManyToManyField(to=user.User, through='DatasetLike', related_name='dataset_comment_like')
     user = models.ForeignKey(to=user.User, on_delete=models.SET_NULL, null=True)
     comment = models.TextField()
@@ -25,7 +25,7 @@ class DatasetLike(models.Model):
 
 class LLMComment(models.Model):
     llm = models.ForeignKey(to=testing.LLMs, on_delete=models.CASCADE)
-    respond = models.IntegerField(null=True)
+    respond_to = models.IntegerField(null=True)
     like = models.ManyToManyField(to=user.User, through='LLMLike', related_name='llm_comment_like')
     user = models.ForeignKey(to=user.User, on_delete=models.SET_NULL, null=True)
     comment = models.TextField()
