@@ -7,6 +7,7 @@ export default {
   'rankings.llm.data.details': 'Details',
   'rankings.llm.data.license': 'License',
   'rankings.llm.details.subscribe.btn': 'Subscribe',
+  'ranking.actions.setColumn': 'Column Setting',
   'ranking.profile.info.description': 'Model Description',
   'ranking.profile.info.paper': 'Relevant Papers',
   'ranking.profile.info.license': 'License',

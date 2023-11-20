@@ -119,9 +119,9 @@
               <icon-download />
             </template>
             {{ $t('searchTable.operation.download') }}
-          </a-button>
+          </a-button >
           <a-tooltip :content="$t('searchTable.actions.refresh')">
-            <div class="action-icon"
+            <div class="action-icon" @click="fetchData"
             ><icon-refresh size="18"
             /></div>
           </a-tooltip>
@@ -140,6 +140,40 @@
               </a-doption>
             </template>
           </a-dropdown>
+          <a-tooltip :content="$t('ranking.actions.srColumnta')">
+            <a-popover
+                trigger="click"
+                position="bl"
+                @popup-visible-change="popupVisibleChange"
+            >
+              <div class="action-icon"><icon-settings size="18" /></div>
+              <template #content>
+                <div id="tableSetting">
+                  <div
+                      v-for="(item, index) in showColumns"
+                      :key="item.dataIndex"
+                      class="setting"
+                  >
+                    <div style="margin-right: 4px; cursor: move">
+                      <icon-drag-arrow />
+                    </div>
+                    <div>
+                      <a-checkbox
+                          v-model="item.checked"
+                          @change="
+                          handleChange($event, item as TableColumnData, index)
+                        "
+                      >
+                      </a-checkbox>
+                    </div>
+                    <div class="title">
+                      {{ item.title === '#' ? '序列号' : item.title }}
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </a-popover>
+          </a-tooltip>
         </a-col>
       </a-row>
       <a-table
@@ -150,15 +184,13 @@
           :data="renderData"
           :bordered="false"
           :size="size"
+          @page-change="onPageChange"
       >
         <template #ranking="{ record }">
           {{ record.ranking }}
         </template>
         <template #name="{ record }">
           {{ record.name }}
-        </template>
-        <template #mmluScore="{ record }">
-          {{ record.mmluScore }}
         </template>
         <template #datasetScore="{ record }">
           {{ record.datasetScore }}
@@ -182,7 +214,8 @@
             :footer="false"
             @cancel="handleCancel"
             @open="setDrawerStyle"
-            unmountOnClose>
+            unmountOnClose
+  >
     <template #title>
       <header class="drawer-model-title">
         <div class="drawer-model-title-text">
@@ -223,7 +256,7 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
   import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
-  import { LLMRankingData } from "@/api/model-list";
+  import {LLMRankingData, queryLLMList} from "@/api/model-list";
   import { Pagination } from '@/types/global';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
@@ -232,26 +265,27 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
   import ModelDiscussionArea from "./components/model-discussion-area.vue";
   import ModelProfile from './components/model-profile.vue';
   import DatasetProfile from './components/model-datasetbehavior.vue'
-  
+
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
 
   const visible = ref(false);
   const generateFormModel = () => {
     return {
-      number: '',
+      id: null,
       name: '',
-      contentType: '',
-      filterType: '',
-      createdTime: [],
-      status: '',
+      ranking: null,
+      datasetScore: null,
+      eloScore: null,
+      license: '',
     };
   };
   const { loading, setLoading } = useLoading(false);
   const { t } = useI18n();
-  const renderData = ref<LLMRankingData[]>([{name: 'GPT-4', ranking: 1, mmluScore: 86.4, datasetScore: 8.99, eloScore: 1181, license: 'Proprietary'}]);
+  const renderData = ref<LLMRankingData[]>();
   const formModel = ref(generateFormModel());
   const cloneColumns = ref<Column[]>([]);
+  const additionalColumns = ref<Column[]>([]);
   const showColumns = ref<Column[]>([]);
   const currentLLM = ref<LLMRankingData>();
 
@@ -291,7 +325,7 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
       value: 'large',
     },
   ]);
-  const columns = computed<TableColumnData[]>(() => [
+  const originalColumns = computed<TableColumnData[]>(() => [
     {
       title: t('rankings.llm.data.ranking'),
       dataIndex: 'ranking',
@@ -305,15 +339,6 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
       title: t('rankings.llm.data.name'),
       dataIndex: 'name',
       slotName: 'name',
-      align: "center",
-      sortable: {
-        sortDirections: ['ascend', 'descend']
-      },
-    },
-    {
-      title: t('rankings.llm.data.mmluScore'),
-      dataIndex: 'mmluScore',
-      slotName: 'mmluScore',
       align: "center",
       sortable: {
         sortDirections: ['ascend', 'descend']
@@ -384,15 +409,11 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
       value: 'offline',
     },
   ]);
-  const fetchData = async (
-      params: PolicyParams = { current: 1, pageSize: 20 }
-  ) => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const { data } = await queryPolicyList(params);
-      renderData.value = data.list;
-      pagination.current = params.current;
-      pagination.total = data.total;
+      const { data } = await queryLLMList();
+      renderData.value = data.data;
     } catch (err) {
       // you can report use errorHandler or other
     } finally {
@@ -400,14 +421,14 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
     }
   };
 
-  const search = () => {
+  /* const search = () => {
     fetchData({
       ...basePagination,
       ...formModel.value,
     } as unknown as PolicyParams);
-  };
-  const onPageChange = (current: number) => {
-    fetchData({ ...basePagination, current });
+  }; */
+  const onPageChange = () => {
+    fetchData();
   };
 
   const reset = () => {

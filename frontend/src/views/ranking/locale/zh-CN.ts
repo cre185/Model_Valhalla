@@ -7,6 +7,7 @@ export default {
   'rankings.llm.data.details': '详情',
   'rankings.llm.data.license': '许可',
   'rankings.llm.details.subscribe.btn': '关注',
+  'ranking.actions.setColumn': '列设置',
   'ranking.profile.info.description': '模型描述',
   'ranking.profile.info.paper': '相关论文',
   'ranking.profile.info.license': '许可',
