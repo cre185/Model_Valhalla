@@ -37,7 +37,7 @@
         </span>
         </a-space>
       </span>
-      <span class="action" key="star" @click="item.changeHateState()">
+      <span class="action" key="star" @click="item.changeHateState(jwt)">
         <span v-if="item.ifHate">
           <IconThumbDownFill :style="{ color: '#1c61ff' }" />
         </span>
@@ -71,7 +71,7 @@
             </span>
           </a-space>
         </span>
-        <span class="action" key="star" @click="child.changeHateState()">
+        <span class="action" key="star" @click="child.changeHateState(jwt)">
           <span v-if="child.ifHate">
             <IconThumbDownFill :style="{ color: '#1c61ff' }" />
           </span>

@@ -71,10 +71,19 @@ class MyComment {
         }
     }
 
-    changeHateState() {
+    async changeHateState(jwt:string) {
         this.ifHate = !this.ifHate
+        await axios.post(apiCat('/ranking/like_llm_comment'), {
+            id: this.commentId,
+            dislike: true
+        }, {
+            headers: {
+                Authorization: jwt,
+            },
+        });
         if (this.ifLike) {
             this.ifLike = false;
+            this.decreaseLike()
         }
     }
 
@@ -140,7 +149,7 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
         });
 
         if (item.respond_to === null) {
-            const tmp = new MyComment(username!, '', avatar!, item.comment, item.add_time, item.like, item.if_like, false, false, []);
+            const tmp = new MyComment(username!, '', avatar!, item.comment, item.add_time, item.like, item.if_like, item.if_dislike, false, []);
             tmp.commentId = item.id;
             commentDetails.value.push(tmp);
         } else {
@@ -151,7 +160,7 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
             await getUsername(targetId).then((returnValue) => {
                 targetName = returnValue;
             });
-            const tmp = new MyComment(username!, targetName!, avatar!, item.comment, item.add_time, item.like, item.if_like, false, false, []);
+            const tmp = new MyComment(username!, targetName!, avatar!, item.comment, item.add_time, item.like, item.if_like, item.if_dislike, false, []);
             tmp.commentId = item.id;
             tmp.toId = target.commentId;
             while (target.respond_to !== null) {
