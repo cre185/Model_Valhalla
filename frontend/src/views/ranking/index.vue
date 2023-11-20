@@ -402,7 +402,7 @@
 
 
   const handleChangeComment = async (index: number, content: MyComment) => {
-    await updateComment(ModelID, content, jwt!);
+    await updateComment(currentLLM.value!.id.toString()!, content, jwt!);
     if (index === -1) {
       commentDetails.value.push(content);
     } else {
