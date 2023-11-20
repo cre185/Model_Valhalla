@@ -12,6 +12,7 @@
                                 <a-form-item
                                     field="number"
                                     :label="$t('ranking.behaviour.dataset.num')"
+                                    :rules="numRules"
                                     :label-col-props="{ span: 7 }"
                                     :wrapper-col-props="{ span: 17 }"
                                 >
@@ -52,6 +53,7 @@
                                 <a-form-item
                                     field="contentSize"
                                     :label="$t('ranking.behaviour.dataset.contentsize')"
+                                    :rules="sizeRules"
                                     :label-col-props="{ span: 7 }"
                                     :wrapper-col-props="{ span: 17 }"
                                 >   
@@ -83,6 +85,7 @@
                                 <a-form-item
                                     field="score"
                                     :label="$t('ranking.behaviour.dataset.score')"
+                                    :rules="scoreRules"
                                     :label-col-props="{ span: 7 }"
                                     :wrapper-col-props="{ span: 17 }"
                                 >   
@@ -151,7 +154,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, ref, reactive, watch, nextTick,} from 'vue';
+    import { computed, ref, reactive, watch, nextTick,getCurrentInstance} from 'vue';
     import { IconSearch } from '@arco-design/web-vue/es/icon';
     import useLoading from '@/hooks/loading';
     import { useI18n } from 'vue-i18n';
@@ -164,20 +167,21 @@
 
     type Column = TableColumnData & { checked?: true };
     const { t } = useI18n();
+    const { proxy } = getCurrentInstance();
     const {loading, setLoading} = useLoading(false);
     const showColumns = ref<Column[]>([]);
     const renderData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
-                                                {num: 2, name: 'LVIS', contentType: "全部", contentSize: 253, createdTime: "2022-10-11", score: 98},
+                                                {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
                                                 {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
-                                                {num: 4, name: 'MNIST', contentType: "全部", contentSize: 284, createdTime: "2019-05-21", score: 100},
+                                                {num: 4, name: 'MNIST', contentType: "混合题", contentSize: 284, createdTime: "2019-05-21", score: 100},
                                                 {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
                                                 {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
                                                 {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
                                             ]);
     const originData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
-                                                {num: 2, name: 'LVIS', contentType: "全部", contentSize: 253, createdTime: "2022-10-11", score: 98},
+                                                {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
                                                 {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
-                                                {num: 4, name: 'MNIST', contentType: "全部", contentSize: 284, createdTime: "2019-05-21", score: 100},
+                                                {num: 4, name: 'MNIST', contentType: "混合题", contentSize: 284, createdTime: "2019-05-21", score: 100},
                                                 {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
                                                 {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
                                                 {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
@@ -208,7 +212,7 @@
     const contentTypeOptions = computed<SelectOptionData[]>(() => [
         {
             label: t('ranking.behaviour.contentType.mix'),
-            value: '全部',
+            value: '混合题',
         },
         {
             label: t('ranking.behaviour.contentType.subjective'),
@@ -223,6 +227,119 @@
     const reset = () => {
         SearchFormModel.value = generateSearchFormModel();
     };
+    
+    const numRules=[
+        {
+            required: false,
+            validator: (value: string, callback: (error?: string) => void) => {
+                return new Promise<void>((resolve) => {
+                    window.setTimeout(() => {
+                        value = SearchFormModel.value.num;
+                        if(value !== '')
+                        {
+                            if(!/^\d+$/.test(value))
+                            {
+                                callback(proxy.$t('ranking.behaviour.dataset.num.errormsg'));
+                            }
+                        }
+                        resolve();
+                    }, 1000);
+                });
+            },
+            trigger: ['change', 'blur'],
+        },
+    ];
+    const sizeRules=[
+        {
+            required: false,
+            validator: (value: string, callback: (error?: string) => void) => {
+                return new Promise<void>((resolve) => {
+                    window.setTimeout(() => {
+                        value = SearchFormModel.value.contentSize_min;
+                        if(value !== '')
+                        {
+                            if(!/^\d+$/.test(value))
+                            {
+                                callback(proxy.$t('ranking.behaviour.dataset.size.errormsg'));
+                            }
+                        }
+                        resolve();
+                    }, 1000);
+                });
+            },
+            trigger: ['blur', 'change'],
+        },
+        {
+            required: false,
+            validator: (value: string, callback: (error?: string) => void) => {
+                return new Promise<void>((resolve) => {
+                    window.setTimeout(() => {
+                        value = SearchFormModel.value.contentSize_max;
+                        if(value !== '')
+                        {
+                            if(!/^\d+$/.test(value))
+                            {
+                                callback(proxy.$t('ranking.behaviour.dataset.size.errormsg'));
+                            }
+                        }
+                        resolve();
+                    }, 1000);
+                });
+            },
+            trigger: ['blur', 'change'],
+        },
+    ];
+
+    const scoreRules=[
+        {
+            required: false,
+            validator: (value: string, callback: (error?: string) => void) => {
+                return new Promise<void>((resolve) => {
+                    window.setTimeout(() => {
+                        value = SearchFormModel.value.score_min;
+                        if(value !== '')
+                        {
+                            const scoreNumMin = parseInt(value, 10);
+                            if(!/^\d+$/.test(value))
+                            {
+                                callback(proxy.$t('ranking.behaviour.dataset.size.errormsg'));
+                            }
+                            else if(scoreNumMin < 0 || scoreNumMin > 100)
+                            {
+                                callback(proxy.$t('ranking.behaviour.dataset.score.errormsg'));
+                            }
+                        }
+                        resolve();
+                    }, 1000);
+                });
+            },
+            trigger: ['blur', 'change'],
+        },
+        {
+            required: false,
+            validator: (value: string, callback: (error?: string) => void) => {
+                return new Promise<void>((resolve) => {
+                    window.setTimeout(() => {
+                        value = SearchFormModel.value.score_max;
+                        if(value !== '')
+                        {
+                            const scoreNum = parseInt(value, 10);
+                            if(!/^\d+$/.test(value))
+                            {
+                                callback(proxy.$t('ranking.behaviour.dataset.size.errormsg'));
+                            }
+                            else if(scoreNum < 0 || scoreNum > 100)
+                            {
+                                callback(proxy.$t('ranking.behaviour.dataset.score.errormsg'));
+                            }
+                        }
+                        resolve();
+                    }, 1000);
+                });
+            },
+            trigger: ['blur', 'change'],
+        },
+    ];
     
     const columns = computed<TableColumnData[]>(() => [
         {

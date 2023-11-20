@@ -8,6 +8,10 @@ class MyComment {
 
     public toAuthor:string
 
+    public commentId: number = -1
+
+    public toId: undefined|number
+
     public avatar:string
 
     public content:string
@@ -84,7 +88,7 @@ class MyComment {
         newComment.content = ''
     }
 
-    addComment(item:MyComment, newComment:MyComment) {
+    async addComment(item: MyComment, newComment: MyComment, modelId:string, jwt:string) {
         this.ifReply = false
         const tmp = new MyComment('', '', '', '', '', 0, false, false, false, []);
         const date = new Date();
@@ -96,14 +100,17 @@ class MyComment {
         tmp.datetime = `${year}-${month}-${day} ${hours}:${minutes}`;
         if (newComment.toAuthor === '') {
             tmp.content = `${newComment.content}`;
-        }
-        else {
+        } else {
             tmp.content = `回复 @ ${newComment.toAuthor} :${newComment.content}`;
         }
         tmp.avatar = newComment.avatar;
         tmp.author = newComment.author;
+        tmp.toAuthor = newComment.toAuthor;
+        tmp.toId = newComment.toId;
+        await updateComment(modelId, tmp, jwt);
         item.children.push(tmp)
         newComment.content = ''
+        newComment.toId = undefined;
     }
 }
 
@@ -124,22 +131,39 @@ export async function getComment(ModelID: string, commentDetails: any) {
             avatar = returnValue;
         });
 
-        if (item.respond_to === undefined) {
+        if (item.respond_to === null) {
             const tmp = new MyComment(username!, '', avatar!, item.comment, item.add_time, item.like, false, false, false, []);
+            tmp.commentId = item.id;
             commentDetails.value.push(tmp);
         } else {
-            const index = item.respond_to - 1;
-            const targetId = response.data[item.respond_to-1].user;
-            let targetName:string;
+            let index = item.respond_to - 1;
+            let target = response.data.data[index];
+            const targetId = target.user;
+            let targetName = '';
             await getUsername(targetId).then((returnValue) => {
                 targetName = returnValue;
             });
             const tmp = new MyComment(username!, targetName!, avatar!, item.comment, item.add_time, item.like, false, false, false, []);
-            commentDetails.value[index].push(tmp);
+            tmp.commentId = item.id;
+            tmp.toId = target.commentId;
+            while (target.respond_to !== null) {
+                index = target.respond_to - 1;
+                target = response.data.data[index];
+            }
+            commentDetails.value[index].children.push(tmp);
         }
     }
 }
 
-export async function changeComment(ModelID: string, commentDetails: any) {
-    
+export async function updateComment(
+    modelId: string,
+    newComment: any,
+    jwt: string
+) {
+    const response = await axios.post(apiCat('/ranking/comment'),{ llm: modelId, comment: newComment.content, respond_to: newComment.toId }, {
+        headers: {
+            Authorization: jwt,
+        },
+    });
+    newComment.commentId = response.data.id;
 }
