@@ -24,7 +24,7 @@
       :datetime="item.datetime"
   >
     <template #actions>
-      <span class="action" key="heart" @click="item.changeLikeState()">
+      <span class="action" key="heart" @click="item.changeLikeState(jwt)">
         <a-space size="mini">
           <span v-if="item.ifLike">
           <IconThumbUpFill :style="{ color: '#1c61ff' }" />
@@ -37,7 +37,7 @@
         </span>
         </a-space>
       </span>
-      <span class="action" key="star" @click="item.changeHateState()">
+      <span class="action" key="star" @click="item.changeHateState(jwt)">
         <span v-if="item.ifHate">
           <IconThumbDownFill :style="{ color: '#1c61ff' }" />
         </span>
@@ -58,7 +58,7 @@
       :datetime="child.datetime"
     >
       <template #actions>
-        <span class="action" key="heart" @click="child.changeLikeState()">
+        <span class="action" key="heart" @click="child.changeLikeState(jwt)">
           <a-space size="mini">
             <span v-if="child.ifLike">
             <IconThumbUpFill :style="{ color: '#1c61ff' }" />
@@ -71,7 +71,7 @@
             </span>
           </a-space>
         </span>
-        <span class="action" key="star" @click="child.changeHateState()">
+        <span class="action" key="star" @click="child.changeHateState(jwt)">
           <span v-if="child.ifHate">
             <IconThumbDownFill :style="{ color: '#1c61ff' }" />
           </span>

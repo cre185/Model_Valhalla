@@ -22,6 +22,7 @@ class DatasetComment(models.Model):
 class DatasetLike(models.Model):
     comment = models.ForeignKey(to=DatasetComment, on_delete=models.CASCADE)
     user = models.ForeignKey(to=user.User, on_delete=models.SET_NULL, null=True)
+    dislike = models.BooleanField(default=False)
 
 class LLMComment(models.Model):
     llm = models.ForeignKey(to=testing.LLMs, on_delete=models.CASCADE)
@@ -34,3 +35,4 @@ class LLMComment(models.Model):
 class LLMLike(models.Model):
     comment = models.ForeignKey(to=LLMComment, on_delete=models.CASCADE)
     user = models.ForeignKey(to=user.User, on_delete=models.SET_NULL, null=True)
+    dislike = models.BooleanField(default=False)

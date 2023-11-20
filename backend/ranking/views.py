@@ -34,15 +34,15 @@ class updateView(APIView):
             return Response({"message": "Invalid credit"}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({"message": "Invalid datasetId or llmId"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class listView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Credit.objects.all()
     serializer_class = CreditSerializer
-    
+
     def get(self, request):
         result = self.list(request)
         return Response({'message': 'ok', 'data': result.data}, status=status.HTTP_200_OK)
-    
+
 class retrieveView(APIView):
     def post(self, request):
         data = request.data
@@ -53,7 +53,7 @@ class retrieveView(APIView):
             return Response({"message": "ok", "credit": target.credit}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid datasetId or llmId"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class clearView(APIView):
     @admin_required
     def post(self, request):
@@ -81,9 +81,10 @@ class averageView(APIView):
             if i.credit!=None:
                 average+=i.credit
                 count+=1
-        average/=count
+        if count != 0:
+            average/=count
         return Response({'message': 'ok', 'average': average}, status=status.HTTP_200_OK)
-    
+
 class averageListView(APIView):
     def get(self, request):
         result = testing.LLMs.objects.all()
@@ -94,7 +95,8 @@ class averageListView(APIView):
                 if j.credit!=None:
                     average+=j.credit
                     count+=1
-            average/=count
+            if count != 0:
+                average/=count
             data.append(average)
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
 
@@ -111,8 +113,9 @@ class commentView(APIView):
             serializer.save()
             return Response({"message": "ok", "id": LLMComment.objects.last().id}, status=status.HTTP_200_OK)
         return Response({"message": "Invalid comment"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class datasetCommentView(APIView):
+    @login_required
     def get(self, request, *args, **kwargs):
         dataset_id = kwargs['id']
         try:
@@ -124,12 +127,15 @@ class datasetCommentView(APIView):
         for i in result:
             serializer = DatasetCommentSerializer(i)
             data.append(serializer.data)
-            likes=DatasetLike.objects.filter(comment=i)
+            likes=DatasetLike.objects.filter(comment=i, dislike=False)
             data[-1]['like']=len(likes)
+            data[-1]['if_like']=len(DatasetLike.objects.filter(user=request.user, comment=i, dislike=False))>0
+            data[-1]['if_dislike']=len(DatasetLike.objects.filter(user=request.user, comment=i, dislike=True))>0
             data[-1]['add_time']=data[-1]['add_time'].split('T')[0]+' '+data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
-    
+
 class llmCommentView(APIView):
+    @login_required
     def get(self, request, *args, **kwargs):
         llm_id = kwargs['id']
         try:
@@ -141,11 +147,13 @@ class llmCommentView(APIView):
         for i in result:
             serializer = LLMCommentSerializer(i)
             data.append(serializer.data)
-            likes=LLMLike.objects.filter(comment=i)
+            likes=LLMLike.objects.filter(comment=i, dislike=False)
             data[-1]['like']=len(likes)
+            data[-1]['if_like']=len(LLMLike.objects.filter(user=request.user, comment=i, dislike=False))>0
+            data[-1]['if_dislike']=len(LLMLike.objects.filter(user=request.user, comment=i, dislike=True))>0
             data[-1]['add_time']=data[-1]['add_time'].split('T')[0]+' '+data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
-    
+
 class likeDCommentView(APIView):
     @login_required
     def post(self, request):
@@ -154,10 +162,24 @@ class likeDCommentView(APIView):
             target = DatasetComment.objects.get(id=data['id'])
             try:
                 like=DatasetLike.objects.get(comment=target, user=request.user)
+                if 'dislike' in data:
+                    if like.dislike and not data['dislike'] or not like.dislike and data['dislike']:
+                        like.dislike=data['dislike']
+                        like.save()
+                        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+                else:
+                    if like.dislike:
+                        like.dislike=False
+                        like.save()
+                        return Response({"message": "ok"}, status=status.HTTP_200_OK)
                 like.delete()
             except:
-                like=DatasetLike.objects.create(comment=target, user=request.user)
-                like.save()
+                if 'dislike' in data:
+                    like=DatasetLike.objects.create(comment=target, user=request.user, dislike=data['dislike'])
+                    like.save()
+                else:
+                    like=DatasetLike.objects.create(comment=target, user=request.user)
+                    like.save()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid commentId"}, status=status.HTTP_400_BAD_REQUEST)
@@ -170,10 +192,24 @@ class likeLCommentView(APIView):
             target = LLMComment.objects.get(id=data['id'])
             try:
                 like=LLMLike.objects.get(comment=target, user=request.user)
+                if 'dislike' in data:
+                    if like.dislike and not data['dislike'] or not like.dislike and data['dislike']:
+                        like.dislike=data['dislike']
+                        like.save()
+                        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+                else:
+                    if like.dislike:
+                        like.dislike=False
+                        like.save()
+                        return Response({"message": "ok"}, status=status.HTTP_200_OK)
                 like.delete()
             except:
-                like=LLMLike.objects.create(comment=target, user=request.user)
-                like.save()
+                if 'dislike' in data:
+                    like=LLMLike.objects.create(comment=target, user=request.user, dislike=data['dislike'])
+                    like.save()
+                else:
+                    like=LLMLike.objects.create(comment=target, user=request.user)
+                    like.save()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid commentId"}, status=status.HTTP_400_BAD_REQUEST)
