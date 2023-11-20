@@ -56,6 +56,7 @@
 ***
 ### 用户账号部分  
 #### delete  
+**功能描述**：删除指定的用户。该api在传入的jwt对应一般用户时只允许删除用户自己，而在传入的jwt对应管理员时允许删除任意用户。  
 **请求方式**：POST  
 **请求URL**：`/user/delete/<id>`  
 **请求参数**：无  
@@ -67,9 +68,9 @@
     "message": "ok"
 }, 
 status=200
-```
-**特殊说明**：该api在传入的jwt对应一般用户时只允许删除用户自己，而在传入的jwt对应管理员时允许删除任意用户。  
+``` 
 #### list_subscription  
+**功能描述**：列出指定用户订阅的所有模型。  
 **请求方式**：GET  
 **请求URL**：`/user/list_subscription/<id>`  
 **请求参数**：无  
@@ -90,9 +91,16 @@ status=200
 status=400
 ```
 #### login  
+**功能描述**：进行用户登录并获取jwt。  
 **请求方式**：POST  
 **请求URL**：`/user/login`  
-**请求参数**：字符串username，字符串password  
+**请求参数**：  
+```json
+{
+    "username": "用户名",
+    "password": "密码"
+}
+```
 **返回情况**：  
 * 正常返回  
 ```python
@@ -112,9 +120,16 @@ status=200
 status=401
 ```
 #### login_with_verify_code  
+**功能描述**：使用验证码进行登录。  
 **请求方式**：POST  
 **请求URL**：`/user/login_with_verify_code`  
-**请求参数**：字符串mobile，字符串verify_code  
+**请求参数**：  
+```json
+{
+    "mobile": "手机号",
+    "verify_code": "验证码"
+}
+```
 **返回情况**：  
 * 正常返回  
 ```python
@@ -141,6 +156,7 @@ status=401
 status=401
 ```
 #### logout  
+**功能描述**：用户登出。  
 **请求方式**：POST  
 **请求URL**：`/user/logout`  
 **请求参数**：无    
@@ -516,6 +532,7 @@ status=400
 **请求方式**：GET  
 **请求URL**：`/ranking/dataset_comment/<id>`  
 **请求参数**：无  
+**额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
 ```python
@@ -594,6 +611,7 @@ status=200
 **请求方式**：GET  
 **请求URL**：`/ranking/llm_comment/<id>`  
 **请求参数**：无  
+**额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
 ```python

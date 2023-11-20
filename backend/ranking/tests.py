@@ -393,6 +393,7 @@ class CommentTests(TestCase):
         )
         response=self.client.get(
             '/ranking/dataset_comment/1', 
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
@@ -422,6 +423,7 @@ class CommentTests(TestCase):
         )
         response=self.client.get(
             '/ranking/llm_comment/1', 
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
@@ -433,6 +435,7 @@ class CommentTests(TestCase):
         # test comment with invalid datasetId
         response=self.client.get(
             '/ranking/dataset_comment/114514', 
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
@@ -481,7 +484,8 @@ class CommentTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(DatasetLike.objects.filter(comment_id=1).count(), 1)
         response=self.client.get(
-            '/ranking/dataset_comment/1', 
+            '/ranking/dataset_comment/1',
+            HTTP_AUTHORIZATION=jwt, 
             format="json"
         )
         json_data=response.json()
@@ -535,6 +539,7 @@ class CommentTests(TestCase):
         self.assertEqual(LLMLike.objects.filter(comment_id=1).count(), 1)
         response=self.client.get(
             '/ranking/llm_comment/1', 
+            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()

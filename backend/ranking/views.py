@@ -113,6 +113,7 @@ class commentView(APIView):
         return Response({"message": "Invalid comment"}, status=status.HTTP_400_BAD_REQUEST)
     
 class datasetCommentView(APIView):
+    @login_required
     def get(self, request, *args, **kwargs):
         dataset_id = kwargs['id']
         try:
@@ -126,10 +127,12 @@ class datasetCommentView(APIView):
             data.append(serializer.data)
             likes=DatasetLike.objects.filter(comment=i)
             data[-1]['like']=len(likes)
+            data[-1]['is_like']=len(DatasetLike.objects.filter(user=request.user, comment=i))>0
             data[-1]['add_time']=data[-1]['add_time'].split('T')[0]+' '+data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
     
 class llmCommentView(APIView):
+    @login_required
     def get(self, request, *args, **kwargs):
         llm_id = kwargs['id']
         try:
@@ -143,6 +146,7 @@ class llmCommentView(APIView):
             data.append(serializer.data)
             likes=LLMLike.objects.filter(comment=i)
             data[-1]['like']=len(likes)
+            data[-1]['is_like']=len(LLMLike.objects.filter(user=request.user, comment=i))>0
             data[-1]['add_time']=data[-1]['add_time'].split('T')[0]+' '+data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
     
