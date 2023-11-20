@@ -33,7 +33,7 @@ export default {
   'ranking.behaviour.dataset.score_max.default': '100',
   'ranking.behaviour.button.filter': 'Filter',
   'ranking.behaviour.button.reset': 'Reset',
-  'ranking.behaviour.contentType.mix': 'All',
+  'ranking.behaviour.contentType.mix': 'Mixed Questions',
   'ranking.behaviour.contentType.subjective': 'Subjective Questions',
   'ranking.behaviour.contentType.objective': 'Objective Questions',
   'ranking.behaviour.table.num': 'Dataset ID',
@@ -42,4 +42,7 @@ export default {
   'ranking.behaviour.table.contentSize': 'Content Size',
   'ranking.behaviour.table.createdTime': 'Created Time',
   'ranking.behaviour.table.score': 'Score',
+  'ranking.behaviour.dataset.num.errormsg': 'Please enter a positive integer',
+  'ranking.behaviour.dataset.size.errormsg': 'Please enter a positive integer',
+  'ranking.behaviour.dataset.score.errormsg': 'Integer scores within the range of [0, 100]',
 };
