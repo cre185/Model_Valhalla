@@ -546,3 +546,70 @@ class CommentTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['data'][0]['like'], 1)
+
+    def testdislike(self):
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/ranking/comment', 
+            {
+                "dataset":1,
+                "comment":"sometext",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response=self.client.post(
+            '/ranking/comment', 
+            {
+                "dataset":1,
+                "comment":"sometext2",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        self.assertEqual(DatasetComment.objects.all().count(), 2)
+        response=self.client.get(
+            '/ranking/dataset_comment/1',
+            HTTP_AUTHORIZATION=jwt, 
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        # dislike now
+        response=self.client.post(
+            '/ranking/like_dataset_comment', 
+            {
+                "id":1,
+                "dislike":True,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(DatasetLike.objects.filter(comment_id=1).count(), 1)
+        self.assertEqual(DatasetLike.objects.get(comment_id=1).dislike, True)
+        # remove dislike
+        response=self.client.post(
+            '/ranking/like_dataset_comment', 
+            {
+                "id":1,
+                "dislike":True,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(DatasetLike.objects.filter(comment_id=1).count(), 0)

@@ -411,9 +411,17 @@ status=401
 ***
 ### 数据集部分  
 #### create  
+**功能描述**：创建新的数据集。  
 **请求方式**：POST  
 **请求URL**：`/dataset/create`  
-**请求参数**：字符串name  
+**请求参数**：  
+```python
+{
+    "name": "数据集名称",
+    #"description": "数据集描述",
+    #"subjective": "是否为主观题"
+}
+```
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
@@ -429,6 +437,7 @@ status=201
 status=400
 ```
 #### delete  
+**功能描述**：删除指定的数据集。  
 **请求方式**：DELETE  
 **请求URL**：`/dataset/delete/<id>`  
 **请求参数**：无  
@@ -467,6 +476,7 @@ status=400
 status=200
 ```
 #### retrieve  
+**功能描述**：获取指定数据集的信息。  
 **请求方式**：GET  
 **请求URL**：`/dataset/retrieve/<id>`  
 **请求参数**：无  
@@ -474,7 +484,10 @@ status=200
 * 正常返回  
 ```python
 {
-    "message": "ok"
+    "message": "ok",
+    "name": "数据集名称",
+    "description": "数据集描述",
+    ...
 },
 status=200
 ```
@@ -483,9 +496,22 @@ status=200
 status=404
 ```
 #### update  
+**功能描述**：更新指定数据集的信息。  
 **请求方式**：PUT/PATCH  
 **请求URL**：`/dataset/update/<id>`  
-**请求参数**：使用PUT时为字符串name，字符串description等字段；使用PATCH时字段均为可选  
+**请求参数**：  
+```python
+PUT={
+    "name": "数据集名称",
+    #"description": "数据集描述",
+    #"subjective": "是否为主观题"
+}
+PATCH={
+    #"name": "数据集名称",
+    #"description": "数据集描述",
+    #"subjective": "是否为主观题"
+}
+```
 **额外需求**：admin_required  
 **返回情况**：  
 * 正常返回  
@@ -500,6 +526,7 @@ status=200
 status=404
 ```
 #### upload  
+**功能描述**：上传数据集文件。  
 **请求方式**：POST  
 **请求URL**：`/dataset/upload`  
 **请求参数**：文件file，字符串datasetId  
@@ -520,6 +547,7 @@ status=400
 ***
 ### 排行榜部分  
 #### average  
+**功能描述**：获取指定数据集的平均分数。  
 **请求方式**：GET  
 **请求URL**：`/ranking/average/<id>`  
 **请求参数**：无  
@@ -537,6 +565,7 @@ status=200
 status=400
 ```
 #### average_list  
+**功能描述**：获取所有数据集的平均分数。  
 **请求方式**：GET  
 **请求URL**：`/ranking/average_list`  
 **请求参数**：无  
@@ -554,9 +583,16 @@ status=400
 status=200
 ```
 #### clear  
+**功能描述**：清空排行榜中某一格的分数。    
 **请求方式**：POST  
 **请求URL**：`/ranking/clear`  
-**请求参数**：字符串datasetId，字符串llmId  
+**请求参数**：  
+```python
+{
+    "datasetId": "数据集id",
+    "llmId": "模型id"
+}
+```
 **额外需求**：admin_required  
 **返回情况**：  
 * 正常返回  
@@ -571,9 +607,17 @@ status=200
 status=400
 ```
 #### comment  
+**功能描述**：对某一数据集或模型进行评论。  
 **请求方式**：POST  
 **请求URL**：`/ranking/comment`  
-**请求参数**：字符串dataset或llm，字符串comment，可选整数respond_to  
+**请求参数**：  
+```python
+{
+    "datasetId": "数据集id" or "llmId": "模型id",
+    "comment": "评论内容",
+    "respond_to": "回复的评论id"  
+}
+```
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
@@ -589,6 +633,7 @@ status=200
 status=400
 ```
 #### dataset_comment  
+**功能描述**：获取某一数据集下的全部评论。  
 **请求方式**：GET  
 **请求URL**：`/ranking/dataset_comment/<id>`  
 **请求参数**：无  
@@ -613,9 +658,15 @@ status=200
 status=400
 ```
 #### like_dataset_comment  
+**功能描述**：对某一数据集评论进行点赞。  
 **请求方式**：POST  
 **请求URL**：`/ranking/like_dataset_comment`  
-**请求参数**：字符串id  
+**请求参数**：  
+```python
+{
+    "id": "评论id"
+}
+```
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
@@ -630,9 +681,15 @@ status=200
 status=400
 ```
 #### like_llm_comment  
+**功能描述**：对某一模型评论进行点赞。  
 **请求方式**：POST  
 **请求URL**：`/ranking/like_llm_comment`  
-**请求参数**：字符串id  
+**请求参数**：  
+```python
+{
+    "id": "评论id"
+}
+```
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
@@ -647,6 +704,7 @@ status=200
 status=400
 ```
 #### list  
+**功能描述**：获取所有分数情况，包括模型id，数据集id，对应分数，添加时间等    
 **请求方式**：GET  
 **请求URL**：`/ranking/list`  
 **请求参数**：无  
@@ -668,6 +726,7 @@ status=400
 status=200
 ```
 #### llm_comment  
+**功能描述**：获取某一模型下的全部评论。  
 **请求方式**：GET  
 **请求URL**：`/ranking/llm_comment/<id>`  
 **请求参数**：无  
@@ -692,9 +751,16 @@ status=200
 status=400
 ```
 #### retrieve  
+**功能描述**：获取某一模型在某一数据集下的分数。  
 **请求方式**：POST  
 **请求URL**：`/ranking/retrieve`  
-**请求参数**：字符串datasetId，字符串llmId  
+**请求参数**：   
+```python
+{
+    "datasetId": "数据集id",
+    "llmId": "模型id"
+}
+```
 **返回情况**：  
 * 正常返回  
 ```python
@@ -705,9 +771,17 @@ status=400
 status=200
 ```
 #### update  
+**功能描述**：更新某一模型在某一数据集下的分数。  
 **请求方式**：POST  
 **请求URL**：`/ranking/update`  
-**请求参数**：字符串datasetId，字符串llmId，字符串score  
+**请求参数**：  
+```python
+{
+    "datasetId": "数据集id",
+    "llmId": "模型id",
+    "credit": "分数"
+}
+```
 **额外需求**：login_required    
 **返回情况**：  
 * 正常返回  
@@ -725,9 +799,15 @@ status=400
 ***
 ### 模型测试部分  
 #### battle_match  
+**功能描述**：通过一个模型id，返回一个与之势均力敌的模型id。  
 **请求方式**：POST  
 **请求URL**：`/testing/battle_match`  
-**请求参数**：字符串llmId  
+**请求参数**：  
+```python
+{
+    "llmId": "模型id"
+}
+```
 **额外需求**：login_required  
 **返回情况**：  
 * 正常返回  
@@ -744,9 +824,17 @@ status=400
 ```
 **特殊说明**：当数据库中仅有一个数据集时返回值也为200，但不包含llmId。  
 #### battle_result  
+**功能描述**：提交一场模型对战的结果并进行结算。  
 **请求方式**：POST  
 **请求URL**：`/testing/battle_result`  
-**请求参数**：字符串llmId1，字符串llmId2，整数result  
+**请求参数**：  
+```python
+{
+    "llmId1": "1号模型id",
+    "llmId2": "2号模型id",
+    "result": "结果，0为平局，1为1号胜利，-1为1号失败"
+}
+```
 **额外需求**：login_required  
 **返回情况**：  
 * 正常返回  
@@ -761,9 +849,24 @@ status=200
 status=400
 ```
 #### create  
+**功能描述**：创建一个新的模型测试。  
 **请求方式**：POST  
 **请求URL**：`/testing/create`  
-**请求参数**：字符串name，字符串api_url，字符串api_headers，字符串api_data，可选整数api_RPM  
+**请求参数**：  
+```python
+{
+    "name": "模型名称",
+    #"api_url": "api地址",
+    #"api_headers": "api请求头",
+    #"api_data": "api请求体",
+    #"api_RPM": "api请求频率",
+    #"description": "模型描述",
+    #"official_website": "官方网站",
+    #"document_name": "文档名称",
+    #"document_website": "文档地址",
+    #"license": "认证"
+}
+```
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
@@ -780,6 +883,7 @@ status=400
 ```
 **特殊说明**：关于上面列出的参数详细信息请查阅标准部分。  
 #### delete  
+**功能描述**：删除指定的模型测试。  
 **请求方式**：DELETE  
 **请求URL**：`/testing/delete/<id>`  
 **请求参数**：无  
@@ -797,6 +901,7 @@ status=200
 status=400
 ```
 #### list  
+**功能描述**：获取所有模型测试的信息。  
 **请求方式**：GET  
 **请求URL**：`/testing/list`  
 **请求参数**：无  
@@ -818,6 +923,7 @@ status=400
 status=200
 ```
 #### retrieve  
+**功能描述**：获取指定模型测试的信息。  
 **请求方式**：GET  
 **请求URL**：`/testing/retrieve/<id>`  
 **请求参数**：无  
@@ -825,7 +931,10 @@ status=200
 * 正常返回  
 ```python
 {
-    "message": "ok"
+    "message": "ok",
+    "name": "模型名称",
+    "api_url": "api地址",
+    ...
 },
 status=200
 ```
@@ -834,9 +943,17 @@ status=200
 status=404
 ```
 #### testing  
+**功能描述**：对指定模型测试进行测试。使用llmId和datasetId筛选后，会对指定的模型和数据集对应的行/列所有单元进行测试。  
 **请求方式**：POST  
-**请求URL**：`/testing/testing`  
-**请求参数**：均为可选：字符串llmId，字符串datasetId，测试筛选样式style  
+**请求URL**：`/testing/testing`   
+**请求参数**：  
+```python
+{
+    "llmId": "模型id",
+    "datasetId": "数据集id",
+    "style": "筛选样式"
+}
+```
 **返回情况**：  
 * 正常返回  
 ```python
@@ -850,9 +967,36 @@ status=200
 
 另外，该函数仍在试验阶段。  
 #### update  
+**功能描述**：更新指定模型测试的信息。  
 **请求方式**：PUT/PATCH  
 **请求URL**：`/testing/update/<id>`  
-**请求参数**：使用PUT时为字符串name，字符串api_url等字段；使用PATCH时字段均为可选  
+**请求参数**：  
+```python
+PUT={
+    "name": "模型名称",
+    #"api_url": "api地址",
+    #"api_headers": "api请求头",
+    #"api_data": "api请求体",
+    #"api_RPM": "api请求频率",
+    #"description": "模型描述",
+    #"official_website": "官方网站",
+    #"document_name": "文档名称",
+    #"document_website": "文档地址",
+    #"license": "认证"
+}
+PATCH={
+    #"name": "模型名称",
+    #"api_url": "api地址",
+    #"api_headers": "api请求头",
+    #"api_data": "api请求体",
+    #"api_RPM": "api请求频率",
+    #"description": "模型描述",
+    #"official_website": "官方网站",
+    #"document_name": "文档名称",
+    #"document_website": "文档地址",
+    #"license": "认证"
+}
+```
 **额外需求**：admin_required  
 **返回情况**：  
 * 正常返回  
