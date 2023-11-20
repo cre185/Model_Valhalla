@@ -1,25 +1,30 @@
+/* eslint-disable */
+import axios from 'axios';
+import apiCat from "@/api/main";
+import {getAvatar, getUsername} from "@/api/user-info";
+
 class MyComment {
-    author:string
+    public author:string
 
-    toAuthor:string
+    public toAuthor:string
 
-    avatar:string
+    public avatar:string
 
-    content:string
+    public content:string
 
-    datetime:string
+    public datetime:string
 
-    like:number
+    public like:number
 
-    ifLike:boolean
+    public ifLike:boolean
 
-    ifHate:boolean
+    public ifHate:boolean
 
-    ifReply:boolean
+    public ifReply:boolean
 
-    lastClicked:number
+    public lastClicked:number
 
-    children:any[]
+    public children:any[]
 
     constructor(author:string, toAuthor:string, avatar:string, content:string, datetime:string, like:number, ifLike:boolean, ifHate:boolean, ifReply:boolean, children:any[]) {
         this.author = author
@@ -89,7 +94,12 @@ class MyComment {
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         tmp.datetime = `${year}-${month}-${day} ${hours}:${minutes}`;
-        tmp.content = `回复 @ ${newComment.toAuthor} :${newComment.content}`;
+        if (newComment.toAuthor === '') {
+            tmp.content = `${newComment.content}`;
+        }
+        else {
+            tmp.content = `回复 @ ${newComment.toAuthor} :${newComment.content}`;
+        }
         tmp.avatar = newComment.avatar;
         tmp.author = newComment.author;
         item.children.push(tmp)
@@ -98,3 +108,38 @@ class MyComment {
 }
 
 export default MyComment;
+
+export async function getComment(ModelID: string, commentDetails: any) {
+    const response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`));
+    for (const item of response.data.data) {
+        const id = item.user;
+        let username: string;
+        let avatar: string;
+
+        await getUsername(id).then((returnValue) => {
+            username = returnValue;
+        });
+
+        await getAvatar(id).then((returnValue) => {
+            avatar = returnValue;
+        });
+
+        if (item.respond_to === undefined) {
+            const tmp = new MyComment(username!, '', avatar!, item.comment, item.add_time, item.like, false, false, false, []);
+            commentDetails.value.push(tmp);
+        } else {
+            const index = item.respond_to - 1;
+            const targetId = response.data[item.respond_to-1].user;
+            let targetName:string;
+            await getUsername(targetId).then((returnValue) => {
+                targetName = returnValue;
+            });
+            const tmp = new MyComment(username!, targetName!, avatar!, item.comment, item.add_time, item.like, false, false, false, []);
+            commentDetails.value[index].push(tmp);
+        }
+    }
+}
+
+export async function changeComment(ModelID: string, commentDetails: any) {
+    
+}

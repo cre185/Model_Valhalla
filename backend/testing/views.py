@@ -11,6 +11,7 @@ from rest_framework import generics
 from utils.jwt import login_required
 from utils.admin_required import admin_required
 from utils.auto_test import AutoTest
+from utils.elo_rating import *
 
 # Create your views here.
 
@@ -20,7 +21,6 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
 
     @login_required
     def post(self, request):
-        request.data['author'] = request.user.id
         headers = self.create(request)
         llm = LLMs.objects.get(id=headers.data['id'])
         for data in dataset.Dataset.objects.all():
@@ -114,21 +114,53 @@ class testingView(APIView):
             tar.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
-class battleView(APIView):
+class battleMatchView(APIView):
     @login_required
     def post(self, request):
         data = request.data
-        if 'llmId' not in data or 'datasetId' not in data:
-            return Response({"message": "llmId and datasetId are required"}, status=status.HTTP_400_BAD_REQUEST)
-        llm = LLMs.objects.get(id=int(data['llmId']))
-        dataset = dataset.Dataset.objects.get(id=int(data['datasetId']))
-        if not dataset.data_file:
-            return Response({"message": "dataset has no data file"}, status=status.HTTP_400_BAD_REQUEST)
-        if not llm.api_url:
-            return Response({"message": "llm has no api url"}, status=status.HTTP_400_BAD_REQUEST)
-        autoTest = AutoTest()
-        result = autoTest.whole_test(dataset.data_file.path, llm)
-        correct_amount = result[0]
-        amount = result[1]
-        return Response({"message": "ok", "correct_amount": correct_amount, "amount": amount}, status=status.HTTP_200_OK)
+        try:
+            llm = LLMs.objects.get(id=int(data['llmId']))
+            all_others = LLMs.objects.exclude(id=llm.id)
+            if all_others.count() == 0:
+                return Response({"message": "No other llms"}, status=status.HTTP_200_OK)
+            nearest = all_others[0]
+            for other in all_others:
+                if abs(other.elo_credit - llm.elo_credit) < abs(nearest.elo_credit - llm.elo_credit):
+                    nearest = other
+            return Response({"message": "ok", "llmId": nearest.id}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class generateView(APIView):  
+    @login_required
+    def post(self, request):
+        data = request.data
+        try:
+            llm = LLMs.objects.get(id=int(data['llmId']))
+            # todo: return the generate result
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+
+class battleResultView(APIView):
+    @login_required
+    def post(self, request):
+        data = request.data
+        if 'llmId1' not in data or 'llmId2' not in data or 'result' not in data:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            llm1 = LLMs.objects.get(id=int(data['llmId1']))
+            llm2 = LLMs.objects.get(id=int(data['llmId2']))
+            if llm1.id == llm2.id:
+                return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+            if int(data['result']) not in [-1, 0, 1]:
+                return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+            sa = (int(data['result'])+1.0)/2
+            elo = EloRating()
+            llm1.elo_credit, llm2.elo_credit=elo.cal_result(llm1.elo_credit, llm2.elo_credit, sa)
+            llm1.save()
+            llm2.save()
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
     
