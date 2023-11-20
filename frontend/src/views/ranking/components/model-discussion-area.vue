@@ -24,7 +24,7 @@
       :datetime="item.datetime"
   >
     <template #actions>
-      <span class="action" key="heart" @click="item.changeLikeState()">
+      <span class="action" key="heart" @click="item.changeLikeState(jwt)">
         <a-space size="mini">
           <span v-if="item.ifLike">
           <IconThumbUpFill :style="{ color: '#1c61ff' }" />
@@ -58,7 +58,7 @@
       :datetime="child.datetime"
     >
       <template #actions>
-        <span class="action" key="heart" @click="child.changeLikeState()">
+        <span class="action" key="heart" @click="child.changeLikeState(jwt)">
           <a-space size="mini">
             <span v-if="child.ifLike">
             <IconThumbUpFill :style="{ color: '#1c61ff' }" />
