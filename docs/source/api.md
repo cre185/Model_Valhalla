@@ -497,13 +497,14 @@ status=400
 #### comment  
 **请求方式**：POST  
 **请求URL**：`/ranking/comment`  
-**请求参数**：字符串dataset或llm，字符串comment  
+**请求参数**：字符串dataset或llm，字符串comment，可选整数respond_to  
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
 ```python
 {
-    "message": "ok"
+    "message": "ok",
+    "id": "评论id"
 },
 status=200
 ```

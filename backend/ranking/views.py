@@ -105,11 +105,11 @@ class commentView(APIView):
         serializer = DatasetCommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+            return Response({"message": "ok", "id": DatasetComment.objects.last().id}, status=status.HTTP_200_OK)
         serializer = LLMCommentSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+            return Response({"message": "ok", "id": LLMComment.objects.last().id}, status=status.HTTP_200_OK)
         return Response({"message": "Invalid comment"}, status=status.HTTP_400_BAD_REQUEST)
     
 class datasetCommentView(APIView):
