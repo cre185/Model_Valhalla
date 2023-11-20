@@ -263,6 +263,7 @@ import MyComment, {getComment, updateComment} from "@/api/comment";
 
   const commentDetails = ref([] as MyComment[]);
   const ModelID = '1';
+  const jwt = getToken();
 
   const handleClick = (data: LLMRankingData) => {
     currentLLM.value = data;
@@ -505,7 +506,6 @@ import MyComment, {getComment, updateComment} from "@/api/comment";
   };
 
   const handleChangeComment = async (index: number, content: MyComment) => {
-    const jwt = getToken();
     await updateComment(ModelID, content, jwt!);
     if (index === -1) {
       commentDetails.value.push(content);
@@ -515,7 +515,7 @@ import MyComment, {getComment, updateComment} from "@/api/comment";
   };
 
 onMounted(async () => {
-  await getComment(ModelID, commentDetails);
+  await getComment(ModelID, commentDetails, jwt!);
 });
 </script>
 

@@ -52,14 +52,20 @@ class MyComment {
         this.like -= 1
     }
 
-    changeLikeState() {
+    async changeLikeState(jwt:string) {
         this.ifLike = !this.ifLike
         if (this.ifLike) {
             this.increaseLike()
-        }
-        else {
+        } else {
             this.decreaseLike()
         }
+        await axios.post(apiCat('/ranking/like_llm_comment'), {
+            id: this.commentId
+        }, {
+            headers: {
+                Authorization: jwt,
+            },
+        });
         if (this.ifHate) {
             this.ifHate = false;
         }
@@ -116,8 +122,10 @@ class MyComment {
 
 export default MyComment;
 
-export async function getComment(ModelID: string, commentDetails: any) {
-    const response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`));
+export async function getComment(ModelID: string, commentDetails: any, jwt:string) {
+    const response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`), {headers: {
+            Authorization: jwt,
+        },});
     for (const item of response.data.data) {
         const id = item.user;
         let username: string;
@@ -132,7 +140,7 @@ export async function getComment(ModelID: string, commentDetails: any) {
         });
 
         if (item.respond_to === null) {
-            const tmp = new MyComment(username!, '', avatar!, item.comment, item.add_time, item.like, false, false, false, []);
+            const tmp = new MyComment(username!, '', avatar!, item.comment, item.add_time, item.like, item.if_like, false, false, []);
             tmp.commentId = item.id;
             commentDetails.value.push(tmp);
         } else {
@@ -143,7 +151,7 @@ export async function getComment(ModelID: string, commentDetails: any) {
             await getUsername(targetId).then((returnValue) => {
                 targetName = returnValue;
             });
-            const tmp = new MyComment(username!, targetName!, avatar!, item.comment, item.add_time, item.like, false, false, false, []);
+            const tmp = new MyComment(username!, targetName!, avatar!, item.comment, item.add_time, item.like, item.if_like, false, false, []);
             tmp.commentId = item.id;
             tmp.toId = target.commentId;
             while (target.respond_to !== null) {
