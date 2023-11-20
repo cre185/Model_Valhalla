@@ -95,7 +95,7 @@ status=400
 **请求方式**：POST  
 **请求URL**：`/user/login`  
 **请求参数**：  
-```json
+```python
 {
     "username": "用户名",
     "password": "密码"
@@ -124,7 +124,7 @@ status=401
 **请求方式**：POST  
 **请求URL**：`/user/login_with_verify_code`  
 **请求参数**：  
-```json
+```python
 {
     "mobile": "手机号",
     "verify_code": "验证码"
@@ -170,9 +170,19 @@ status=401
 status=200
 ```
 #### register  
+**功能描述**：注册新用户。  
 **请求方式**：POST  
 **请求URL**：`/user/register`  
-**请求参数**：字符串username，字符串password，字符串mobile，可选字符串email  
+**请求参数**：  
+```python
+{
+    "username": "用户名",
+    "password": "密码",
+    "mobile": "手机号",
+    #"email": "邮箱",
+    #"secret": "邀请码"
+}
+```
 **返回情况**：  
 * 正常返回  
 ```python
@@ -186,6 +196,7 @@ status=201
 status=400
 ```
 #### retrieve  
+**功能描述**：获取指定用户的信息。  
 **请求方式**：GET  
 **请求URL**：`/user/retrieve/<id>`  
 **请求参数**：无  
@@ -206,6 +217,7 @@ status=200
 status=404
 ```
 #### retrieve_password  
+**功能描述**：获取指定用户的密码。  
 **请求方式**：GET  
 **请求URL**：`/user/retrieve_password`  
 **请求参数**：无  
@@ -221,12 +233,18 @@ status=200
 ```
 * 未找到用户  
 ```python
-status=40
+status=400
 ```
 #### send_email  
+**功能描述**：发送邮箱验证码。  
 **请求方式**：POST  
 **请求URL**：`/user/send_email`  
-**请求参数**：字符串email  
+**请求参数**：  
+```python
+{
+    "email": "邮箱"
+}
+```
 **返回情况**：  
 * 正常返回  
 ```python
@@ -240,9 +258,15 @@ status=201
 status=401
 ```
 #### send_message  
+**功能描述**：发送短信验证码。  
 **请求方式**：POST  
 **请求URL**：`/user/send_message`  
-**请求参数**：字符串mobile  
+**请求参数**：  
+```python
+{
+    "mobile": "手机号"
+}
+```
 **返回情况**：  
 * 正常返回  
 ```python
@@ -256,9 +280,15 @@ status=201
 status=401
 ```
 #### subscribe  
+**功能描述**：订阅某一模型。  
 **请求方式**：POST  
 **请求URL**：`/user/subscribe`  
-**请求参数**：字符串llmId  
+**请求参数**：  
+```python
+{
+    "llmId": "模型id"
+}
+```
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  
@@ -273,9 +303,24 @@ status=200
 status=400
 ```
 #### update  
+**功能描述**：更新指定用户的信息。  
 **请求方式**：PUT/PATCH  
 **请求URL**：`/user/update/<id>`  
-**请求参数**：使用PUT时为字符串username，字符串password，字符串mobile，可选字符串email；使用PATCH时字段均为可选  
+**请求参数**：  
+```python
+PUT={
+    "username": "用户名",
+    "password": "密码",
+    "mobile": "手机号",
+    #"email": "邮箱"
+}
+PATCH={
+    #"username": "用户名",
+    #"password": "密码",
+    #"mobile": "手机号",
+    #"email": "邮箱"
+}
+```
 **额外需求**：jwt  
 **返回情况**：
 * 正常返回  
@@ -294,6 +339,7 @@ status=200
 status=404
 ```
 #### update_avatar  
+**功能描述**：更新指定用户的头像。  
 **请求方式**：POST  
 **请求URL**：`/user/update_avatar/<id>`  
 **请求参数**：文件avatar  
@@ -311,9 +357,16 @@ status=200
 status=404
 ```
 #### verify_code  
+**功能描述**：验证短信验证码的正确性。  
 **请求方式**：POST  
 **请求URL**：`/user/verify_code`  
-**请求参数**：字符串mobile，字符串verify_code
+**请求参数**：   
+```python
+{
+    "mobile": "手机号",
+    "verify_code": "验证码"
+}
+```
 **返回情况**：  
 * 正常返回   
 ```python
@@ -330,9 +383,16 @@ status=200
 status=401
 ```
 #### verify_email  
+**功能描述**：验证邮箱验证码的正确性。  
 **请求方式**：POST  
 **请求URL**：`/user/verify_email`  
-**请求参数**：字符串email，字符串verify_code  
+**请求参数**：  
+```python
+{
+    "email": "邮箱",
+    "verify_code": "验证码"
+}
+```
 **返回情况**：  
 * 正常返回  
 ```python
