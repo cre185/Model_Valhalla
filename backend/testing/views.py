@@ -21,7 +21,6 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
 
     @login_required
     def post(self, request):
-        request.data['author'] = request.user.id
         headers = self.create(request)
         llm = LLMs.objects.get(id=headers.data['id'])
         for data in dataset.Dataset.objects.all():

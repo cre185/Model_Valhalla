@@ -25,13 +25,17 @@
   >
     <template #actions>
       <span class="action" key="heart" @click="item.changeLikeState()">
-        <span v-if="item.ifLike">
+        <a-space size="mini">
+          <span v-if="item.ifLike">
           <IconThumbUpFill :style="{ color: '#1c61ff' }" />
         </span>
         <span v-else>
           <IconThumbUp class="icon" />
         </span>
-        {{ item.like }}
+        <span v-if="item.like !== 0">
+          {{ item.like }}
+        </span>
+        </a-space>
       </span>
       <span class="action" key="star" @click="item.changeHateState()">
         <span v-if="item.ifHate">
@@ -55,13 +59,17 @@
     >
       <template #actions>
         <span class="action" key="heart" @click="child.changeLikeState()">
-          <span v-if="child.ifLike">
+          <a-space size="mini">
+            <span v-if="child.ifLike">
             <IconThumbUpFill :style="{ color: '#1c61ff' }" />
-          </span>
-          <span v-else>
-            <IconThumbUp class="icon" />
-          </span>
-          {{ child.like }}
+            </span>
+            <span v-else>
+              <IconThumbUp class="icon" />
+            </span>
+            <span v-if="child.like !== 0">
+              {{ child.like }}
+            </span>
+          </a-space>
         </span>
         <span class="action" key="star" @click="child.changeHateState()">
           <span v-if="child.ifHate">
