@@ -321,6 +321,7 @@ class CommentTests(TestCase):
         json_data=response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['id'], 1)
         self.assertEqual(DatasetComment.objects.get(id=1).comment, "sometext")
         # comment with empty comment
         response=self.client.post(

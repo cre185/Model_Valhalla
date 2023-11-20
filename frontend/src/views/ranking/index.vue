@@ -211,7 +211,7 @@
         <a-tab-pane key="3" title="对抗记录">
         </a-tab-pane>
         <a-tab-pane key="4" title="讨论区">
-          <ModelDiscussionArea :comment-details="commentDetails" @change-comment="handleChangeComment" />
+          <ModelDiscussionArea :comment-details="commentDetails" :model-id="ModelID" @change-comment="handleChangeComment" />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -220,6 +220,9 @@
 
 <script lang="ts" setup>
 import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
+import axios from "axios";
+import apiCat from "@/api/main";
+import {getToken} from "@/utils/auth";
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
   import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
@@ -229,7 +232,7 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import Sortable from 'sortablejs';
   import cloneDeep from 'lodash/cloneDeep';
-  import MyComment from "@/api/comment";
+import MyComment, {getComment, updateComment} from "@/api/comment";
   import ModelDiscussionArea from "./components/model-discussion-area.vue";
   import ModelProfile from './components/model-profile.vue';
   import DatasetProfile from './components/model-datasetbehavior.vue'
@@ -259,6 +262,7 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
   const size = ref<SizeProps>('medium');
 
   const commentDetails = ref([] as MyComment[]);
+  const ModelID = '1';
 
   const handleClick = (data: LLMRankingData) => {
     currentLLM.value = data;
@@ -500,14 +504,19 @@ import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
     }
   };
 
-  const handleChangeComment = (index:number, content:MyComment) => {
+  const handleChangeComment = async (index: number, content: MyComment) => {
+    const jwt = getToken();
+    await updateComment(ModelID, content, jwt!);
     if (index === -1) {
       commentDetails.value.push(content);
-    }
-    else {
+    } else {
       commentDetails.value[index].children.push(content);
     }
   };
+
+onMounted(async () => {
+  await getComment(ModelID, commentDetails);
+});
 </script>
 
 <script lang="ts">

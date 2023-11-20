@@ -1,7 +1,16 @@
+/* eslint-disable */
+import axios from 'axios';
+import apiCat from "@/api/main";
+import {getAvatar, getUsername} from "@/api/user-info";
+
 class MyComment {
     public author:string
 
     public toAuthor:string
+
+    public commentId: number = -1
+
+    public toId: undefined|number
 
     public avatar:string
 
@@ -79,7 +88,7 @@ class MyComment {
         newComment.content = ''
     }
 
-    addComment(item:MyComment, newComment:MyComment) {
+    async addComment(item: MyComment, newComment: MyComment, modelId:string, jwt:string) {
         this.ifReply = false
         const tmp = new MyComment('', '', '', '', '', 0, false, false, false, []);
         const date = new Date();
@@ -89,12 +98,72 @@ class MyComment {
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         tmp.datetime = `${year}-${month}-${day} ${hours}:${minutes}`;
-        tmp.content = `回复 @ ${newComment.toAuthor} :${newComment.content}`;
+        if (newComment.toAuthor === '') {
+            tmp.content = `${newComment.content}`;
+        } else {
+            tmp.content = `回复 @ ${newComment.toAuthor} :${newComment.content}`;
+        }
         tmp.avatar = newComment.avatar;
         tmp.author = newComment.author;
+        tmp.toAuthor = newComment.toAuthor;
+        tmp.toId = newComment.toId;
+        await updateComment(modelId, tmp, jwt);
         item.children.push(tmp)
         newComment.content = ''
+        newComment.toId = undefined;
     }
 }
 
 export default MyComment;
+
+export async function getComment(ModelID: string, commentDetails: any) {
+    const response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`));
+    for (const item of response.data.data) {
+        const id = item.user;
+        let username: string;
+        let avatar: string;
+
+        await getUsername(id).then((returnValue) => {
+            username = returnValue;
+        });
+
+        await getAvatar(id).then((returnValue) => {
+            avatar = returnValue;
+        });
+
+        if (item.respond_to === null) {
+            const tmp = new MyComment(username!, '', avatar!, item.comment, item.add_time, item.like, false, false, false, []);
+            tmp.commentId = item.id;
+            commentDetails.value.push(tmp);
+        } else {
+            let index = item.respond_to - 1;
+            let target = response.data.data[index];
+            const targetId = target.user;
+            let targetName = '';
+            await getUsername(targetId).then((returnValue) => {
+                targetName = returnValue;
+            });
+            const tmp = new MyComment(username!, targetName!, avatar!, item.comment, item.add_time, item.like, false, false, false, []);
+            tmp.commentId = item.id;
+            tmp.toId = target.commentId;
+            while (target.respond_to !== null) {
+                index = target.respond_to - 1;
+                target = response.data.data[index];
+            }
+            commentDetails.value[index].children.push(tmp);
+        }
+    }
+}
+
+export async function updateComment(
+    modelId: string,
+    newComment: any,
+    jwt: string
+) {
+    const response = await axios.post(apiCat('/ranking/comment'),{ llm: modelId, comment: newComment.content, respond_to: newComment.toId }, {
+        headers: {
+            Authorization: jwt,
+        },
+    });
+    newComment.commentId = response.data.id;
+}
