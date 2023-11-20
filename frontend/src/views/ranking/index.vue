@@ -211,7 +211,7 @@
         <a-tab-pane key="3" title="对抗记录">
         </a-tab-pane>
         <a-tab-pane key="4" title="讨论区">
-          <ModelDiscussionArea :comment-details="commentDetails" @change-comment="handleChangeComment" />
+          <ModelDiscussionArea :comment-details="commentDetails" :model-id="ModelID" @change-comment="handleChangeComment" />
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -232,7 +232,7 @@ import {getToken} from "@/utils/auth";
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import Sortable from 'sortablejs';
   import cloneDeep from 'lodash/cloneDeep';
-import MyComment, {getComment} from "@/api/comment";
+import MyComment, {getComment, updateComment} from "@/api/comment";
   import ModelDiscussionArea from "./components/model-discussion-area.vue";
   import ModelProfile from './components/model-profile.vue';
   import DatasetProfile from './components/model-datasetbehavior.vue'
@@ -504,14 +504,14 @@ import MyComment, {getComment} from "@/api/comment";
     }
   };
 
-  const handleChangeComment = (index:number, content:MyComment) => {
+  const handleChangeComment = async (index: number, content: MyComment) => {
+    const jwt = getToken();
+    await updateComment(ModelID, content, jwt!);
     if (index === -1) {
       commentDetails.value.push(content);
-    }
-    else {
+    } else {
       commentDetails.value[index].children.push(content);
     }
-
   };
 
 onMounted(async () => {
