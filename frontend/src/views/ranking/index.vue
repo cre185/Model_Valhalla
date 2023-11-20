@@ -133,7 +133,8 @@
             <p>TODO</p>
           </a-tab-pane>
           <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
-            <ModelDiscussionArea :comment-details="commentDetails" @change-comment="handleChangeComment" />
+            <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
+                                 @change-comment="handleChangeComment" />
           </a-tab-pane>
         </a-tabs>
       </div>
@@ -172,6 +173,7 @@
   const additionalColumns = ref<Column[]>(await queryDatasetColumnList());
   const showColumns = ref<Column[]>([]);
   const currentLLM = ref<LLMRankingData>();
+  const ModelID = ref('');
 
   const size = ref<SizeProps>('medium');
 
@@ -397,7 +399,8 @@
       firstTab.style.margin = '0 25px 0 60px';
     }
 
-    getComment(currentLLM.value!.id.toString()!, commentDetails, jwt!);
+    ModelID.value=currentLLM.value!.id.toString();
+    getComment(ModelID.value!, commentDetails, jwt!);
   };
 
 
