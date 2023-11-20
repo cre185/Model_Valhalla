@@ -43,4 +43,8 @@ export default {
   'ranking.behaviour.table.contentSize': '内容量',
   'ranking.behaviour.table.createdTime': '创建时间',
   'ranking.behaviour.table.score': '得分',
+  'ranking.details.details': '详细信息',
+  'ranking.details.datasetScore': '数据集表现',
+  'ranking.details.competitionRecords': '对抗记录',
+  'ranking.details.discussions': '讨论区,'
 };

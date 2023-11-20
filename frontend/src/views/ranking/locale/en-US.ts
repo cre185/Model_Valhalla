@@ -43,4 +43,8 @@ export default {
   'ranking.behaviour.table.contentSize': 'Content Size',
   'ranking.behaviour.table.createdTime': 'Created Time',
   'ranking.behaviour.table.score': 'Score',
+  'ranking.details.details': 'Details',
+  'ranking.details.datasetScore': 'Dataset Score',
+  'ranking.details.competitionRecords': 'Competition Records',
+  'ranking.details.discussions': 'Discussions,'
 };

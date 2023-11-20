@@ -13,7 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             name='elo_credit',
             model_name="llms",
-            name="elo_credit",
             field=models.FloatField(default=1500),
         ),
     ]
