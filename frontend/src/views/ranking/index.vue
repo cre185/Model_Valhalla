@@ -154,7 +154,7 @@
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import Sortable from 'sortablejs';
   import cloneDeep from 'lodash/cloneDeep';
-  import MyComment, {getComment} from "@/api/comment";
+  import MyComment, {getComment, updateComment} from "@/api/comment";
   import ModelDiscussionArea from "./components/model-discussion-area.vue";
   import ModelProfile from './components/model-profile.vue';
   import DatasetProfile from './components/model-datasetbehavior.vue'
@@ -176,6 +176,8 @@
   const size = ref<SizeProps>('medium');
 
   const commentDetails = ref([] as MyComment[]);
+
+  const jwt = getToken();
 
   const handleClick = (data: LLMRankingData) => {
     currentLLM.value = data;
@@ -395,18 +397,18 @@
       firstTab.style.margin = '0 25px 0 60px';
     }
 
-    getComment(currentLLM.value!.id.toString()!, commentDetails);
+    getComment(currentLLM.value!.id.toString()!, commentDetails, jwt!);
   };
 
-   const handleChangeComment = (index:number, content:MyComment) => {
+
+  const handleChangeComment = async (index: number, content: MyComment) => {
+    await updateComment(ModelID, content, jwt!);
     if (index === -1) {
       commentDetails.value.push(content);
-    }
-    else {
+    } else {
       commentDetails.value[index].children.push(content);
     }
   };
-
 </script>
 
 <style scoped lang="less">

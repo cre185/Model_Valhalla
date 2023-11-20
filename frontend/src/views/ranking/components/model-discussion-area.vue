@@ -24,7 +24,7 @@
       :datetime="item.datetime"
   >
     <template #actions>
-      <span class="action" key="heart" @click="item.changeLikeState()">
+      <span class="action" key="heart" @click="item.changeLikeState(jwt)">
         <a-space size="mini">
           <span v-if="item.ifLike">
           <IconThumbUpFill :style="{ color: '#1c61ff' }" />
@@ -37,7 +37,7 @@
         </span>
         </a-space>
       </span>
-      <span class="action" key="star" @click="item.changeHateState()">
+      <span class="action" key="star" @click="item.changeHateState(jwt)">
         <span v-if="item.ifHate">
           <IconThumbDownFill :style="{ color: '#1c61ff' }" />
         </span>
@@ -45,7 +45,7 @@
           <IconThumbDown class="icon" />
         </span>
       </span>
-      <span class="action, reply" key="reply" @click="handleClick(item, -1, index, '')">
+      <span class="action, reply" key="reply" @click="handleClick(item, -1, index, '', item.commentId)">
         {{ $t('ranking.profile.discussion.reply') }}
       </span>
     </template>
@@ -58,7 +58,7 @@
       :datetime="child.datetime"
     >
       <template #actions>
-        <span class="action" key="heart" @click="child.changeLikeState()">
+        <span class="action" key="heart" @click="child.changeLikeState(jwt)">
           <a-space size="mini">
             <span v-if="child.ifLike">
             <IconThumbUpFill :style="{ color: '#1c61ff' }" />
@@ -71,7 +71,7 @@
             </span>
           </a-space>
         </span>
-        <span class="action" key="star" @click="child.changeHateState()">
+        <span class="action" key="star" @click="child.changeHateState(jwt)">
           <span v-if="child.ifHate">
             <IconThumbDownFill :style="{ color: '#1c61ff' }" />
           </span>
@@ -79,7 +79,7 @@
             <IconThumbDown class="icon" />
           </span>
         </span>
-        <span class="action, reply" key="reply" @click="handleClick(item, child_index as number, index, child.author)">
+        <span class="action, reply" key="reply" @click="handleClick(item, child_index as number, index, child.author, child.commentId)">
           {{ $t('ranking.profile.discussion.reply') }}
         </span>
       </template>
@@ -90,7 +90,7 @@
         :avatar="userStore.avatar"
     >
       <template #actions>
-        <a-button key="0" type="primary" @click="item.addComment(item, tmpComment)"> {{ $t('ranking.profile.discussion.submit') }} </a-button>
+        <a-button key="0" type="primary" @click="item.addComment(item, tmpComment, props.modelId, jwt)"> {{ $t('ranking.profile.discussion.submit') }} </a-button>
       </template>
       <template #content>
         <a-input :placeholder="$t('ranking.profile.discussion.replyEmbed.placeholder')+(item.lastClicked == -1 ? item.author : item.children[item.lastClicked].author)" v-model="tmpComment.content" />
@@ -103,12 +103,19 @@
   import MyComment from '@/api/comment'
   import { useUserStore } from '@/store';
   import {defineEmits, reactive, Ref, ref, toRef, toRefs} from "vue";
+  import {getToken} from "@/utils/auth";
 
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   const props = defineProps({
-    commentDetails: Array<MyComment>
+    commentDetails: {
+      type: Array<MyComment>,
+    },
+    modelId: {
+      type: String,
+    }
   });
+  const jwt = getToken();
 
   const emit = defineEmits<{
     (event: 'changeComment', arg1: number, arg2: MyComment): void;
@@ -130,8 +137,9 @@
     }
   }
 
-  const handleClick = (item:MyComment, who:number, index:number, target:string) => {
+  const handleClick = (item:MyComment, who:number, index:number, target:string, toId:number) => {
     tmpComment.value.toAuthor = target;
+    tmpComment.value.toId = toId;
     item.changeReplyState(tmpComment.value, who);
     ensureOneReply(index)
   }

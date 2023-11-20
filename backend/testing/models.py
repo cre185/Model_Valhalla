@@ -8,7 +8,12 @@ class LLMs(models.Model):
     api_headers = models.TextField(default='{"Authorization":"Bearer '+GPT_KEY+'"}')
     api_data = models.TextField(default='{"model": "gpt-3.5-turbo","messages": [{"role": "user", "content": "$PROMPT"}],"temperature": 0.7}')
     api_RPM = models.IntegerField(null=True, default=3)
+    logo = models.ImageField(upload_to='static/logo', default='static/logo/default.jpg')
+    official_website = models.CharField(max_length=255, default='')
     description = models.TextField(default='')
+    document_name = models.TextField(default='')
+    document_website = models.TextField(default='')
+    license = models.TextField(default='')
     elo_credit = models.FloatField(default=1500)
     add_time = models.DateTimeField(auto_now_add=True)
     def __str__(self):
