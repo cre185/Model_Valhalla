@@ -456,7 +456,7 @@ status=400
 ```
 #### list  
 **请求方式**：GET  
-**请求URL**：`/testing/list`  
+**请求URL**：`/dataset/list`  
 **请求参数**：无  
 **返回情况**：  
 * 正常返回  
