@@ -43,7 +43,7 @@ export default {
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
   'menu.server.monitor': '实时监控-服务端',
-  'menu.list': '列表页',
+  'menu.list': '评测',
   'menu.result': '结果页',
   'menu.exception': '异常页',
   'menu.form': '表单页',

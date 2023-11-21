@@ -22,7 +22,7 @@
                                     ></a-input>
                                 </a-form-item>
                             </a-col>
-                            <a-col :span="8">
+                            <a-col :span="9">
                                 <a-form-item
                                     field="name"
                                     :label="$t('ranking.behaviour.dataset.name')"
@@ -35,7 +35,7 @@
                                     ></a-input>
                                 </a-form-item>
                             </a-col>
-                            <a-col :span="8">
+                            <a-col :span="7">
                                 <a-form-item
                                     field="contentType"
                                     :label="$t('ranking.behaviour.dataset.contenttype')"
@@ -68,7 +68,7 @@
                                     ></a-input>
                                 </a-form-item>
                             </a-col>
-                            <a-col :span="8">
+                            <a-col :span="9">
                                 <a-form-item
                                     field="createdTime"
                                     :label="$t('ranking.behaviour.dataset.createdTime')"
@@ -81,7 +81,7 @@
                                     ></a-range-picker>
                                 </a-form-item>
                             </a-col>
-                            <a-col :span="8">
+                            <a-col :span="7">
                                 <a-form-item
                                     field="score"
                                     :label="$t('ranking.behaviour.dataset.score')"
@@ -177,6 +177,7 @@
                                                 {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
                                                 {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
                                                 {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
+                                                
                                             ]);
     const originData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
                                                 {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},

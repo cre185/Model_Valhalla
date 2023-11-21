@@ -135,6 +135,7 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
     const response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`), {headers: {
             Authorization: jwt,
         },});
+    commentDetails.value = [];
     for (const item of response.data.data) {
         const id = item.user;
         let username: string;

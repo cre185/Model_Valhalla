@@ -34,15 +34,15 @@ class updateView(APIView):
             return Response({"message": "Invalid credit"}, status=status.HTTP_400_BAD_REQUEST)
         except:
             return Response({"message": "Invalid datasetId or llmId"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class listView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Credit.objects.all()
     serializer_class = CreditSerializer
-    
+
     def get(self, request):
         result = self.list(request)
         return Response({'message': 'ok', 'data': result.data}, status=status.HTTP_200_OK)
-    
+
 class retrieveView(APIView):
     def post(self, request):
         data = request.data
@@ -53,7 +53,7 @@ class retrieveView(APIView):
             return Response({"message": "ok", "credit": target.credit}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid datasetId or llmId"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 class clearView(APIView):
     @admin_required
     def post(self, request):
@@ -81,9 +81,10 @@ class averageView(APIView):
             if i.credit!=None:
                 average+=i.credit
                 count+=1
-        average/=count
+        if count != 0:
+            average/=count
         return Response({'message': 'ok', 'average': average}, status=status.HTTP_200_OK)
-    
+
 class averageListView(APIView):
     def get(self, request):
         result = testing.LLMs.objects.all()
@@ -94,7 +95,8 @@ class averageListView(APIView):
                 if j.credit!=None:
                     average+=j.credit
                     count+=1
-            average/=count
+            if count != 0:
+                average/=count
             data.append(average)
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
 
@@ -111,7 +113,7 @@ class commentView(APIView):
             serializer.save()
             return Response({"message": "ok", "id": LLMComment.objects.last().id}, status=status.HTTP_200_OK)
         return Response({"message": "Invalid comment"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
 class datasetCommentView(APIView):
     @login_required
     def get(self, request, *args, **kwargs):
@@ -131,7 +133,7 @@ class datasetCommentView(APIView):
             data[-1]['if_dislike']=len(DatasetLike.objects.filter(user=request.user, comment=i, dislike=True))>0
             data[-1]['add_time']=data[-1]['add_time'].split('T')[0]+' '+data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
-    
+
 class llmCommentView(APIView):
     @login_required
     def get(self, request, *args, **kwargs):
@@ -151,7 +153,7 @@ class llmCommentView(APIView):
             data[-1]['if_dislike']=len(LLMLike.objects.filter(user=request.user, comment=i, dislike=True))>0
             data[-1]['add_time']=data[-1]['add_time'].split('T')[0]+' '+data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
-    
+
 class likeDCommentView(APIView):
     @login_required
     def post(self, request):
