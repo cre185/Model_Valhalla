@@ -18,27 +18,12 @@ export interface LLMRankingData{
 }
 
 export interface DatasetRankingData{
-    num: number;
+    id: number;
     name: string;
     contentType: string;
     contentSize: number;
     createdTime: string;
     score: number;
-}
-
-export interface DatasetSearchRecord{
-    ID: number;
-    number: number;
-    name: string;
-    contentType: 'book' | 'imageCut' | 'imageClassify';
-    contentSize: number;
-    createdTime: string;
-    score: number;
-}
-
-export interface DatasetSelectParams extends Partial<DatasetSearchRecord> {
-    current: number;
-    pageSize: number;
 }
 
 export interface LLMListRes {
@@ -81,6 +66,33 @@ export async function queryLLMList() {
     }
     return LLMRankingList;
 }
+
+
+export async function queryDatasetbehaviorList() {
+    const DatasetRankingList: {data: any, total: number} = { data:[], total: 0};
+    const response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
+    for(let i = 0; i < response.data.data.length; i += 1){
+        const dataset = response.data.data[i] as { id: number, name: string, add_time: string,
+                                                    data_file: string, subjective:boolean };
+        const datasetType = dataset.subjective ? "主观题" : "客观题";
+        DatasetRankingList.data.push({id: dataset.id, name: dataset.name, contentSize: 200, contentType: datasetType,
+                                createdTime: dataset.add_time, score: 100});
+    }
+    // response = await axios.get<LLMListRes>(apiCat('/ranking/list'));
+    // for(let i = 0; i < response.data.data.length; i+=1)
+    // {
+       // const score = response.data.data[i] as {LLM: number, dataset: number, add_time: string, credit: number};
+        // for(let j = 0; j < DatasetRankingList.data.length; j+=1)
+        // {
+            // if(DatasetRankingList.data[j].id === score.LLM){
+                // DatasetRankingList.data[j][score.dataset] = score.credit;
+                // break;
+            // }
+        // }
+    // }
+    return DatasetRankingList;
+}
+
 
 export async function queryDatasetColumnList() {
     const datasetColumnList: Column[] = [];

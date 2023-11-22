@@ -1,0 +1,37 @@
+{
+  "id": "4339726",
+  "name": "icon-model",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "12578848",
+      "name": "hand-right",
+      "font_class": "hand-right1",
+      "unicode": "e6b7",
+      "unicode_decimal": 59063
+    },
+    {
+      "icon_id": "12578854",
+      "name": "hand-left",
+      "font_class": "hand-left1",
+      "unicode": "e6b9",
+      "unicode_decimal": 59065
+    },
+    {
+      "icon_id": "38159812",
+      "name": "笑",
+      "font_class": "Outline_fuben11",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
+      "icon_id": "38159929",
+      "name": "伤心",
+      "font_class": "Outline_fuben24",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    }
+  ]
+}

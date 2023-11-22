@@ -226,7 +226,7 @@ import { computed, ref, reactive, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
-import '@/assets/icon/iconfont.css'
+import '@/assets/icondataset/iconfont.css'
 
 const generateFormModel = () => {
   return {

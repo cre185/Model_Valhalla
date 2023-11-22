@@ -161,7 +161,7 @@
     import { Pagination } from '@/types/global';
     import { queryDatasetList, DatasetRecord, DatasetParams } from '@/api/list';
     import type {TableColumnData } from '@arco-design/web-vue/es/table/interface';
-    import { DatasetRankingData, DatasetSelectParams } from "@/api/model-list";
+    import { DatasetRankingData, queryDatasetbehaviorList} from "@/api/model-list";
     import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
     import cloneDeep from 'lodash/cloneDeep';
 
@@ -170,23 +170,30 @@
     const { proxy } = getCurrentInstance();
     const {loading, setLoading} = useLoading(false);
     const showColumns = ref<Column[]>([]);
-    const renderData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
-                                                {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
-                                                {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
-                                                {num: 4, name: 'MNIST', contentType: "混合题", contentSize: 284, createdTime: "2019-05-21", score: 100},
-                                                {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
-                                                {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
-                                                {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
+    const renderData = ref<DatasetRankingData[]>();
+    let { data }= await queryDatasetbehaviorList();
+    const originData = ref<DatasetRankingData[]>();
+    renderData.value = data;
+    originData.value = data;
+
+    // const renderData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
+                                               // {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
+                                               // {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
+                                               // {num: 4, name: 'MNIST', contentType: "混合题", contentSize: 284, createdTime: "2019-05-21", score: 100},
+                                               // {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
+                                               // {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
+                                               // {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
                                                 
-                                            ]);
-    const originData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
-                                                {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
-                                                {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
-                                                {num: 4, name: 'MNIST', contentType: "混合题", contentSize: 284, createdTime: "2019-05-21", score: 100},
-                                                {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
-                                                {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
-                                                {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
-                                            ]);
+                                            // ]);
+    // const originData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
+                                                // {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
+                                                // {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
+                                                // {num: 4, name: 'MNIST', contentType: "混合题", contentSize: 284, createdTime: "2019-05-21", score: 100},
+                                                // {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
+                                                // {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
+                                                // {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
+                                            // ]);
+                                            
     const cloneColumns = ref<Column[]>([]);
     const basePagination: Pagination = {
         current: 1,
@@ -345,8 +352,8 @@
     const columns = computed<TableColumnData[]>(() => [
         {
             title: t('ranking.behaviour.table.num'),
-            dataIndex: 'num',
-            slotName: 'num',
+            dataIndex: 'id',
+            slotName: 'id',
             align: "center",
             sortable: {
                 sortDirections: ['ascend', 'descend']
@@ -400,13 +407,13 @@
     ) => {
     setLoading(true);
     try {
-        const { data } = await queryDatasetList(params);
+        data = await queryDatasetList(params);
         // renderData.value = data.list;
         const filteredData = computed(() => {
             let result = originData.value;
             if(SearchFormModel.value.num !== '')
             {
-                result=result.filter(item => item.num.toString() === SearchFormModel.value.num);
+                result=result.filter(item => item.id.toString() === SearchFormModel.value.num);
             }
             if(SearchFormModel.value.name !== '')
             {
