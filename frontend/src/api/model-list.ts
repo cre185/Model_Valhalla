@@ -68,28 +68,28 @@ export async function queryLLMList() {
 }
 
 
-export async function queryDatasetbehaviorList() {
+export async function queryDatasetbehaviorList(modelId: string) {
     const DatasetRankingList: {data: any, total: number} = { data:[], total: 0};
-    const response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
+    // modelId = "99";
+    const modelNum = Number(modelId);
+    let response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
     for(let i = 0; i < response.data.data.length; i += 1){
-        const dataset = response.data.data[i] as { id: number, name: string, add_time: string,
+        const dataset = response.data.data[i] as { id: number, name: string, add_time: string, content_size: number,
                                                     data_file: string, subjective:boolean };
         const datasetType = dataset.subjective ? "主观题" : "客观题";
-        DatasetRankingList.data.push({id: dataset.id, name: dataset.name, contentSize: 200, contentType: datasetType,
-                                createdTime: dataset.add_time, score: 100});
+        DatasetRankingList.data.push({id: dataset.id, name: dataset.name, contentSize: dataset.content_size, contentType: datasetType,
+                                createdTime: dataset.add_time, score: modelNum});
     }
-    // response = await axios.get<LLMListRes>(apiCat('/ranking/list'));
-    // for(let i = 0; i < response.data.data.length; i+=1)
-    // {
-       // const score = response.data.data[i] as {LLM: number, dataset: number, add_time: string, credit: number};
-        // for(let j = 0; j < DatasetRankingList.data.length; j+=1)
-        // {
-            // if(DatasetRankingList.data[j].id === score.LLM){
-                // DatasetRankingList.data[j][score.dataset] = score.credit;
-                // break;
-            // }
-        // }
-    // }
+    response = await axios.get<LLMListRes>(apiCat('/ranking/list'));
+    for(let i = 0; i < response.data.data.length; i += 1)
+    {
+        const datasetScore = response.data.data[i] as {LLM: number, dataset: number, add_time: string, credit: number};
+        // DatasetRankingList.data[i].score = datasetScore.credit;
+        if(datasetScore.LLM === modelNum)
+        {
+            DatasetRankingList.data[datasetScore.dataset - 1].score = datasetScore.credit;
+        }
+    }
     return DatasetRankingList;
 }
 

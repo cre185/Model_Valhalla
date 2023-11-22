@@ -154,7 +154,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, ref, reactive, watch, nextTick,getCurrentInstance} from 'vue';
+    import { computed, ref, reactive, watch, nextTick, defineProps, getCurrentInstance} from 'vue';
     import { IconSearch } from '@arco-design/web-vue/es/icon';
     import useLoading from '@/hooks/loading';
     import { useI18n } from 'vue-i18n';
@@ -166,12 +166,15 @@
     import cloneDeep from 'lodash/cloneDeep';
 
     type Column = TableColumnData & { checked?: true };
+    const props = defineProps({
+        modelid: String,
+    });
     const { t } = useI18n();
     const { proxy } = getCurrentInstance();
     const {loading, setLoading} = useLoading(false);
     const showColumns = ref<Column[]>([]);
     const renderData = ref<DatasetRankingData[]>();
-    let { data }= await queryDatasetbehaviorList();
+    let { data }= await queryDatasetbehaviorList(props.modelid);
     const originData = ref<DatasetRankingData[]>();
     renderData.value = data;
     originData.value = data;
