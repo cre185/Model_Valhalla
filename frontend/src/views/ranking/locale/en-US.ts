@@ -1,4 +1,9 @@
 export default {
+  'ranking.welcome': 'Welcome to the leaderboard',
+  'ranking.slogan1': 'Find the most powerful llm here',
+  'ranking.slogan2': 'Or crown your own model',
+  'ranking.llm.upload': 'Upload',
+  'ranking.llm.search.placeholder': 'Please input the name of the llm you\'re willing to view',
   'rankings.llm.data.ranking': 'Overall Ranking',
   'rankings.llm.data.name': 'Model Name',
   'rankings.llm.data.mmluScore': 'MMLU Score',

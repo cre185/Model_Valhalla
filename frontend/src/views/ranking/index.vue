@@ -2,21 +2,60 @@
   <div>
     <div class="container">
       <Breadcrumb :items="['menu.ranking', 'menu.ranking.profile']" />
-        <a-card class="general-card" :title="$t('menu.list.searchTable')">
+      <a-row>
+        <a-col style="align-items: center; justify-content: center" :span="6">
+          <a-typography-title style="margin-top: 5px; margin-left: 30px;" :bold="true">
+            {{ $t('ranking.welcome') }}
+          </a-typography-title>
+          <a-typography-title style="margin-left: 30px; color: dimgrey"  :heading="6">
+            {{ $t('ranking.slogan1') }}
+          </a-typography-title>
+          <a-typography-title style="margin-top: 5px; margin-left: 30px; color: dimgrey"  :heading="6">
+            {{ $t('ranking.slogan2') }}
+          </a-typography-title>
+        </a-col>
+        <a-col style="align-items: center; z-index: 10" :span="18">
+          <div id="llm-rotatingGallery">
+            <div id="drag-container">
+              <div id="spin-container">
+                <img src="@/assets/images/llm_logos/ChatGPT_logo.png">
+                <img src="@/assets/images/llm_logos/Claude_logo.png">
+                <img src="@/assets/images/llm_logos/Claude2_logo.png">
+                <img src="@/assets/images/llm_logos/Falcon_logo.png">
+                <img src="@/assets/images/llm_logos/GPT-4_logo.png">
+                <img src="@/assets/images/llm_logos/MetaLlama_logo.png">
+                <img src="@/assets/images/llm_logos/Mistral-7b_logo.png">
+                <img src="@/assets/images/llm_logos/Qwen-chat_logo.png">
+                <img src="@/assets/images/llm_logos/Vicuna_logo.png">
+                <img src="@/assets/images/llm_logos/Xinghuo_logo.png">
+                <img src="@/assets/images/llm_logos/Yiyan_logo.png">
+                <img src="@/assets/images/llm_logos/zephyr_logo.png">
+                <img src="@/assets/images/llm_logos/MPT-7b_logo.png">
+                <img src="@/assets/images/llm_logos/etc.png">
+              </div>
+              <div id="ground"></div>
+            </div>
+          </div>
+        </a-col>
+      </a-row>
+        <a-card class="general-card" style="z-index: 0">
           <a-row style="margin-bottom: 16px">
-            <a-col :span="12">
+            <a-col :span="6">
               <a-space>
-                <a-button type="primary">
+                <a-button type="primary" style="margin-top: 20px">
                   <template #icon>
                     <icon-plus />
                   </template>
-                  {{ $t('searchTable.operation.create') }}
+                  {{ $t('ranking.llm.upload') }}
                 </a-button>
               </a-space>
             </a-col>
+            <a-col :span="12" style="display: flex; align-items:center; justify-content: center; margin-top: 20px">
+              <a-input-search :style="{width:'600px'}" :placeholder="$t('ranking.llm.search.placeholder')" :loading="loading" @search="handleSearch" search-button/>
+            </a-col>
             <a-col
-                :span="12"
-                style="display: flex; align-items: center; justify-content: end"
+                :span="6"
+                style="display: flex; align-items: center; justify-content: end; margin-top: 20px"
             >
               <a-button>
                 <template #icon>
@@ -354,6 +393,18 @@
     }
   };
 
+  const handleSearch = async (modelName: string) => {
+    setLoading(true);
+    try {
+      await fetchData();
+      renderData.value = renderData.value?.filter(item => item.name.includes(modelName))
+    } catch (err) {
+      console.log('Search error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const setDrawer = () => {
     // 设置Drawer样式
     const drawerHeader = document.querySelector('.arco-drawer-header');
@@ -403,7 +454,6 @@
     getComment(ModelID.value!, commentDetails, jwt!);
   };
 
-
   const handleChangeComment = async (index: number, content: MyComment) => {
     await updateComment(currentLLM.value!.id.toString()!, content, jwt!);
     if (index === -1) {
@@ -412,6 +462,111 @@
       commentDetails.value[index].children.push(content);
     }
   };
+
+  const handleRotatingGallery = () =>{
+    let radius = 180;
+    const autoRotate = true;
+    const rotateSpeed = -60;
+    const imgWidth = 40;
+    const imgHeight = 40;
+
+    const oDrag = document.getElementById('drag-container');
+    const oSpin = document.getElementById('spin-container');
+    const aImg = oSpin!.getElementsByTagName('img');
+    const aEle = [...aImg];
+    let sX: number;
+    let sY: number;
+    let nX: number;
+    let nY: number;
+    let desX = 0;
+    let desY = 0;
+    let tX = 0;
+    let tY =0;
+
+    oSpin!.style.width = `${imgWidth}px`;
+    oSpin!.style.height = `${imgHeight}px`;
+
+    const ground = document.getElementById('ground');
+    ground!.style.width = `${radius * 3}px`;
+    ground!.style.height = `${radius * 3}px`
+    function init(delayTime: any){
+      for(let i = 0; i < aEle.length; i += 1){
+        aEle[i].style.transform = `rotateY(${i * (360 / aEle.length)}deg) translateZ(${radius}px)`;
+        aEle[i].style.transition = `transform 1s`;
+        aEle[i].style.transitionDelay = `${delayTime || (aEle.length - i) / 4}s`;
+      }
+    }
+    setTimeout(init, 1000);
+
+    function applyTransform(obj: any){
+      if( tY > 180) tY = 180;
+      if( tY < 0) tY = 0;
+      obj.style.transform = `rotateX(${-tY}deg) rotateY(${tX}deg)`;
+    }
+
+    function playSpin(yes: boolean){
+      oSpin!.style.animationPlayState = (yes?'running' : 'paused');
+    }
+
+    if(autoRotate) {
+      const animationName = rotateSpeed > 0 ? 'spin' : 'spinRevert';
+      oSpin!.style.animation = `${animationName} ${Math.abs(rotateSpeed)}s infinite linear `;
+    }
+
+    document.getElementById('llm-rotatingGallery')!.onpointerdown = function (e) {
+      clearInterval(oDrag!.timer);
+      e = e || window.event;
+      sX = e.clientX;
+      sY = e.clientY;
+
+      document.onpointermove = function (event){
+        event = event || window.event;
+        nX = event.clientX ;
+        nY = event.clientY;
+        desX = nX - sX;
+        desY = nY -sY;
+        tX += desX * 0.1;
+        tY += desY * 0.1;
+        applyTransform(oDrag);
+        sX = nX;
+        sY = nY;
+      };
+
+      document.onpointerup = function(event) {
+        oDrag!.timer = setInterval(function (){
+          desX *= 0.95;
+          desY *= 0.95;
+          tX += desX * 0.1;
+          tY += desY * 0.1;
+          applyTransform(oDrag);
+          playSpin(false);
+          if(Math.abs(desX) < 0.5 && Math.abs(desY) < 0.5){
+            clearInterval(oDrag!.timer);
+            playSpin(true);
+          }
+        }, 17);
+        this.onpointermove = null;
+        this.onpointerup = null;
+      };
+      return false;
+    }
+
+    document.getElementById('llm-rotatingGallery')!.onwheel = function (e){
+      e = e || window.event;
+      radius += e.wheelDelta / 20 || -e.detail;
+      if(radius < imgWidth * 2) {
+        radius = imgWidth * 2;
+      }
+      else if(radius > 250){
+        radius = 250;
+      }
+      init(0.01);
+    }
+  }
+
+  onMounted(() => {
+    handleRotatingGallery();
+  })
 </script>
 
 <style scoped lang="less">
@@ -455,7 +610,6 @@
     align-items: center;
   }
 
-
   .llm-details-subscribe-btn{
     display: flex;
     justify-content: center;
@@ -464,5 +618,106 @@
     padding: 5px 20px;
     font-size: 18px;
   }
+
+  #llm-rotatingGallery{
+    z-index: 100;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+
+  #drag-container, #spin-container{
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin: 10px auto 40px auto;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-transform: rotateX(-10deg);
+    transform: rotateX(-10deg);
+  }
+
+  #drag-container img{
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    line-height: 200px;
+    font-size: 50px;
+    text-align: center;
+    -webkit-box-shadow: 0 0 8px #fff;
+    box-shadow: 0 0 #fff;
+    -webkit-box-reflect: below 10px linear-gradient(transparent, transparent, #0005);
+  }
+
+  #drag-container img:hover{
+    -webkit-box-shadow: 0 0 15px #fffd;
+    box-shadow: 0 0 15px #fffd;
+    -webkit-box-reflect: below 10px linear-gradient(transparent, transparent, #0007);
+  }
+
+  #ground{
+    width: 900px;
+    height: 900px;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%) rotateX(90deg);
+    transform: translate(-50%, -50%) rotateX(90deg);
+    background: -wekbit-radial-gradient(center center, farthest-side, #9993, transparent);
+  }
 </style>
 
+<style>
+  @-webkit-keyframes spin {
+    from{
+      -webkit-transform: rotateY(0deg);
+      transform: rotateY(0deg);
+    }
+    to{
+      -webkit-transform: rotateY(360deg);
+      transform: rotateY(360deg);
+    }
+  }
+
+  @keyframes spin {
+    from{
+      -webkit-transform: rotateY(0deg);
+      transform: rotateY(0deg);
+    }
+    to{
+      -webkit-transform: rotateY(360deg);
+      transform: rotateY(360deg);
+    }
+  }
+
+  @-webkit-keyframes spinRevert {
+    from{
+      -webkit-transform: rotateY(360deg);
+      transform: rotateY(360deg);
+    }
+    to{
+      -webkit-transform: rotateY(0deg);
+      transform: rotateY(0deg);
+    }
+  }
+
+  @keyframes spinRevert {
+    from{
+      -webkit-transform: rotateY(360deg);
+      transform: rotateY(360deg);
+    }
+    to{
+      -webkit-transform: rotateY(0deg);
+      transform: rotateY(0deg);
+    }
+  }
+</style>
