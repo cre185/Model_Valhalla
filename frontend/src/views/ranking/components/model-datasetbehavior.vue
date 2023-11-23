@@ -125,7 +125,7 @@
             <a-table
                 row-key="ID"
                 :loading="loading"
-                :pagination="pagination"
+                :pagination=false
                 :columns="columns"
                 :data="renderData"
                 :bordered="false"
@@ -220,13 +220,13 @@
                                             // ]);
                                             
     const cloneColumns = ref<Column[]>([]);
-    const basePagination: Pagination = {
-        current: 1,
-        pageSize: 20,
-    };
-    const pagination = reactive({
-        ...basePagination,
-    });
+    // const basePagination: Pagination = {
+    //    current: 1,
+    //    pageSize: 20,
+    // };
+    // const pagination = reactive({
+    //    ...basePagination,
+    // });
 
     const generateSearchFormModel = () => {
         return {
@@ -424,7 +424,7 @@
         },
     ]);
     const filterData = async (
-        params: DatasetParams = { current: 1, pageSize: 20 }
+        // params: DatasetParams = { current: 1, pageSize: 20 }
     ) => {
     setLoading(true);
     try {
@@ -478,8 +478,8 @@
             return result;
         });
         renderData.value = filteredData.value;
-        pagination.current = params.current;
-        pagination.total = 1;
+        // pagination.current = params.current;
+        // pagination.total = 1;
     } catch (err) {
         // you can report use errorHandler or other
     } finally {
@@ -491,10 +491,11 @@
     // return renderData.value.filter(item => item.num.toString() === SearchFormModel.value.num);
     // });
     const search = () => {
-        filterData({
-        ...basePagination,
-        ...SearchFormModel.value,
-        } as unknown as DatasetParams);
+        filterData(// {
+        // ...basePagination,
+        // ...SearchFormModel.value,
+        // } as unknown as DatasetParams
+        );
     };
     watch(
         () => columns.value,
