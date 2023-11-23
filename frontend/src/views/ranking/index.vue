@@ -166,7 +166,7 @@
             <ModelProfile />
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('ranking.details.datasetScore')">
-            <DatasetProfile />
+            <DatasetProfile :modelid="ModelID" />
           </a-tab-pane>
           <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
             <p>TODO</p>
