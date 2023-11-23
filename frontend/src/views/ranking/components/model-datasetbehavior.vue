@@ -167,17 +167,39 @@
 
     type Column = TableColumnData & { checked?: true };
     const props = defineProps({
-        modelid: String,
-    });
+    modelid: {
+      type: String,
+    },
+
+  });
+        
     const { t } = useI18n();
     const { proxy } = getCurrentInstance();
     const {loading, setLoading} = useLoading(false);
     const showColumns = ref<Column[]>([]);
-    const renderData = ref<DatasetRankingData[]>();
-    let { data }= await queryDatasetbehaviorList(props.modelid);
+    // const originData = ref<DatasetRankingData[]>(await queryDatasetbehaviorList(props.modelid!).then(response => response.data));
+    // const renderData = ref<DatasetRankingData[]>(await queryDatasetbehaviorList(props.modelid!).then(response => response.data));
     const originData = ref<DatasetRankingData[]>();
-    renderData.value = data;
-    originData.value = data;
+    const renderData = ref<DatasetRankingData[]>();
+
+    watch(
+        () => props.modelid,
+    
+        async (newModelid, oldModelid) => {
+            try {
+                const response = await queryDatasetbehaviorList(newModelid);
+                renderData.value = response.data;
+                originData.value = response.data;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            },
+        {
+            immediate: true // 立即执行一次回调函数
+        }
+     );
+    // const originData = ref<DatasetRankingData[]>();
+    // originData.value = data;
 
     // const renderData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
                                                // {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
@@ -221,10 +243,6 @@
 
     const SearchFormModel= ref(generateSearchFormModel());
     const contentTypeOptions = computed<SelectOptionData[]>(() => [
-        {
-            label: t('ranking.behaviour.contentType.mix'),
-            value: '混合题',
-        },
         {
             label: t('ranking.behaviour.contentType.subjective'),
             value: '主观题',
@@ -405,12 +423,12 @@
             },
         },
     ]);
-    const fetchData = async (
+    const filterData = async (
         params: DatasetParams = { current: 1, pageSize: 20 }
     ) => {
     setLoading(true);
     try {
-        data = await queryDatasetList(params);
+        // data = await queryDatasetList(params);
         // renderData.value = data.list;
         const filteredData = computed(() => {
             let result = originData.value;
@@ -461,7 +479,7 @@
         });
         renderData.value = filteredData.value;
         pagination.current = params.current;
-        pagination.total = data.total;
+        pagination.total = 1;
     } catch (err) {
         // you can report use errorHandler or other
     } finally {
@@ -473,7 +491,7 @@
     // return renderData.value.filter(item => item.num.toString() === SearchFormModel.value.num);
     // });
     const search = () => {
-        fetchData({
+        filterData({
         ...basePagination,
         ...SearchFormModel.value,
         } as unknown as DatasetParams);
