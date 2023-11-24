@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import { HttpResponse } from '@/api/interceptor';
 import useLoading from './loading';
 
-// use to fetch list
+// use to fetch evaluate
 // Don't use async function. It doesn't work in async function.
 // Use the bind function to add parameters
 // example: useRequest(api.bind(null, {}))
