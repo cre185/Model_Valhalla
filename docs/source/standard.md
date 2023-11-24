@@ -50,6 +50,7 @@ Question,A,B,C,D,Answer
 * [FastChat OpenAI-Compatible RESTful APIs 文档](https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md)  
 * [openai API reference 官方文档](https://platform.openai.com/docs/api-reference/chat)  
 
+关于默认支持的模型可以查看[大模型api文档](http://111.202.73.146:10510/docs)  
 在上传语言模型时，需要提供以下内容：  
 * api_url：一个url，为模型的生成内容调用接口    
 * model_name：一个字符串，用于标识调用接口时使用的模型的名称  
