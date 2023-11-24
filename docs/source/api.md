@@ -831,9 +831,11 @@ status=400
 **请求参数**：  
 ```python
 {
-    "llmId1": "1号模型id",
-    "llmId2": "2号模型id",
-    "result": "结果，0为平局，1为1号胜利，-1为1号失败"
+    "llm1": "1号模型id",
+    "llm2": "2号模型id",
+    "winner": "结果，0为平局，1为1号胜利，-1为1号失败",
+    "round": "回合数",
+    "result": "JSON对象，包含每一回合的prompt和双方response"
 }
 ```
 **额外需求**：login_required  
@@ -843,7 +845,7 @@ status=400
 {
     "message": "ok"
 },
-status=200
+status=201
 ```
 * 参数异常  
 ```python
