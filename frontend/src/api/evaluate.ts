@@ -41,13 +41,20 @@ class EvaluateRound {
     result:number
     date:string
 
-    constructor(modelA:number, modelB:number, user:number) {
+    constructor(modelA:number, user:number) {
         this.modelA = modelA;
-        this.modelB = modelB;
+        this.modelB = -1;
         this.user = user;
         this.QA = [] as QuestionAndAnswer[];
         this.result = 0;
         this.date = '';
+    }
+
+    async getModelB() {
+        const response = await axios.post(apiCat('/testing/battle_match'), {
+            llmId: this.modelA,
+        });
+        this.modelB = response.data.llmId;
     }
 
     async getResponse() {
