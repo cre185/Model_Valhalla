@@ -28,7 +28,7 @@
                   :label-col-props="{ span: 4 }"
                   :wrapper-col-props="{ span: 10 }"
                   >
-                  <a-select v-model="formModel.name" :options="ModelSelectOptions"
+                  <a-select v-model="formModel.id" :options="ModelSelectOptions"
                     :placeholder="$t('searchTable.form.selectDefault')" />
                 </a-form-item>
               </a-form>
@@ -39,12 +39,6 @@
                   <icon-check></icon-check>
                 </template>
                 {{ $t('evaluation.select.models.confirm') }}
-              </a-button>
-              <a-button>
-                <template #icon>
-                  <icon-refresh></icon-refresh>
-                </template>
-                {{ $t('evaluation.select.models.reset') }}
               </a-button>
             </a-col>
           </a-row>
@@ -232,7 +226,7 @@ import * as module from "module";
 
 const generateFormModel = () => {
   return {
-    name: '',
+    id: undefined,
   };
 }
 
@@ -249,6 +243,7 @@ const ModelSelectOptions = computed<SelectOptionData[]>(() => {
     value: model.id,
   }));
 });
+const ModelAId = computed(() => formModel.value.id);
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: "机器翻译",
