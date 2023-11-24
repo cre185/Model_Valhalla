@@ -77,7 +77,7 @@ class registerView(mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def create(self, request):
+    def post(self, request):
         request.data['is_admin'] = False
         if 'secret' in request.data and request.data['secret'] == 'TXNKvJ#1':
             request.data['is_admin'] = True
@@ -86,10 +86,6 @@ class registerView(mixins.CreateModelMixin, generics.GenericAPIView):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-    def post(self, request):
-        headers = self.create(request)
-        return Response({"message": "ok"}, status=status.HTTP_201_CREATED, headers=headers)
 
 class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     queryset = User.objects.all()

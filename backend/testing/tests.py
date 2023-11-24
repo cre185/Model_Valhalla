@@ -1,9 +1,8 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from .models import LLMs
+from .models import *
 from user.models import User
-from dataset.models import Dataset
-from testing.models import LLMs
+import json
 # Create your tests here.
 
 class LLMsModelTests(TestCase):
@@ -214,20 +213,6 @@ class LLMsModelTests(TestCase):
         self.assertEqual(len(json_data['data']), 1)
         self.assertEqual(json_data['data'][0]['name'], "sometesting")
 
-class TestingModelTests(TestCase):
-    def setUp(self):
-        user=User(
-            username="testuser",
-            password="testpassword",
-            mobile="12345678901",
-            is_admin=True,
-        )
-        user.save()
-        self.client=APIClient()
-    
-    def test_testing(self):
-        pass
-
 class BattleModelTests(TestCase):
     def setUp(self):
         user=User(
@@ -264,40 +249,44 @@ class BattleModelTests(TestCase):
         response=self.client.post(
             '/testing/battle_result',
             {
-                "llmId1":1,
-                "llmId2":2,
-                "result":1,
+                "llm1":1,
+                "llm2":2,
+                "round":1,
+                "result":json.loads('[{"result1":"a","result2":"b","prompt":"c"}]'),
+                "winner":1,
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(LLMs.objects.get(id=1).elo_credit>1500, True)
         self.assertEqual(LLMs.objects.get(id=2).elo_credit<1500, True)
         response=self.client.post(
             '/testing/battle_result',
             {
-                "llmId1":2,
-                "llmId2":3,
-                "result":-1,
+                "llm1":2,
+                "llm2":3,
+                "round":1,
+                "result":json.loads('[{"result1":"a","result2":"b","prompt":"c"}]'),
+                "winner":-1,
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data=response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(LLMs.objects.get(id=2).elo_credit<1500, True)
         self.assertEqual(LLMs.objects.get(id=3).elo_credit>1500, True)
         # request with same llm  
         response=self.client.post(
             '/testing/battle_result',
             {
-                "llmId1":1,
-                "llmId2":1,
-                "result":-1,
+                "llm1":1,
+                "llm2":1,
+                "round":1,
+                "result":json.loads('[{"result1":"a","result2":"b","prompt":"c"}]'),
+                "winner":-1,
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -308,9 +297,11 @@ class BattleModelTests(TestCase):
         response=self.client.post(
             '/testing/battle_result',
             {
-                "llmId1":1,
-                "llmId2":4,
-                "result":-1,
+                "llm1":1,
+                "llm2":4,
+                "round":1,
+                "result":json.loads('[{"result1":"a","result2":"b","prompt":"c"}]'),
+                "winner":-1,
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -342,3 +333,56 @@ class BattleModelTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(json_data['llmId'], 3)
+
+class BattleHistoryTests(TestCase):
+    def setUp(self):
+        user=User(
+            username="testuser",
+            password="testpassword",
+            mobile="12345678901",
+            is_admin=True,
+        )
+        user.save()
+        llm1=LLMs(
+            name="llm1",
+        )
+        llm1.save()
+        llm2=LLMs(
+            name="llm2",
+        )
+        llm2.save()
+        llm3=LLMs(
+            name="llm3",
+        )
+        llm3.save()
+        self.client=APIClient()
+
+    def test_history(self):
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/testing/battle_result',
+            {
+                "llm1":1,
+                "llm2":2,
+                "round":1,
+                "result":json.loads('[{"result1":"a","result2":"b","prompt":"c"}]'),
+                "winner":1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(LLMs.objects.get(id=1).elo_credit>1500, True)
+        self.assertEqual(LLMs.objects.get(id=2).elo_credit<1500, True)
+        self.assertEqual(BattleHistory.objects.count(), 1)
+        json_record=BattleHistory.objects.get(id=1).result
+        self.assertEqual(json_record[0]['result1'], 'a')
