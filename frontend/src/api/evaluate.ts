@@ -36,15 +36,13 @@ class QuestionAndAnswer {
 class EvaluateRound {
     modelA:number
     modelB:number
-    user:number
     QA:QuestionAndAnswer[]
     result:number
     date:string
 
-    constructor(modelA:number, user:number) {
+    constructor(modelA:number) {
         this.modelA = modelA;
         this.modelB = -1;
-        this.user = user;
         this.QA = [] as QuestionAndAnswer[];
         this.result = 0;
         this.date = '';
