@@ -227,6 +227,7 @@ import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
+import { SelectedModel, queryLLMevaluateList } from '@/api/evaluate';
 
 const generateFormModel = () => {
   return {
@@ -239,6 +240,8 @@ const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
 const showButtons = ref(true);
+// const SelectedModelInfo = ref<SelectedModel[]>();
+// SelectedModelInfo.value = (await queryLLMevaluateList()).data;
 const ModelSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: t('evalution.select.models.gpt3.5'),
