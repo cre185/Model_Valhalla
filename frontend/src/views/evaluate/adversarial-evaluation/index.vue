@@ -53,7 +53,7 @@
                     <span style="font-size: 18px;">Model A</span>
                   </div>
                   <div class="box-textA">
-                    杩欐槸鏂囨湰妗咥
+                    这是文本框A
                   </div>
                 </a-space>
               </div>
@@ -66,7 +66,7 @@
                     <span style="font-size: 18px;">Model B</span>
                   </div>
                   <div class="box-textB">
-                    杩欐槸鏂囨湰妗咮
+                    这是文本框B
                   </div>
                 </a-space>
               </div>
@@ -244,6 +244,7 @@ const ModelSelectOptions = computed<SelectOptionData[]>(() => {
   }));
 });
 const ModelAId = computed(() => formModel.value.id);
+const ABresult = ref<EvaluateRound>();
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: "鏈哄櫒缈昏瘧",
