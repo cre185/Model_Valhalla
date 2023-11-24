@@ -17,7 +17,11 @@ class AutoTest():
         data_file = open(dataPath, 'rb')
         data_lines = data_file.readlines()
         data_file.close()
-        header = data_lines[0].decode('utf-8')[:-1].split(',')
+        header = data_lines[0].decode('utf-8').split(',')
+        if header[-1][-1] == '\n':
+            header[-1] = header[-1][:-1]
+        if header[-1][-1] == '\r':
+            header[-1] = header[-1][:-1]
         for i in range(len(header)):
             target_column[header[i].upper()] = i
         data_lines = data_lines[1:]
@@ -56,8 +60,11 @@ class AutoTest():
         subject_accuracy={}
         test_time=time.time()
         for i in range(len(data)):
-            question = data[i][target_column['QUESTION']]
-            answer = data[i][target_column['ANSWER']]
+            try:
+                question = data[i][target_column['QUESTION']]
+                answer = data[i][target_column['ANSWER']]
+            except:
+                break
             if test_count >= self.RPM:
                 if time.time()-test_time <= 61:
                     time.sleep(61-(time.time()-test_time))

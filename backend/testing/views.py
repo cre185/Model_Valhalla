@@ -24,7 +24,7 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
         headers = self.create(request)
         llm = LLMs.objects.get(id=headers.data['id'])
         for data in dataset.Dataset.objects.all():
-            ranking.Credit.objects.create(LLM=llm, dataset=data, credit=None)
+            Credit.objects.create(LLM=llm, dataset=data, credit=None)
         return Response({"message": "ok", "llmId": headers.data['id']}, status=status.HTTP_201_CREATED, headers=headers)
     
 class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):

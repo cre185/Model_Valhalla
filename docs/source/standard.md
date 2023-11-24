@@ -46,16 +46,18 @@ Question,A,B,C,D,Answer
 * subject：字符串类型，包含题目所属的方向，如果为题目指定了该字段，则测试过程还会分析模型在各个方向的题目上的表现，并给出相应的结果。  
 * example：字符串类型，包含一个样例，可能作为用户进行评测时的参考样例呈现。  
 ### 语言模型   
-项目中的语言模型需要提供以下内容：  
-* api_url：一个url，用于访问模型的生成功能  
-* api_headers：模型接口必需的headers，为JSON格式  
-* api_data：模型接口的请求内容格式，为JSON格式，其中应该包含一个值为"$PROMPT"的键，该键应该是语言模型生成回答基于的字串  
+本项目支持的模型开放的接口需要满足RESTful API的标准，详细信息可以参考：  
+* [FastChat OpenAI-Compatible RESTful APIs 文档](https://github.com/lm-sys/FastChat/blob/main/docs/openai_api.md)  
+* [openai API reference 官方文档](https://platform.openai.com/docs/api-reference/chat)  
+
+在上传语言模型时，需要提供以下内容：  
+* api_url：一个url，为模型的生成内容调用接口    
+* model_name：一个字符串，用于标识调用接口时使用的模型的名称  
 * api_RPM：可选，一个整数，表示模型每分钟可以被请求进行生成的次数，不指定时默认无限制  
 
 作为示例，下面给出chatgpt3.5的api接口在上述字段中的对应值：  
 ```python
-api_url = 'https://api.openai.com/v1/chat/completions'
-api_headers = '{"Authorization":"Bearer $API_KEY"}'
-api_data = '{"model": "gpt-3.5-turbo","messages": [{"role": "user", "content": "$PROMPT"}],"temperature": 0.7}'
-api_RPM = 3
+api_url = 'http://111.202.73.146:10510/v1/chat/completions'  
+model_name = 'mistral_7b'  
+api_RPM = 3 
 ```
