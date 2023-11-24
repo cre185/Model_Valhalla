@@ -240,30 +240,14 @@ const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
 const showButtons = ref(true);
-// const SelectedModelInfo = ref<SelectedModel[]>();
-// SelectedModelInfo.value = (await queryLLMevaluateList()).data;
-const ModelSelectOptions = computed<SelectOptionData[]>(() => [
-  {
-    label: t('evalution.select.models.gpt3.5'),
-    value: 'Gpt-3.5',
-  },
-  {
-    label: t('evalution.select.models.baidu'),
-    value: '文心一言',
-  },
-  {
-    label: t('evalution.select.models.Thu'),
-    value: 'ChatGLM',
-  },
-  {
-    label: t('evalution.select.models.Google'),
-    value: 'Google Bard',
-  },
-  {
-    label: t('evalution.select.models.iFLYTEK'),
-    value: '讯飞星火',
-  },
-]);
+const SelectedModelInfo = ref<SelectedModel[]>();
+SelectedModelInfo.value = (await queryLLMevaluateList()).data;
+const ModelSelectOptions = computed<SelectOptionData[]>(() => {
+  return (SelectedModelInfo.value || []).map((model) => ({
+    label: model.name,
+    value: model.id,
+  }));
+});
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: "机器翻译",
