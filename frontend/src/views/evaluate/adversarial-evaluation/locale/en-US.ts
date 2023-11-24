@@ -13,7 +13,6 @@ export default {
   'evaluation.select.models.Google': 'Google Bard',
   'evaluation.select.models.iFLYTEK': 'SparkDesk',
   'evaluation.select.models.confirm': 'Confirm',
-  'evaluation.select.models.reset': 'Reset',
   'evaluation.question.input': 'Please Enter your question, or fill in a suggested question',
   'evaluation.question.button.fill': 'Fill',
   'evaluation.question.button.send': 'Send',
