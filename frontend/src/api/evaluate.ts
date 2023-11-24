@@ -46,7 +46,7 @@ class EvaluateRound {
         this.modelB = modelB;
         this.user = user;
         this.QA = [] as QuestionAndAnswer[];
-        this.result = -1;
+        this.result = 0;
         this.date = '';
     }
 
@@ -61,6 +61,16 @@ class EvaluateRound {
             prompt: this.QA[this.QA.length-1].question
         });
         this.QA[this.QA.length-1].answerB = response.data.content;
+    }
+
+    async updateEloResult() {
+        await axios.post(apiCat('/testing/battle_result'), {
+            llm1: this.modelA,
+            llm2: this.modelB,
+            result: this.QA,
+            winner: this.result,
+            add_time: this.date,
+        });
     }
 }
 
