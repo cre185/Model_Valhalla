@@ -34,8 +34,8 @@ export interface LLMListRes {
 export async function queryLLMList() {
     const LLMRankingList: {data: any, total: number} = { data:[], total: 0};
     let totalDatasetNum = 0;
-    await axios.get<LLMListRes>(apiCat('/dataset/evaluate')).then(res => {totalDatasetNum = res.data.data.length});
-    let response = await axios.get<LLMListRes>(apiCat('/testing/evaluate'));
+    await axios.get<LLMListRes>(apiCat('/dataset/list')).then(res => {totalDatasetNum = res.data.data.length});
+    let response = await axios.get<LLMListRes>(apiCat('/testing/list'));
     const averageScore = await axios.get<LLMListRes>(apiCat('/ranking/average_list'));
     LLMRankingList.total = response.data.data.length;
     for(let i = 0; i <response.data.data.length; i += 1){
@@ -54,7 +54,7 @@ export async function queryLLMList() {
         LLMRankingList.data[i].ranking = i + 1;
     }
     // 获取数据集具体评分
-    response = await axios.get<LLMListRes>(apiCat('/ranking/evaluate'));
+    response = await axios.get<LLMListRes>(apiCat('/ranking/list'));
     for(let i = 0; i < response.data.data.length; i += 1){
         const score = response.data.data[i] as {LLM: number, dataset: number, add_time: string, credit: number};
         for(let j = 0; j < LLMRankingList.data.length; j += 1){
@@ -72,7 +72,7 @@ export async function queryDatasetbehaviorList(modelId: string) {
     const DatasetRankingList: {data: any, total: number} = { data:[], total: 0};
     // modelId = "99";
     const modelNum = Number(modelId);
-    let response = await axios.get<LLMListRes>(apiCat('/dataset/evaluate'));
+    let response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
     for(let i = 0; i < response.data.data.length; i += 1){
         const dataset = response.data.data[i] as { id: number, name: string, add_time: string, content_size: number,
                                                     data_file: string, subjective:boolean };
@@ -80,7 +80,7 @@ export async function queryDatasetbehaviorList(modelId: string) {
         DatasetRankingList.data.push({id: dataset.id, name: dataset.name, contentSize: dataset.content_size, contentType: datasetType,
                                 createdTime: dataset.add_time, score: modelNum});
     }
-    response = await axios.get<LLMListRes>(apiCat('/ranking/evaluate'));
+    response = await axios.get<LLMListRes>(apiCat('/ranking/list'));
     for(let i = 0; i < response.data.data.length; i += 1)
     {
         const datasetScore = response.data.data[i] as {LLM: number, dataset: number, add_time: string, credit: number};
@@ -96,7 +96,7 @@ export async function queryDatasetbehaviorList(modelId: string) {
 
 export async function queryDatasetColumnList() {
     const datasetColumnList: Column[] = [];
-    const response = await axios.get<LLMListRes>(apiCat('/dataset/evaluate'));
+    const response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
     for(let i = 0; i < response.data.data.length; i += 1){
         const dataset = response.data.data[i] as { id: number, name: string, add_time: string,
                                                     data_file: string, author_id: number, subjective:boolean };
