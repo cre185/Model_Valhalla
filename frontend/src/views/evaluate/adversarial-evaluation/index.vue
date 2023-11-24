@@ -232,7 +232,7 @@ import * as module from "module";
 
 const generateFormModel = () => {
   return {
-    name: '',
+    name: undefined,
   };
 }
 

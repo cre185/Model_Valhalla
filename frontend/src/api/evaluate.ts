@@ -50,14 +50,17 @@ class EvaluateRound {
         this.date = '';
     }
 
-    async getResponse(jwt:string) {
-        await axios.post(apiCat('/ranking/like_llm_comment'), {
-            id: this.commentId
-        }, {
-            headers: {
-                Authorization: jwt,
-            },
+    async getResponse() {
+        let response = await axios.post(apiCat('/testing/generate'), {
+            llmId: this.modelA,
+            prompt: this.QA[this.QA.length-1].question
         });
+        this.QA[this.QA.length-1].answerA = response.data.content;
+        response = await axios.post(apiCat('/testing/generate'), {
+            llmId: this.modelB,
+            prompt: this.QA[this.QA.length-1].question
+        });
+        this.QA[this.QA.length-1].answerB = response.data.content;
     }
 }
 
