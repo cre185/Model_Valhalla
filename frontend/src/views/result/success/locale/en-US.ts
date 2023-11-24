@@ -8,7 +8,7 @@ export default {
   'success.submitApplication': 'Submit Application',
   'success.leaderReview': 'Leader Review',
   'success.purchaseCertificate': 'Purchase Certificate',
-  'success.safetyTest': 'Safety Test',
+  'success.safetyTest': 'Safety Evaluate',
   'success.launched': 'Officially launched',
   'success.waiting': 'Waiting',
   'success.processing': 'Processing',

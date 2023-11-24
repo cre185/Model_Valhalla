@@ -12,8 +12,8 @@
       :pagination="false"
     />
     <a-typography-text type="secondary" class="data-statistic-list-tip">
-      {{ $t('monitor.list.tip.rotations') }} {{ data.length }}
-      {{ $t('monitor.list.tip.rest') }}
+      {{ $t('monitor.evaluate.tip.rotations') }} {{ data.length }}
+      {{ $t('monitor.evaluate.tip.rest') }}
     </a-typography-text>
   </div>
 </template>
@@ -47,7 +47,7 @@
   const renderTag = (status: number) => {
     if (status === -1) {
       return `<a-tag  color="red" class='data-statistic-list-cover-tag'>
-            ${t('monitor.list.tag.auditFailed')}
+            ${t('monitor.evaluate.tag.auditFailed')}
         </a-tag>`;
     }
     return '';

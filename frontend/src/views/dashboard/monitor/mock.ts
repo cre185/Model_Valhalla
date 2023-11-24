@@ -7,7 +7,7 @@ import setupMock, {
 
 setupMock({
   setup() {
-    Mock.mock(new RegExp('/api/chat/list'), () => {
+    Mock.mock(new RegExp('/api/chat/evaluate'), () => {
       // return failResponseWrap(null, '重新登陆', 50008);
       const data = Mock.mock({
         'data|4-6': [
