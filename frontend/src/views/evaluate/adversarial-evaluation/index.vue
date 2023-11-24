@@ -5,18 +5,18 @@
       <a-col :span="24">
         <a-card class="general-card">
           <template #title>
-            <div class="custom-title"><b>{{ $t('evalution.rules.title') }}</b></div>
+            <div class="custom-title"><b>{{ $t('evaluation.rules.title') }}</b></div>
           </template>
-          <a-list :bordered=false :split=false>
-            <a-list-item style="width: auto;">{{ $t('evalution.rules.one') }}</a-list-item>
-            <a-list-item style="width: auto;">{{ $t('evalution.rules.two') }}</a-list-item>
-            <a-list-item style="width: auto;">{{ $t('evalution.rules.three') }}</a-list-item>
-            <a-list-item style="width: auto;">{{ $t('evalution.rules.four') }}</a-list-item>
-          </a-list>
+          <a-timeline>
+            <a-timeline-item>{{ $t('evaluation.rules.one') }}</a-timeline-item>
+            <a-timeline-item>{{ $t('evaluation.rules.two') }}</a-timeline-item>
+            <a-timeline-item>{{ $t('evaluation.rules.three') }}</a-timeline-item>
+            <a-timeline-item>{{ $t('evaluation.rules.four') }}</a-timeline-item>
+          </a-timeline>
         </a-card>
         <a-card :bordered=false>
           <template #title>
-            <div class="custom-title"><b>{{ $t('evalution.select.models') }}</b></div>
+            <div class="custom-title"><b>{{ $t('evaluation.select.models') }}</b></div>
           </template>
           <a-row :gutter="16">
             <a-col :span="18">
@@ -24,7 +24,7 @@
                 label-align="left">
                 <a-form-item 
                   field="filterType"
-                  :label="$t('evalution.select.models.title')"
+                  :label="$t('evaluation.select.models.title')"
                   :label-col-props="{ span: 4 }"
                   :wrapper-col-props="{ span: 10 }"
                   >
@@ -38,13 +38,13 @@
                 <template #icon>
                   <icon-check></icon-check>
                 </template>
-                {{ $t('evalution.select.models.confirm') }}
+                {{ $t('evaluation.select.models.confirm') }}
               </a-button>
               <a-button>
                 <template #icon>
                   <icon-refresh></icon-refresh>
                 </template>
-                {{ $t('evalution.select.models.reset') }}
+                {{ $t('evaluation.select.models.reset') }}
               </a-button>
             </a-col>
           </a-row>
@@ -86,7 +86,7 @@
                 <template #icon>
                   <span class="iconfont icon-hand-left1"></span>
                 </template>
-                {{ $t('evalution.evaluate.modelA') }}
+                {{ $t('evaluation.evaluate.modelA') }}
               </a-button>
             </a-col>
             <a-col :span="6">
@@ -94,7 +94,7 @@
                 <template #icon>
                   <span class="iconfont icon-hand-right1"></span>
                 </template>
-                {{ $t('evalution.evaluate.modelB') }}
+                {{ $t('evaluation.evaluate.modelB') }}
               </a-button>
             </a-col>
             <a-col :span="6">
@@ -102,7 +102,7 @@
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben11"></span>
                 </template>
-                {{ $t('evalution.evaluate.both') }}
+                {{ $t('evaluation.evaluate.both') }}
               </a-button>
             </a-col>
             <a-col :span="6">
@@ -110,13 +110,13 @@
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben24"></span>
                 </template>
-                {{ $t('evalution.evaluate.neither') }}
+                {{ $t('evaluation.evaluate.neither') }}
               </a-button>
             </a-col>
           </a-row>
           <a-row :gutter="16" style="padding-bottom: 20px;">
             <a-col :span="18">
-              <a-input :placeholder="$t('evalution.question.input')" allow-clear>
+              <a-input :placeholder="$t('evaluation.question.input')" allow-clear>
               </a-input>
             </a-col>
             <a-col :span="6">
@@ -124,13 +124,13 @@
                 <template #icon>
                   <icon-plus></icon-plus>
                 </template>
-                {{ $t('evalution.question.button.fill') }}
+                {{ $t('evaluation.question.button.fill') }}
               </a-button>
               <a-button type="primary">
                 <template #icon>
                   <icon-arrow-up></icon-arrow-up>
                 </template>
-                {{ $t('evalution.question.button.send') }}
+                {{ $t('evaluation.question.button.send') }}
               </a-button>
             </a-col>
           </a-row>
@@ -140,7 +140,7 @@
                 <template #icon>
                   <icon-delete></icon-delete>
                 </template>
-                {{ $t('evalution.result.button.clear') }}
+                {{ $t('evaluation.result.button.clear') }}
               </a-button>
             </a-col>
             <a-col :span="8">
@@ -148,7 +148,7 @@
                 <template #icon>
                   <icon-loop></icon-loop>
                 </template>
-                {{ $t('evalution.result.button.regenerate') }}
+                {{ $t('evaluation.result.button.regenerate') }}
               </a-button>
             </a-col>
             <a-col :span="8">
@@ -156,7 +156,7 @@
                 <template #icon>
                   <icon-book></icon-book>
                 </template>
-                {{ $t('evalution.result.button.advise') }}
+                {{ $t('evaluation.result.button.advise') }}
               </a-button>
             </a-col>
           </a-row>
@@ -166,9 +166,9 @@
         <a-modal
           class="selectModal"
           v-model:visible="selectVisible"
-          :ok-text="$t('evalution.question.select.button.confirm')"
+          :ok-text="$t('evaluation.question.select.button.confirm')"
           @ok="handleSelect"
-          :cancel-text="$t('evalution.question.select.button.quit')"
+          :cancel-text="$t('evaluation.question.select.button.quit')"
           @cancel="handleCancelSelect"
           :closable=false
           :modal-style="{width: '700px'}"
@@ -176,7 +176,7 @@
           <a-row :gutter="16">
             <a-col :span="8">
               <a-select
-                :placeholder="$t('evalution.question.select.type.default')"
+                :placeholder="$t('evaluation.question.select.type.default')"
                 :options="QuestionTypeSelectOptions"
                 >
 
@@ -184,7 +184,7 @@
             </a-col>
             <a-col :span="16">
               <a-select
-                :placeholder="$t('evalution.question.select.content.default')"
+                :placeholder="$t('evaluation.question.select.content.default')"
                 :options="QuestionSelectOptions"
                 >
 
@@ -198,20 +198,20 @@
           class="adviseModal"
           v-model:visible="visible"
           :modal-style="{width: '500px', height: '400px'}"
-          :ok-text="$t('evalution.advise.button.submit')"
+          :ok-text="$t('evaluation.advise.button.submit')"
           @ok="handleSubmit"
-          :cancel-text="$t('evalution.advise.button.cancel')"
+          :cancel-text="$t('evaluation.advise.button.cancel')"
           @cancel="handleCancel"
           >
           <template #title>
-            <span style="color:dodgerblue">{{ $t('evalution.advise.title') }}</span>
+            <span style="color:dodgerblue">{{ $t('evaluation.advise.title') }}</span>
           </template>
           <a-row :gutter="-8">
             <a-col :span="5">
-              <b><span>{{ $t('evalution.advise.subtitle') }}</span></b>
+              <b><span>{{ $t('evaluation.advise.subtitle') }}</span></b>
             </a-col>
             <a-col :span="19">
-              <a-textarea class="adviseInput" display:center :placeholder="$t('evalution.advise.default')" allow-clear :style="{height: '240px'}">
+              <a-textarea class="adviseInput" display:center :placeholder="$t('evaluation.advise.default')" allow-clear :style="{height: '240px'}">
               </a-textarea>
             </a-col>
           </a-row>
@@ -241,23 +241,23 @@ const selectVisible = ref(false);
 const showButtons = ref(true);
 const ModelSelectOptions = computed<SelectOptionData[]>(() => [
   {
-    label: t('evalution.select.models.gpt3.5'),
+    label: t('evaluation.select.models.gpt3.5'),
     value: 'Gpt-3.5',
   },
   {
-    label: t('evalution.select.models.baidu'),
+    label: t('evaluation.select.models.baidu'),
     value: '文心一言',
   },
   {
-    label: t('evalution.select.models.Thu'),
+    label: t('evaluation.select.models.Thu'),
     value: 'ChatGLM',
   },
   {
-    label: t('evalution.select.models.Google'),
+    label: t('evaluation.select.models.Google'),
     value: 'Google Bard',
   },
   {
-    label: t('evalution.select.models.iFLYTEK'),
+    label: t('evaluation.select.models.iFLYTEK'),
     value: '讯飞星火',
   },
 ]);
