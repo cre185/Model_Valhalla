@@ -168,6 +168,16 @@ class battleResultView(mixins.CreateModelMixin, generics.GenericAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         except:
             return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class battleHistoryView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            llm = LLMs.objects.get(id=int(data['llm']))
+            history = BattleHistory.objects.filter(llm1=llm) | BattleHistory.objects.filter(llm2=llm)
+            return Response({"message": "ok", "data": BattleHistorySerializer(history, many=True).data}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
     
 class generateView(APIView):  
     @login_required

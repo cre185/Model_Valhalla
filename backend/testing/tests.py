@@ -386,3 +386,40 @@ class BattleHistoryTests(TestCase):
         self.assertEqual(BattleHistory.objects.count(), 1)
         json_record=BattleHistory.objects.get(id=1).result
         self.assertEqual(json_record[0]['result1'], 'a')
+        response=self.client.post(
+            '/testing/battle_result',
+            {
+                "llm1":2,
+                "llm2":3,
+                "round":1,
+                "result":json.loads('[{"result1":"b","result2":"d","prompt":"c"}]'),
+                "winner":1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        self.assertEqual(BattleHistory.objects.count(), 2)
+        # test battle history
+        response=self.client.post(
+            '/testing/battle_history',
+            {
+                "llm":2,
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(len(json_data['data']), 2)
+        json_record=json_data['data'][0]['result']
+        self.assertEqual(json_record[0]['result1'], 'b')
+        # test battle history with invalid llm
+        response=self.client.post(
+            '/testing/battle_history',
+            {
+                "llm":4,
+            },
+            format="json"
+        )
+        json_data=response.json()
+        self.assertEqual(response.status_code, 400)

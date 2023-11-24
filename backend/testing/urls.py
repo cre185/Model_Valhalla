@@ -12,4 +12,5 @@ urlpatterns = [
     path('battle_match', views.battleMatchView.as_view(), name='battle_match'),
     path('generate', views.generateView.as_view(), name='generate'),
     path('battle_result', views.battleResultView.as_view(), name='battle_result'),
+    path('battle_history', views.battleHistoryView.as_view(), name='battle_history'),
 ]
