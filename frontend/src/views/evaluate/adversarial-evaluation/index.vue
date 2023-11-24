@@ -227,6 +227,8 @@ import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
+import { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
+import * as module from "module";
 
 const generateFormModel = () => {
   return {
@@ -239,28 +241,14 @@ const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
 const showButtons = ref(true);
-const ModelSelectOptions = computed<SelectOptionData[]>(() => [
-  {
-    label: t('evaluation.select.models.gpt3.5'),
-    value: 'Gpt-3.5',
-  },
-  {
-    label: t('evaluation.select.models.baidu'),
-    value: '文心一言',
-  },
-  {
-    label: t('evaluation.select.models.Thu'),
-    value: 'ChatGLM',
-  },
-  {
-    label: t('evaluation.select.models.Google'),
-    value: 'Google Bard',
-  },
-  {
-    label: t('evaluation.select.models.iFLYTEK'),
-    value: '讯飞星火',
-  },
-]);
+const SelectedModelInfo = ref<SelectedModel[]>();
+SelectedModelInfo.value = (await queryLLMevaluateList()).data;
+const ModelSelectOptions = computed<SelectOptionData[]>(() => {
+  return (SelectedModelInfo.value || []).map((model) => ({
+    label: model.name,
+    value: model.id,
+  }));
+});
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: "机器翻译",
