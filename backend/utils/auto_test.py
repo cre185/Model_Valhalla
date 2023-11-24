@@ -9,7 +9,7 @@ class AutoTest():
         try:
             self.RPM = llm.RPM
         except:
-            self.RPM = 10^9
+            self.RPM = 10**9
 
     def generate_test_data(self, dataPath):
         target_column = {}
@@ -72,6 +72,9 @@ class AutoTest():
             else:
                 choices = [data[i][target_column['A']], data[i][target_column['B']], data[i][target_column['C']], data[i][target_column['D']]]
                 current_result = api(question, choices)
+            print('Current result: '+str(current_result))
+            if not current_result:
+                continue
             for ans in ['A','B','C','D']:
                 if ans in current_result:
                     current_result = ans
@@ -90,7 +93,7 @@ class AutoTest():
                     subject_amount[subject]+=1
             except:
                 pass
-            if current_result == ans:
+            if current_result == answer:
                 try:
                     subject = data[i][target_column['SUBJECT']]
                     if not subject:
@@ -117,11 +120,7 @@ class AutoTest():
         prompt+='Remember only one single character is required, A, B, C, or D.'
 
         result = self.call_api(prompt)
-        if not result:
-            return 'A'
-        for c in result:
-            if c in ['A','B','C','D']:
-                return c 
+        return result
     
     def call_api(self, prompt):
         data_json={

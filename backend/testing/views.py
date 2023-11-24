@@ -1,7 +1,7 @@
 from .serializers import *
 from .models import *
-from dataset import models as dataset
-from ranking import models as ranking
+from dataset.models import *
+from ranking.models import *
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -85,11 +85,12 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
             data[i]['add_time'] = data[i]['add_time'].split('T')[0]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
 
-class testingView(APIView):
+class testView(APIView):
     @login_required
     def post(self, request):
         data = request.data
-        target = ranking.Credit.objects.filter(subjective=False)
+        obj_dataset = Dataset.objects.filter(subjective=False)
+        target = Credit.objects.filter(dataset__in=obj_dataset)
         if 'llmId' in data:
             target = target.filter(LLM_id=int(data['llmId']))
         if 'datasetId' in data:

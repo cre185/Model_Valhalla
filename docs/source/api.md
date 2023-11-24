@@ -46,9 +46,10 @@
     - [battle\_result](#battle_result)
     - [create](#create-1)
     - [delete](#delete-2)
+    - [generate](#generate)
     - [list](#list-2)
     - [retrieve](#retrieve-3)
-    - [testing](#testing)
+    - [test](#test)
     - [update](#update-3)
   - [额外需求](#额外需求)
     - [jwt](#jwt)
@@ -900,6 +901,31 @@ status=200
 ```python
 status=400
 ```
+#### generate  
+**功能描述**：基于某个模型的api信息，用提供的prompt进行一次生成。  
+**请求方式**：POST  
+**请求URL**：`/testing/generate`  
+**请求参数**：  
+```python
+{
+    "llmId": "模型id",
+    "prompt": "生成的prompt"
+}
+```
+**额外需求**：login_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "content": "生成结果"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 #### list  
 **功能描述**：获取所有模型测试的信息。  
 **请求方式**：GET  
@@ -942,16 +968,16 @@ status=200
 ```python
 status=404
 ```
-#### testing  
+#### test  
 **功能描述**：对指定模型测试进行测试。使用llmId和datasetId筛选后，会对指定的模型和数据集对应的行/列所有单元进行测试。  
 **请求方式**：POST  
 **请求URL**：`/testing/testing`   
 **请求参数**：  
 ```python
 {
-    "llmId": "模型id",
-    "datasetId": "数据集id",
-    "style": "筛选样式"
+    #"llmId": "模型id",
+    #"datasetId": "数据集id",
+    #"style": "筛选样式"
 }
 ```
 **返回情况**：  
@@ -965,7 +991,6 @@ status=200
 **特殊说明**：测试筛选样式style支持以下值：  
 * `fill`：在llmId和datasetId筛选后，仅针对表格中还未被测试（也即credit为null）的单元格进行测试。  
 
-另外，该函数仍在试验阶段。  
 #### update  
 **功能描述**：更新指定模型测试的信息。  
 **请求方式**：PUT/PATCH  
