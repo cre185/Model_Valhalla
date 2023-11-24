@@ -10,5 +10,6 @@ urlpatterns = [
     path('retrieve/<int:id>', views.retrieveView.as_view(), name='retrieve'),
     path('list', views.listView.as_view(), name='list'),
     path('battle_match', views.battleMatchView.as_view(), name='battle_match'),
+    path('generate', views.generateView.as_view(), name='generate'),
     path('battle_result', views.battleResultView.as_view(), name='battle_result'),
 ]

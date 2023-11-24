@@ -10,7 +10,7 @@ from rest_framework import mixins
 from rest_framework import generics
 from utils.jwt import login_required
 from utils.admin_required import admin_required
-from utils.auto_test import AutoTest
+from utils.auto_test import *
 from utils.elo_rating import *
 
 # Create your views here.
@@ -106,8 +106,8 @@ class testingView(APIView):
                 continue
             if not llm.api_url:
                 continue
-            autoTest = AutoTest()
-            result = autoTest.whole_test(dataset.data_file.path, llm)
+            autoTest = AutoTest(llm)
+            result = autoTest.whole_test(dataset.data_file.path)
             correct_amount = result[0]
             amount = result[1]
             tar.credit = (100*correct_amount)/amount
@@ -164,3 +164,14 @@ class battleResultView(APIView):
         except:
             return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
     
+class generateView(APIView):  
+    @login_required
+    def post(self, request):
+        data = request.data
+        try:
+            llm = LLMs.objects.get(id=int(data['llmId']))
+            autotest = AutoTest(llm)
+            ans = autotest.call_api(data['prompt'])
+            return Response({"message": "ok", "content": ans}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
