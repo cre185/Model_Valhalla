@@ -131,17 +131,6 @@ class battleMatchView(APIView):
             return Response({"message": "ok", "llmId": nearest.id}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
-        
-class generateView(APIView):  
-    @login_required
-    def post(self, request):
-        data = request.data
-        try:
-            llm = LLMs.objects.get(id=int(data['llmId']))
-            # todo: return the generate result
-            return Response({"message": "ok"}, status=status.HTTP_200_OK)
-        except:
-            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
 
 class battleResultView(mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = BattleHistory.objects.all()
