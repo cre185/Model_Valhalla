@@ -1,50 +1,44 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.list', 'menu.list.cardList']" />
+    <Breadcrumb :items="['menu.evaluate', 'menu.evaluate.adversarialEvaluation']" />
     <a-row :gutter="20" align="stretch">
       <a-col :span="24">
         <a-card class="general-card">
           <template #title>
-            <div class="custom-title"><b>{{ $t('evalution.rules.title') }}</b></div>
+            <div class="custom-title"><b>{{ $t('evaluation.rules.title') }}</b></div>
           </template>
-          <a-list :bordered=false :split=false>
-            <a-list-item style="width: auto;">{{ $t('evalution.rules.one') }}</a-list-item>
-            <a-list-item style="width: auto;">{{ $t('evalution.rules.two') }}</a-list-item>
-            <a-list-item style="width: auto;">{{ $t('evalution.rules.three') }}</a-list-item>
-            <a-list-item style="width: auto;">{{ $t('evalution.rules.four') }}</a-list-item>
-          </a-list>
+          <a-timeline>
+            <a-timeline-item>{{ $t('evaluation.rules.one') }}</a-timeline-item>
+            <a-timeline-item>{{ $t('evaluation.rules.two') }}</a-timeline-item>
+            <a-timeline-item>{{ $t('evaluation.rules.three') }}</a-timeline-item>
+            <a-timeline-item>{{ $t('evaluation.rules.four') }}</a-timeline-item>
+          </a-timeline>
         </a-card>
         <a-card :bordered=false>
           <template #title>
-            <div class="custom-title"><b>{{ $t('evalution.select.models') }}</b></div>
+            <div class="custom-title"><b>{{ $t('evaluation.select.models') }}</b></div>
           </template>
           <a-row :gutter="16">
             <a-col :span="18">
               <a-form :model="formModel" :label-col-props="{ span: 4 }" :wrapper-col-props="{ span: 8 }"
-                label-align="left">
-                <a-form-item 
-                  field="filterType"
-                  :label="$t('evalution.select.models.title')"
-                  :label-col-props="{ span: 4 }"
-                  :wrapper-col-props="{ span: 10 }"
-                  >
-                  <a-select v-model="formModel.name" :options="ModelSelectOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')" />
+                      label-align="left">
+                <a-form-item
+                    field="filterType"
+                    :label="$t('evaluation.select.models.title')"
+                    :label-col-props="{ span: 4 }"
+                    :wrapper-col-props="{ span: 10 }"
+                >
+                  <a-select v-model="formModel.id" :options="ModelSelectOptions"
+                            :placeholder="$t('searchTable.form.selectDefault')" />
                 </a-form-item>
               </a-form>
             </a-col>
             <a-col :span="6">
-              <a-button type="primary" style="margin-right: 20px;">
+              <a-button type="primary" style="margin-right: 20px;" @click="confirmClick">
                 <template #icon>
                   <icon-check></icon-check>
                 </template>
-                {{ $t('evalution.select.models.confirm') }}
-              </a-button>
-              <a-button>
-                <template #icon>
-                  <icon-refresh></icon-refresh>
-                </template>
-                {{ $t('evalution.select.models.reset') }}
+                {{ $t('evaluation.select.models.confirm') }}
               </a-button>
             </a-col>
           </a-row>
@@ -55,7 +49,7 @@
               <div class="text-box">
                 <a-space direction="vertical" :size="10">
                   <div class="box-header">
-                      <icon-message style="margin-right: 8px; font-size: 20px;"/>
+                    <icon-message style="margin-right: 8px; font-size: 20px;"/>
                     <span style="font-size: 18px;">Model A</span>
                   </div>
                   <div class="box-textA">
@@ -68,7 +62,7 @@
               <div class="text-box">
                 <a-space direction="vertical" :size="10">
                   <div class="box-header">
-                      <icon-message style="margin-right: 8px; font-size: 20px;"/>
+                    <icon-message style="margin-right: 8px; font-size: 20px;"/>
                     <span style="font-size: 18px;">Model B</span>
                   </div>
                   <div class="box-textB">
@@ -80,13 +74,13 @@
           </a-row>
         </a-card>
         <a-card class="questionInput">
-          <a-row :gutter="16" v-if="showButtons" style="padding-bottom: 20px;">
+          <a-row :gutter="16" v-if="evaluateButtons" style="padding-bottom: 20px;">
             <a-col :span="6">
               <a-button style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-hand-left1"></span>
                 </template>
-                {{ $t('evalution.evaluate.modelA') }}
+                {{ $t('evaluation.evaluate.modelA') }}
               </a-button>
             </a-col>
             <a-col :span="6">
@@ -94,7 +88,7 @@
                 <template #icon>
                   <span class="iconfont icon-hand-right1"></span>
                 </template>
-                {{ $t('evalution.evaluate.modelB') }}
+                {{ $t('evaluation.evaluate.modelB') }}
               </a-button>
             </a-col>
             <a-col :span="6">
@@ -102,7 +96,7 @@
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben11"></span>
                 </template>
-                {{ $t('evalution.evaluate.both') }}
+                {{ $t('evaluation.evaluate.both') }}
               </a-button>
             </a-col>
             <a-col :span="6">
@@ -110,13 +104,17 @@
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben24"></span>
                 </template>
-                {{ $t('evalution.evaluate.neither') }}
+                {{ $t('evaluation.evaluate.neither') }}
               </a-button>
             </a-col>
           </a-row>
           <a-row :gutter="16" style="padding-bottom: 20px;">
             <a-col :span="18">
-              <a-input :placeholder="$t('evalution.question.input')" allow-clear>
+              <a-input
+                v-model="formModel.question"
+                :placeholder="$t('evaluation.question.input')"
+                allow-clear
+              >
               </a-input>
             </a-col>
             <a-col :span="6">
@@ -124,13 +122,13 @@
                 <template #icon>
                   <icon-plus></icon-plus>
                 </template>
-                {{ $t('evalution.question.button.fill') }}
+                {{ $t('evaluation.question.button.fill') }}
               </a-button>
-              <a-button type="primary">
+              <a-button type="primary" @click="evaluateClick">
                 <template #icon>
                   <icon-arrow-up></icon-arrow-up>
                 </template>
-                {{ $t('evalution.question.button.send') }}
+                {{ $t('evaluation.question.button.send') }}
               </a-button>
             </a-col>
           </a-row>
@@ -140,7 +138,7 @@
                 <template #icon>
                   <icon-delete></icon-delete>
                 </template>
-                {{ $t('evalution.result.button.clear') }}
+                {{ $t('evaluation.result.button.clear') }}
               </a-button>
             </a-col>
             <a-col :span="8">
@@ -148,7 +146,7 @@
                 <template #icon>
                   <icon-loop></icon-loop>
                 </template>
-                {{ $t('evalution.result.button.regenerate') }}
+                {{ $t('evaluation.result.button.regenerate') }}
               </a-button>
             </a-col>
             <a-col :span="8">
@@ -156,7 +154,7 @@
                 <template #icon>
                   <icon-book></icon-book>
                 </template>
-                {{ $t('evalution.result.button.advise') }}
+                {{ $t('evaluation.result.button.advise') }}
               </a-button>
             </a-col>
           </a-row>
@@ -164,29 +162,31 @@
       </a-col>
       <template>
         <a-modal
-          class="selectModal"
-          v-model:visible="selectVisible"
-          :ok-text="$t('evalution.question.select.button.confirm')"
-          @ok="handleSelect"
-          :cancel-text="$t('evalution.question.select.button.quit')"
-          @cancel="handleCancelSelect"
-          :closable=false
-          :modal-style="{width: '700px'}"
-          >
+            class="selectModal"
+            v-model:visible="selectVisible"
+            :ok-text="$t('evaluation.question.select.button.confirm')"
+            @ok="handleSelect"
+            :cancel-text="$t('evaluation.question.select.button.quit')"
+            @cancel="handleCancelSelect"
+            :closable=false
+            :modal-style="{width: '700px'}"
+        >
           <a-row :gutter="16">
             <a-col :span="8">
               <a-select
-                :placeholder="$t('evalution.question.select.type.default')"
-                :options="QuestionTypeSelectOptions"
-                >
+                  v-model="formModel.questionType"
+                  :placeholder="$t('evaluation.question.select.type.default')"
+                  :options="QuestionTypeSelectOptions"
+              >
 
               </a-select>
             </a-col>
             <a-col :span="16">
               <a-select
-                :placeholder="$t('evalution.question.select.content.default')"
-                :options="QuestionSelectOptions"
-                >
+                  v-model="selectedQuestions"
+                  :placeholder="$t('evaluation.question.select.content.default')"
+                  :options="QuestionSelectOptions"
+              >
 
               </a-select>
             </a-col>
@@ -194,24 +194,24 @@
         </a-modal>
       </template>
       <template>
-        <a-modal 
-          class="adviseModal"
-          v-model:visible="visible"
-          :modal-style="{width: '500px', height: '400px'}"
-          :ok-text="$t('evalution.advise.button.submit')"
-          @ok="handleSubmit"
-          :cancel-text="$t('evalution.advise.button.cancel')"
-          @cancel="handleCancel"
-          >
+        <a-modal
+            class="adviseModal"
+            v-model:visible="visible"
+            :modal-style="{width: '500px', height: '400px'}"
+            :ok-text="$t('evaluation.advise.button.submit')"
+            @ok="handleSubmit"
+            :cancel-text="$t('evaluation.advise.button.cancel')"
+            @cancel="handleCancel"
+        >
           <template #title>
-            <span style="color:dodgerblue">{{ $t('evalution.advise.title') }}</span>
+            <span style="color:dodgerblue">{{ $t('evaluation.advise.title') }}</span>
           </template>
           <a-row :gutter="-8">
             <a-col :span="5">
-              <b><span>{{ $t('evalution.advise.subtitle') }}</span></b>
+              <b><span>{{ $t('evaluation.advise.subtitle') }}</span></b>
             </a-col>
             <a-col :span="19">
-              <a-textarea class="adviseInput" display:center :placeholder="$t('evalution.advise.default')" allow-clear :style="{height: '240px'}">
+              <a-textarea class="adviseInput" display:center :placeholder="$t('evaluation.advise.default')" allow-clear :style="{height: '240px'}">
               </a-textarea>
             </a-col>
           </a-row>
@@ -222,16 +222,19 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, reactive, watch, nextTick } from 'vue';
+import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
-import { SelectedModel, queryLLMevaluateList } from '@/api/evaluate';
+import EvaluateRound, { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
+import * as module from "module";
 
 const generateFormModel = () => {
   return {
-    name: '',
+    id: '',
+    questionType: '',
+    question: '',
   };
 }
 
@@ -239,7 +242,7 @@ const formModel = ref(generateFormModel());
 const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
-const showButtons = ref(true);
+const evaluateButtons = ref(false);
 const SelectedModelInfo = ref<SelectedModel[]>();
 SelectedModelInfo.value = (await queryLLMevaluateList()).data;
 const ModelSelectOptions = computed<SelectOptionData[]>(() => {
@@ -248,6 +251,13 @@ const ModelSelectOptions = computed<SelectOptionData[]>(() => {
     value: model.id,
   }));
 });
+const ModelAId = computed(() => formModel.value.id);
+const ABresult = ref<EvaluateRound>();
+const selectedQuestions = ref('');
+watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
+  selectedQuestions.value = '';
+}); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
+
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: "机器翻译",
@@ -258,36 +268,58 @@ const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
     value: '数学运算'
   },
 ]);
-const QuestionSelectOptions = computed<SelectOptionData[]>(() => [
-  {
-    label: "Question A",
-    value: 'Question A',
-
-  },
-  {
-    label: "Question B",
-    value: 'Question B',
-  },
-  {
-    label: "Question C",
-    value: 'Question C',
-  },
-]);
+const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
+  if (formModel.value.questionType === '机器翻译') { // 之后填充的问题设定在此框架上修改具体内容即可
+    return [
+      {
+        label: "Question A(translate)",
+        value: 'Question A(translate)',
+      },
+      {
+        label: "Question D(translate)",
+        value: 'Question D(translate)',
+      },
+    ];
+  }
+  if (formModel.value.questionType === '数学运算') {
+    return [
+      {
+        label: "Question B(evaluate)",
+        value: 'Question B(evaluate)',
+      },
+      {
+        label: "Question C(evaluate)",
+        value: 'Question C(evaluate)',
+      },
+    ];
+  }
+  return [];
+});
+const confirmClick = () => {
+    ABresult.value = new EvaluateRound(-1);
+    ABresult.value.modelA = Number(formModel.value.id);
+    ABresult.value.getModelB();
+    formModel.value.question = ABresult.value.modelB.toString(); // 检验是否正确调用getModelB()
+};
 const adviseClick = () => {
   visible.value = true;
 };
 const selectClick = () => {
   selectVisible.value = true;
-}
+};
+const evaluateClick = () => {
+  evaluateButtons.value = true;
+};
 const handleSubmit = () => {
-
 };
 const handleCancel = () => {
   visible.value = false;
 };
 
 const handleSelect = () => {
-
+  formModel.value.question = selectedQuestions.value; // 填充问题对话框确定按钮事件的绑定
+  formModel.value.questionType = '';
+  selectedQuestions.value = '';
 };
 
 const handleCancelSelect = () => {
@@ -352,8 +384,8 @@ export default {
   }
 }
 .custom-title {
-    font-size: 18px;
-  }
+  font-size: 18px;
+}
 .text-box {
   border: 1px solid #ccc;
   padding: 10px;
