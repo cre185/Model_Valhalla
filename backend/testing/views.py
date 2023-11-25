@@ -1,7 +1,7 @@
 from .serializers import *
 from .models import *
-from dataset import models as dataset
-from ranking import models as ranking
+from dataset.models import *
+from ranking.models import *
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -10,7 +10,7 @@ from rest_framework import mixins
 from rest_framework import generics
 from utils.jwt import login_required
 from utils.admin_required import admin_required
-from utils.auto_test import AutoTest
+from utils.auto_test import *
 from utils.elo_rating import *
 
 # Create your views here.
@@ -24,7 +24,7 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
         headers = self.create(request)
         llm = LLMs.objects.get(id=headers.data['id'])
         for data in dataset.Dataset.objects.all():
-            ranking.Credit.objects.create(LLM=llm, dataset=data, credit=None)
+            Credit.objects.create(LLM=llm, dataset=data, credit=None)
         return Response({"message": "ok", "llmId": headers.data['id']}, status=status.HTTP_201_CREATED, headers=headers)
     
 class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
@@ -85,11 +85,12 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
             data[i]['add_time'] = data[i]['add_time'].split('T')[0]
         return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
 
-class testingView(APIView):
+class testView(APIView):
     @login_required
     def post(self, request):
         data = request.data
-        target = ranking.Credit.objects.filter(subjective=False)
+        obj_dataset = Dataset.objects.filter(subjective=False)
+        target = Credit.objects.filter(dataset__in=obj_dataset)
         if 'llmId' in data:
             target = target.filter(LLM_id=int(data['llmId']))
         if 'datasetId' in data:
@@ -106,8 +107,8 @@ class testingView(APIView):
                 continue
             if not llm.api_url:
                 continue
-            autoTest = AutoTest()
-            result = autoTest.whole_test(dataset.data_file.path, llm)
+            autoTest = AutoTest(llm)
+            result = autoTest.whole_test(dataset.data_file.path)
             correct_amount = result[0]
             amount = result[1]
             tar.credit = (100*correct_amount)/amount
@@ -164,3 +165,14 @@ class battleResultView(APIView):
         except:
             return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
     
+class generateView(APIView):  
+    @login_required
+    def post(self, request):
+        data = request.data
+        try:
+            llm = LLMs.objects.get(id=int(data['llmId']))
+            autotest = AutoTest(llm)
+            ans = autotest.call_api(data['prompt'])
+            return Response({"message": "ok", "content": ans}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)

@@ -3,13 +3,25 @@ import requests
 import time
 
 class AutoTest():
+    def __init__(self, llm):
+        self.url = llm.api_url
+        self.model_name=llm.model_name
+        try:
+            self.RPM = llm.RPM
+        except:
+            self.RPM = 10**9
+
     def generate_test_data(self, dataPath):
         target_column = {}
         data = []
         data_file = open(dataPath, 'rb')
         data_lines = data_file.readlines()
         data_file.close()
-        header = data_lines[0].decode('utf-8')[:-1].split(',')
+        header = data_lines[0].decode('utf-8').split(',')
+        if header[-1][-1] == '\n':
+            header[-1] = header[-1][:-1]
+        if header[-1][-1] == '\r':
+            header[-1] = header[-1][:-1]
         for i in range(len(header)):
             target_column[header[i].upper()] = i
         data_lines = data_lines[1:]
@@ -48,8 +60,11 @@ class AutoTest():
         subject_accuracy={}
         test_time=time.time()
         for i in range(len(data)):
-            question = data[i][target_column['QUESTION']]
-            answer = data[i][target_column['ANSWER']]
+            try:
+                question = data[i][target_column['QUESTION']]
+                answer = data[i][target_column['ANSWER']]
+            except:
+                break
             if test_count >= self.RPM:
                 if time.time()-test_time <= 61:
                     time.sleep(61-(time.time()-test_time))
@@ -64,6 +79,9 @@ class AutoTest():
             else:
                 choices = [data[i][target_column['A']], data[i][target_column['B']], data[i][target_column['C']], data[i][target_column['D']]]
                 current_result = api(question, choices)
+            print('Current result: '+str(current_result))
+            if not current_result:
+                continue
             for ans in ['A','B','C','D']:
                 if ans in current_result:
                     current_result = ans
@@ -82,7 +100,7 @@ class AutoTest():
                     subject_amount[subject]+=1
             except:
                 pass
-            if current_result == ans:
+            if current_result == answer:
                 try:
                     subject = data[i][target_column['SUBJECT']]
                     if not subject:
@@ -107,38 +125,48 @@ class AutoTest():
         for i in range(4):
             prompt+=(chr(65+i))+'. '+choices[i].replace('\\', '\\\\').replace('"', '\\"')+'  '
         prompt+='Remember only one single character is required, A, B, C, or D.'
-        headers = json.loads(self.headers)
-        # print(self.data.replace('$PROMPT', prompt))
-        data = json.loads(self.data.replace('$PROMPT', prompt))
-        # print('Starting test: '+question)
-        response = requests.post(self.url, headers=headers, json=data)
 
+        result = self.call_api(prompt)
+        return result
+    
+    def call_api(self, prompt):
+        data_json={
+            "model": self.model_name,
+            "messages": [{"role":"user", "content":prompt}],
+            "temperature": 0.7,
+            "top_p": 1,
+            "top_k": -1,
+            "n": 1,
+            "max_tokens": 100,
+            "stop": [
+                "\n\n"
+            ],
+            "stream": False,
+            "presence_penalty": 0,
+            "frequency_penalty": 0,
+            "user": "user"
+        }
+        headers={
+            "Content-Type": "application/json"
+        }
+        try:
+            data = json.dumps(data_json)
+        except:
+            print('json error')
+            return None
+        response = requests.post(self.url, headers=headers, data=data)
         if response.status_code == 200:
             response.encoding = 'utf-8'
             result = response.json()
-            # print(result['choices'][0]['message']['content'])
-            for c in result['choices'][0]['message']['content']:
-                if c in ['A','B','C','D']:
-                    return c 
+            try:
+                return result['choices'][0]['message']['content']
+            except:
+                return None
         else:
             print(response.status_code)
             print(response.text)
-            return 'A'
+            return None
 
-    def whole_test(self, dataPath, llm):
-        self.url = llm.api_url
-        self.headers = llm.api_headers
-        self.data = llm.api_data
-        try:
-            self.RPM = llm.RPM
-        except:
-            self.RPM = 10^9
+    def whole_test(self, dataPath):
         data, target_column = self.generate_test_data(dataPath)
         return self.test_with_data(data, target_column, self.api_url)
-
-if __name__ == '__main__':
-    autotest=AutoTest()
-    autotest.api_url = 'https://api.openai.com/v1/chat/completions'
-    autotest.api_headers = '{"Authorization":"Bearer '+'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'+'"}'
-    autotest.api_data = '{"model": "gpt-3.5-turbo","messages": [{"role": "user", "content": "$PROMPT"}],"temperature": 0.7}'
-    print(autotest.generate_test_data('../static/data/zbench_common copy.csv'))
