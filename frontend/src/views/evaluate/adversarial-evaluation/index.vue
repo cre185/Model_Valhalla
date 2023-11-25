@@ -110,7 +110,11 @@
           </a-row>
           <a-row :gutter="16" style="padding-bottom: 20px;">
             <a-col :span="18">
-              <a-input :placeholder="$t('evaluation.question.input')" allow-clear>
+              <a-input
+                v-model="formModel.question"
+                :placeholder="$t('evaluation.question.input')"
+                allow-clear
+              >
               </a-input>
             </a-col>
             <a-col :span="6">
@@ -170,6 +174,7 @@
           <a-row :gutter="16">
             <a-col :span="8">
               <a-select
+                  v-model="formModel.questionType"
                   :placeholder="$t('evaluation.question.select.type.default')"
                   :options="QuestionTypeSelectOptions"
               >
@@ -178,6 +183,7 @@
             </a-col>
             <a-col :span="16">
               <a-select
+                  v-model="formModel.question"
                   :placeholder="$t('evaluation.question.select.content.default')"
                   :options="QuestionSelectOptions"
               >
@@ -227,6 +233,8 @@ import * as module from "module";
 const generateFormModel = () => {
   return {
     id: undefined,
+    questionType: '',
+    question: '',
   };
 }
 
@@ -247,29 +255,41 @@ const ModelAId = computed(() => formModel.value.id);
 const ABresult = ref<EvaluateRound>();
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
-    label: "鏈哄櫒缈昏瘧",
-    value: '鏈哄櫒缈昏瘧',
+    label: "机器翻译",
+    value: '机器翻译',
   },
   {
-    label: "鏁板�﹁繍绠�",
-    value: '鏁板�﹁繍绠�'
+    label: "数学运算",
+    value: '数学运算'
   },
 ]);
-const QuestionSelectOptions = computed<SelectOptionData[]>(() => [
-  {
-    label: "Question A",
-    value: 'Question A',
-
-  },
-  {
-    label: "Question B",
-    value: 'Question B',
-  },
-  {
-    label: "Question C",
-    value: 'Question C',
-  },
-]);
+const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
+  if (formModel.value.questionType === '机器翻译') {
+    return [
+      {
+        label: "Question A(translate)",
+        value: 'Question A(translate)',
+      },
+      {
+        label: "Question D(translate)",
+        value: 'Question D(translate)',
+      },
+    ];
+  }
+  if (formModel.value.questionType === '数学运算') {
+    return [
+      {
+        label: "Question B(evaluate)",
+        value: 'Question B(evaluate)',
+      },
+      {
+        label: "Question C(evaluate)",
+        value: 'Question C(evaluate)',
+      },
+    ];
+  }
+  return [];
+});
 const adviseClick = () => {
   visible.value = true;
 };
@@ -284,7 +304,7 @@ const handleCancel = () => {
 };
 
 const handleSelect = () => {
-
+  // inputQuestions.value = filledQuestions.valueOf;
 };
 
 const handleCancelSelect = () => {
