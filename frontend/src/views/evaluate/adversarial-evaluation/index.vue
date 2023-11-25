@@ -183,7 +183,7 @@
             </a-col>
             <a-col :span="16">
               <a-select
-                  v-model="formModel.question"
+                  v-model="selectedQuestions"
                   :placeholder="$t('evaluation.question.select.content.default')"
                   :options="QuestionSelectOptions"
               >
@@ -253,6 +253,11 @@ const ModelSelectOptions = computed<SelectOptionData[]>(() => {
 });
 const ModelAId = computed(() => formModel.value.id);
 const ABresult = ref<EvaluateRound>();
+const selectedQuestions = ref('');
+watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
+  selectedQuestions.value = '';
+}); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
+
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: "机器翻译",
@@ -264,7 +269,7 @@ const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   },
 ]);
 const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
-  if (formModel.value.questionType === '机器翻译') {
+  if (formModel.value.questionType === '机器翻译') { // 之后填充的问题设定在此框架上修改具体内容即可
     return [
       {
         label: "Question A(translate)",
@@ -304,7 +309,9 @@ const handleCancel = () => {
 };
 
 const handleSelect = () => {
-  // inputQuestions.value = filledQuestions.valueOf;
+  formModel.value.question = selectedQuestions.value; // 填充问题对话框确定按钮事件的绑定
+  formModel.value.questionType = '';
+  selectedQuestions.value = '';
 };
 
 const handleCancelSelect = () => {
