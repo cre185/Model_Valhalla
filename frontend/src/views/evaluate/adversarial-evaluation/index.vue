@@ -34,7 +34,7 @@
               </a-form>
             </a-col>
             <a-col :span="6">
-              <a-button type="primary" style="margin-right: 20px;">
+              <a-button type="primary" style="margin-right: 20px;" @click="confirmClick">
                 <template #icon>
                   <icon-check></icon-check>
                 </template>
@@ -74,7 +74,7 @@
           </a-row>
         </a-card>
         <a-card class="questionInput">
-          <a-row :gutter="16" v-if="showButtons" style="padding-bottom: 20px;">
+          <a-row :gutter="16" v-if="evaluateButtons" style="padding-bottom: 20px;">
             <a-col :span="6">
               <a-button style="margin-right: 20px; width: 100%">
                 <template #icon>
@@ -124,7 +124,7 @@
                 </template>
                 {{ $t('evaluation.question.button.fill') }}
               </a-button>
-              <a-button type="primary">
+              <a-button type="primary" @click="evaluateClick">
                 <template #icon>
                   <icon-arrow-up></icon-arrow-up>
                 </template>
@@ -232,7 +232,7 @@ import * as module from "module";
 
 const generateFormModel = () => {
   return {
-    id: undefined,
+    id: '',
     questionType: '',
     question: '',
   };
@@ -242,7 +242,7 @@ const formModel = ref(generateFormModel());
 const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
-const showButtons = ref(true);
+const evaluateButtons = ref(false);
 const SelectedModelInfo = ref<SelectedModel[]>();
 SelectedModelInfo.value = (await queryLLMevaluateList()).data;
 const ModelSelectOptions = computed<SelectOptionData[]>(() => {
@@ -295,14 +295,22 @@ const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
   }
   return [];
 });
+const confirmClick = () => {
+    ABresult.value = new EvaluateRound(-1);
+    ABresult.value.modelA = Number(formModel.value.id);
+    ABresult.value.getModelB();
+    formModel.value.question = ABresult.value.modelB.toString(); // 检验是否正确调用getModelB()
+};
 const adviseClick = () => {
   visible.value = true;
 };
 const selectClick = () => {
   selectVisible.value = true;
-}
+};
+const evaluateClick = () => {
+  evaluateButtons.value = true;
+};
 const handleSubmit = () => {
-
 };
 const handleCancel = () => {
   visible.value = false;
