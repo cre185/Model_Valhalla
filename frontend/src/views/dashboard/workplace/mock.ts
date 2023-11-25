@@ -115,7 +115,7 @@ setupMock({
       };
       return successResponseWrap([...getLineData()]);
     });
-    Mock.mock(new RegExp('/api/popular/list'), (params: GetParams) => {
+    Mock.mock(new RegExp('/api/popular/evaluate'), (params: GetParams) => {
       const { type = 'text' } = qs.parseUrl(params.url).query;
       if (type === 'image') {
         return successResponseWrap([...videoList]);

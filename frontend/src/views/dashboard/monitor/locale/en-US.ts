@@ -13,7 +13,7 @@ export default {
   'monitor.list.title.duration': 'Duration',
   'monitor.list.title.id': 'ID',
   'monitor.list.tip.rotations': 'Rotations ',
-  'monitor.list.tip.rest': ', The program list is not visible to viewers',
+  'monitor.list.tip.rest': ', The program evaluate is not visible to viewers',
   'monitor.list.tag.auditFailed': 'Audit Failed',
   'monitor.tab.title.liveMethod': 'Live Method',
   'monitor.tab.title.onlinePopulation': 'Online Population',

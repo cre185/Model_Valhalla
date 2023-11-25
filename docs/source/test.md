@@ -11,7 +11,7 @@ pip install -r requirements.txt
 ```
 引入了新的python库后，使用下列命令重新导出依赖：  
 ```bash
-pip list --format=freeze > requirements.txt
+pip evaluate --format=freeze > requirements.txt
 ```
 ### 数据库迁移  
 当一次更新改变了Models时，需要进行数据库迁移  
