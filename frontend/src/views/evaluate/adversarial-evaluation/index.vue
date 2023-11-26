@@ -76,7 +76,7 @@
         <a-card class="questionInput">
           <a-row :gutter="16" v-if="evaluateButtons" style="padding-bottom: 20px;">
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button @click="aBetterClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-hand-left1"></span>
                 </template>
@@ -84,7 +84,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button @click="bBetterClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-hand-right1"></span>
                 </template>
@@ -92,7 +92,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button @click="abGoodClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben11"></span>
                 </template>
@@ -100,7 +100,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button @click="abBadClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben24"></span>
                 </template>
@@ -202,18 +202,34 @@
             @ok="handleSubmit"
             :cancel-text="$t('evaluation.advise.button.cancel')"
             @cancel="handleCancel"
+            :ok-button-props="{ disabled: isOkButtonDisabled }"
         >
           <template #title>
             <span style="color:dodgerblue">{{ $t('evaluation.advise.title') }}</span>
           </template>
           <a-row :gutter="-8">
-            <a-col :span="5">
-              <b><span>{{ $t('evaluation.advise.subtitle') }}</span></b>
-            </a-col>
-            <a-col :span="19">
-              <a-textarea class="adviseInput" display:center :placeholder="$t('evaluation.advise.default')" allow-clear :style="{height: '240px'}">
+          <a-form
+            :model="formModel"
+            label-align="right"
+          >
+            <a-form-item
+              field="advise"
+              :label="$t('evaluation.advise.subtitle')"
+              :rules="lengthRules"
+              :label-col-props="{ span: 5 }"
+              :wrapper-col-props="{ span: 19 }"
+              >
+              <a-textarea
+                class="adviseInput"
+                v-model="formModel.advise"
+                display:center
+                :placeholder="$t('evaluation.advise.default')"
+                allow-clear
+                :style="{height: '220px'}"
+              >
               </a-textarea>
-            </a-col>
+            </a-form-item>
+          </a-form>
           </a-row>
         </a-modal>
       </template>
@@ -222,7 +238,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
+import {computed, ref, reactive, watch, nextTick, onMounted, getCurrentInstance} from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
@@ -235,6 +251,7 @@ const generateFormModel = () => {
     id: '',
     questionType: '',
     question: '',
+    advise: '', // 增加建议属性，方便表单验证
   };
 }
 
@@ -242,7 +259,9 @@ const formModel = ref(generateFormModel());
 const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
-const evaluateButtons = ref(false);
+const evaluateButtons = ref(true);
+const isOkButtonDisabled = ref(false); // 反馈建议的ok按钮是否禁用属性,false表示没有禁用
+const { proxy } = getCurrentInstance();
 const SelectedModelInfo = ref<SelectedModel[]>();
 SelectedModelInfo.value = (await queryLLMevaluateList()).data;
 const ModelSelectOptions = computed<SelectOptionData[]>(() => {
@@ -257,7 +276,24 @@ const selectedQuestions = ref('');
 watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
   selectedQuestions.value = '';
 }); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
-
+const lengthRules = [
+  {
+    required: false,
+    validator: (value: string, callback: (error?: string) => void) => {
+      return new Promise<void>((resolve) => {
+        window.setTimeout(() => {
+          value = formModel.value.advise;
+          if (value.length > 100) { // 防止用户用大量字符串恶意攻击系统
+            isOkButtonDisabled.value = true;
+            callback(proxy.$t('evaluation.advice.error.default'));
+          }
+          resolve();
+        }, 1000);
+      });
+    },
+    trigger: ['change', 'blur'],
+  },
+];
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: "机器翻译",
@@ -303,6 +339,7 @@ const confirmClick = () => {
 };
 const adviseClick = () => {
   visible.value = true;
+  isOkButtonDisabled.value = false;
 };
 const selectClick = () => {
   selectVisible.value = true;
@@ -311,9 +348,12 @@ const evaluateClick = () => {
   evaluateButtons.value = true;
 };
 const handleSubmit = () => {
+  formModel.value.advise = '';
+  // formModel.value.question = adviseText.value;
 };
 const handleCancel = () => {
   visible.value = false;
+  formModel.value.advise = '';
 };
 
 const handleSelect = () => {
@@ -325,6 +365,33 @@ const handleSelect = () => {
 const handleCancelSelect = () => {
 
 };
+const aBetterClick = () => {
+  if (ABresult.value?.modelA) {
+    ABresult.value.result = 1;
+    formModel.value.question = ABresult.value.result.toString();
+  }
+}
+
+const bBetterClick = () => {
+  if (ABresult.value?.modelA) {
+    ABresult.value.result = -1;
+    formModel.value.question = ABresult.value.result.toString();
+  }
+}
+
+const abGoodClick = () => {
+  if (ABresult.value?.modelA) {
+    ABresult.value.result = 0;
+    formModel.value.question = ABresult.value.result.toString();
+  }
+}
+
+const abBadClick = () => {
+  if (ABresult.value?.modelA) {
+    ABresult.value.result = 0;
+    formModel.value.question = ABresult.value.result.toString();
+  }
+}
 </script>
 
 <script lang="ts">
