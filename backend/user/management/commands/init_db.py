@@ -32,3 +32,8 @@ class Command(BaseCommand):
         llm3.save()
         llm4 = LLMs(name="llm4", description="llm4", model_name="zephyr_7b")
         llm4.save()
+        # Create credits
+        for i in range(1,6):
+            for j in range(1,5):
+                credit = Credit(dataset=Dataset.objects.get(id=i), LLM=LLMs.objects.get(id=j))
+                credit.save()
