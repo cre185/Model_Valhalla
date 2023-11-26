@@ -31,6 +31,7 @@ python manage.py init_db
 * 一个管理员账户，用户名为realadmin，密码为realadmin  
 * 5个标准的数据集，名称分别为dataset1-5，并分别对应一个题目库  
 * 4个标准的模型，名称分别为llm1-4，并分别对应一个模型的调用接口  
+* 20个这些模型/数据集对应的测试分数  
 
 如需更改init_db命令的行为，请修改`user/management/commands/init_db.py`  
 ### 单元测试  
