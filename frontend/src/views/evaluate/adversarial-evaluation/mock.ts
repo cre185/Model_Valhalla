@@ -154,7 +154,7 @@ const rulesPresetList: ServiceRecord[] = [
 setupMock({
   setup() {
     // Quality Inspection
-    Mock.mock(new RegExp('/api/list/quality-inspection'), () => {
+    Mock.mock(new RegExp('/api/evaluate/quality-inspection'), () => {
       return successResponseWrap(
         qualityInspectionList.map((_, index) => ({
           ...qualityInspectionList[index % qualityInspectionList.length],
@@ -164,7 +164,7 @@ setupMock({
     });
 
     // the service
-    Mock.mock(new RegExp('/api/list/the-service'), () => {
+    Mock.mock(new RegExp('/api/evaluate/the-service'), () => {
       return successResponseWrap(
         theServiceList.map((_, index) => ({
           ...theServiceList[index % theServiceList.length],
@@ -174,7 +174,7 @@ setupMock({
     });
 
     // rules preset
-    Mock.mock(new RegExp('/api/list/rules-preset'), () => {
+    Mock.mock(new RegExp('/api/evaluate/rules-preset'), () => {
       return successResponseWrap(
         rulesPresetList.map((_, index) => ({
           ...rulesPresetList[index % rulesPresetList.length],

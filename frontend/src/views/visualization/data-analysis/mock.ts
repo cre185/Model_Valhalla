@@ -88,7 +88,7 @@ setupMock({
       ]);
     });
 
-    Mock.mock(new RegExp('/api/popular-author/list'), () => {
+    Mock.mock(new RegExp('/api/popular-author/evaluate'), () => {
       const generateData = () => {
         const list = new Array(7).fill(0).map((_item, index) => ({
           ranking: index + 1,
