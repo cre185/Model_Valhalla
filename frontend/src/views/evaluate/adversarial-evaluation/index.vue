@@ -275,7 +275,7 @@ const ModelSelectOptions = computed<SelectOptionData[]>(() => {
   }));
 });
 const ModelAId = computed(() => formModel.value.id);
-const ABresult = ref<EvaluateRound>();
+const round = ref(new EvaluateRound(-1));
 const selectedQuestions = ref('');
 watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
   selectedQuestions.value = '';
@@ -306,7 +306,7 @@ const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   },
   {
     label: "数学运算",
-    value: '数学运算'
+    value: '数学运算',
   },
 ]);
 const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
@@ -337,10 +337,9 @@ const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
   return [];
 });
 const confirmClick = () => {
-    ABresult.value = new EvaluateRound(-1);
-    ABresult.value.modelA = Number(formModel.value.id);
-    ABresult.value.getModelB();
-    formModel.value.question = ABresult.value.modelB.toString(); // 检验是否正确调用getModelB()
+    round.value.modelA = Number(formModel.value.id);
+    round.value.getModelB();
+    // formModel.value.question = round.value.modelB.toString(); // 检验是否正确调用getModelB()
     sendQuestionsDisabled.value = false; // 解除send按钮禁用
     
 };
@@ -382,8 +381,8 @@ const handleCancelSelect = () => {
 
 };
 const aBetterClick = () => {
-  if (ABresult.value?.modelA) {
-    ABresult.value.result = 1;
+  if (round.value?.modelA) {
+    round.value.result = 1;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
     sendQuestionsDisabled.value = true;
@@ -391,8 +390,8 @@ const aBetterClick = () => {
 }
 
 const bBetterClick = () => {
-  if (ABresult.value?.modelA) {
-    ABresult.value.result = -1;
+  if (round.value?.modelA) {
+    round.value.result = -1;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
     sendQuestionsDisabled.value = true;
@@ -400,8 +399,8 @@ const bBetterClick = () => {
 }
 
 const abGoodClick = () => {
-  if (ABresult.value?.modelA) {
-    ABresult.value.result = 0;
+  if (round.value?.modelA) {
+    round.value.result = 0;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
     sendQuestionsDisabled.value = true;
@@ -409,8 +408,8 @@ const abGoodClick = () => {
 }
 
 const abBadClick = () => {
-  if (ABresult.value?.modelA) {
-    ABresult.value.result = 0;
+  if (round.value?.modelA) {
+    round.value.result = 0;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
     sendQuestionsDisabled.value = true;
