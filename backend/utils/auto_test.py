@@ -7,10 +7,10 @@ import requests
 class AutoTest():
     def __init__(self, llm):
         self.url = llm.api_url
-        self.model_name=llm.model_name
+        self.model_name = llm.model_name
         try:
             self.RPM = llm.RPM
-        except:
+        except BaseException:
             self.RPM = 10**9
 
     def generate_test_data(self, dataPath):
@@ -27,68 +27,77 @@ class AutoTest():
         for i in range(len(header)):
             target_column[header[i].upper()] = i
         data_lines = data_lines[1:]
-        i=0
+        i = 0
         while i < len(data_lines):
             data.append([])
             data_lines[i] = data_lines[i].decode('utf-8')
-            is_inside=False
-            rec_i=i
-            i-=1
-            index=0
-            last_index=0
-            while len(data[rec_i]) < len(header)-1 or is_inside:
-                i+=1
+            is_inside = False
+            rec_i = i
+            i -= 1
+            index = 0
+            last_index = 0
+            while len(data[rec_i]) < len(header) - 1 or is_inside:
+                i += 1
                 if i >= len(data_lines):
                     break
-                if i!=rec_i:
-                    data_lines[rec_i]+=data_lines[i].decode('utf-8')
+                if i != rec_i:
+                    data_lines[rec_i] += data_lines[i].decode('utf-8')
                 while index < len(data_lines[rec_i]):
                     chr = data_lines[rec_i][index]
                     if chr == '"':
                         is_inside = not is_inside
                     if chr == ',' and not is_inside:
                         data[rec_i].append(data_lines[rec_i][last_index:index])
-                        last_index = index+1
-                    index+=1
+                        last_index = index + 1
+                    index += 1
             data[rec_i].append(data_lines[rec_i][last_index:-1])
-            i+=1
+            i += 1
         return data, target_column
-    
+
     def test_with_data(self, data, target_column, api):
-        test_count=0
-        correct_amount=0
-        subject_amount={}
-        subject_correct_amount={}
-        subject_accuracy={}
-        test_time=time.time()
+        test_count = 0
+        correct_amount = 0
+        subject_amount = {}
+        subject_correct_amount = {}
+        subject_accuracy = {}
+        test_time = time.time()
         for i in range(len(data)):
             try:
                 question = data[i][target_column['QUESTION']]
                 answer = data[i][target_column['ANSWER']]
-            except:
+            except BaseException:
                 break
             if test_count >= self.RPM:
-                if time.time()-test_time <= 61:
-                    time.sleep(61-(time.time()-test_time))
-                test_count=0
-                test_time=time.time()
-            test_count+=1
-            print('Testing question '+str(i))
+                if time.time() - test_time <= 61:
+                    time.sleep(61 - (time.time() - test_time))
+                test_count = 0
+                test_time = time.time()
+            test_count += 1
+            print('Testing question ' + str(i))
             if 'CHOICES' in target_column:
-                choices = data[i][target_column['CHOICES']][2:-2].replace('"", ""','"",""').split('"",""')
-                choices = [choice.replace('"" ','').replace(' ""','') for choice in choices]
+                choices = data[i][target_column['CHOICES']][2:- \
+                    2].replace('"", ""', '"",""').split('"",""')
+                choices = [
+                    choice.replace(
+                        '"" ',
+                        '').replace(
+                        ' ""',
+                        '') for choice in choices]
                 current_result = api(question, choices)
             else:
-                choices = [data[i][target_column['A']], data[i][target_column['B']], data[i][target_column['C']], data[i][target_column['D']]]
+                choices = [data[i][target_column['A']],
+                           data[i][target_column['B']],
+                           data[i][target_column['C']],
+                           data[i][target_column['D']]]
                 current_result = api(question, choices)
-            print('Current result: '+str(current_result))
+            print('Current result: ' + str(current_result))
             if not current_result:
                 continue
-            for ans in ['A','B','C','D']:
+            for ans in ['A', 'B', 'C', 'D']:
                 if ans in current_result:
                     current_result = ans
                     break
-            for ans in ['A','B','C','D']:
+            for ans in ['A', 'B', 'C', 'D']:
                 if ans in answer:
                     answer = ans
                     break
@@ -97,10 +106,10 @@ class AutoTest():
                 if not subject:
                     raise Exception
                 if subject not in subject_amount:
-                    subject_amount[subject]=1
+                    subject_amount[subject] = 1
                 else:
-                    subject_amount[subject]+=1
-            except:
+                    subject_amount[subject] += 1
+            except BaseException:
                 pass
             if current_result == answer:
                 try:
@@ -108,33 +117,40 @@ class AutoTest():
                     if not subject:
                         raise Exception
                     if subject not in subject_correct_amount:
-                        subject_correct_amount[subject]=1
+                        subject_correct_amount[subject] = 1
                     else:
-                        subject_correct_amount[subject]+=1
-                except:
+                        subject_correct_amount[subject] += 1
+                except BaseException:
                     pass
-                correct_amount+=1
+                correct_amount += 1
         for subject, amount in subject_amount.items():
             if subject not in subject_correct_amount:
-                subject_correct_amount[subject]=0
-            subject_accuracy[subject]=subject_correct_amount[subject]/amount
-        return [correct_amount, len(data), subject_correct_amount, subject_amount, subject_accuracy]
+                subject_correct_amount[subject] = 0
+            subject_accuracy[subject] = subject_correct_amount[subject] / amount
+        return [
+            correct_amount,
+            len(data),
+            subject_correct_amount,
+            subject_amount,
+            subject_accuracy]
 
     def api_url(self, question, choices):
-        prompt='Answer the question by choosing the best answer you think and return a single character A, B, C, or D representing your choice.  '
-        prompt+='Question: '+question.replace('\\', '\\\\').replace('"', '\\"')+'  '
-        prompt+='Following are the four choices.  '
+        prompt = 'Answer the question by choosing the best answer you think and return a single character A, B, C, or D representing your choice.  '
+        prompt += 'Question: ' + \
+            question.replace('\\', '\\\\').replace('"', '\\"') + '  '
+        prompt += 'Following are the four choices.  '
         for i in range(4):
-            prompt+=(chr(65+i))+'. '+choices[i].replace('\\', '\\\\').replace('"', '\\"')+'  '
-        prompt+='Remember only one single character is required, A, B, C, or D.'
+            prompt += (chr(65 + i)) + '. ' + \
+                choices[i].replace('\\', '\\\\').replace('"', '\\"') + '  '
+        prompt += 'Remember only one single character is required, A, B, C, or D.'
 
         result = self.call_api(prompt)
         return result
 
     def stream_call_api(self, prompt):
-        data_json={
+        data_json = {
             "model": self.model_name,
-            "messages": [{"role":"user", "content":prompt}],
+            "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.7,
             "top_p": 1,
             "top_k": -1,
@@ -148,30 +164,34 @@ class AutoTest():
             "frequency_penalty": 0,
             "user": "user"
         }
-        headers={
+        headers = {
             "Content-Type": "application/json"
         }
         try:
             data = json.dumps(data_json)
-        except:
+        except BaseException:
             print('json error')
             return None
-        response = requests.post(self.url, headers=headers, data=data, stream=True)
+        response = requests.post(
+            self.url,
+            headers=headers,
+            data=data,
+            stream=True)
         for line in response.iter_lines():
             try:
                 json_str = line.decode('utf-8')
-                if json_str.startswith('data: '): 
+                if json_str.startswith('data: '):
                     json_str = json_str[6:]
                 result = json.loads(json_str)
                 if 'choices' in result:
                     yield result['choices'][0]['delta']['content']
-            except:
+            except BaseException:
                 pass
 
     def call_api(self, prompt):
-        data_json={
+        data_json = {
             "model": self.model_name,
-            "messages": [{"role":"user", "content":prompt}],
+            "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.7,
             "top_p": 1,
             "top_k": -1,
@@ -185,12 +205,12 @@ class AutoTest():
             "frequency_penalty": 0,
             "user": "user"
         }
-        headers={
+        headers = {
             "Content-Type": "application/json"
         }
         try:
             data = json.dumps(data_json)
-        except:
+        except BaseException:
             print('json error')
             return None
         response = requests.post(self.url, headers=headers, data=data)
@@ -199,7 +219,7 @@ class AutoTest():
             result = response.json()
             try:
                 return result['choices'][0]['message']['content']
-            except:
+            except BaseException:
                 return None
         else:
             print(response.status_code)

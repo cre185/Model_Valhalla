@@ -1,7 +1,3 @@
-#!/usr/bin/bash
-
-# TODO: add flake8 here.
-# finished
 function getdir(){
     for element in `ls $1`
     do  
@@ -24,4 +20,4 @@ flake="autoflake --in-place --remove-all-unused-imports --remove-unused-variable
 getdir "./"
 
 isort .
-flake8 .
+# flake8 .

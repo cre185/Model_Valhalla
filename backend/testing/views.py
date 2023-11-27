@@ -1,6 +1,5 @@
 from django.http import StreamingHttpResponse
 from rest_framework import generics, mixins, status
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -16,6 +15,7 @@ from .serializers import *
 
 # Create your views here.
 
+
 class createView(mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = LLMs.objects.all()
     serializer_class = LLMsSerializer
@@ -26,8 +26,12 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
         llm = LLMs.objects.get(id=headers.data['id'])
         for data in dataset.Dataset.objects.all():
             Credit.objects.create(LLM=llm, dataset=data, credit=None)
-        return Response({"message": "ok", "llmId": headers.data['id']}, status=status.HTTP_201_CREATED, headers=headers)
-    
+        return Response({"message": "ok",
+                         "llmId": headers.data['id']},
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)
+
+
 class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
     queryset = LLMs.objects.all()
     serializer_class = LLMsSerializer
@@ -38,9 +42,11 @@ class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
             instance = LLMs.objects.get(id=int(kwargs['id']))
             instance.delete()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
-        except:
-            return Response({"message": "Invalid llm id"}, status=status.HTTP_400_BAD_REQUEST)
-        
+        except BaseException:
+            return Response({"message": "Invalid llm id"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     queryset = LLMs.objects.all()
     serializer_class = LLMsSerializer
@@ -53,7 +59,7 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
-    
+
     @admin_required
     def patch(self, request, *args, **kwargs):
         result = self.partial_update(request, *args, **kwargs)
@@ -61,12 +67,13 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
-    
+
+
 class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     queryset = LLMs.objects.all()
     serializer_class = LLMsSerializer
     lookup_field = "id"
-    
+
     @login_required
     def get(self, request, *args, **kwargs):
         result = self.retrieve(request, *args, **kwargs)
@@ -74,17 +81,20 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
-    
+
+
 class listView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = LLMs.objects.all()
     serializer_class = LLMsSerializer
-    
+
     def get(self, request, *args, **kwargs):
         result = self.list(request, *args, **kwargs)
         data = result.data
         for i in range(len(data)):
             data[i]['add_time'] = data[i]['add_time'].split('T')[0]
-        return Response({'message': 'ok', 'data': data}, status=status.HTTP_200_OK)
+        return Response({'message': 'ok', 'data': data},
+                        status=status.HTTP_200_OK)
+
 
 class testView(APIView):
     @login_required
@@ -98,9 +108,10 @@ class testView(APIView):
             target = target.filter(dataset_id=int(data['datasetId']))
         if 'style' in data and data['style'] == 'fill':
             target = target.filter(credit__isnull=True)
-        
+
         if target.count() == 0:
-            return Response({"message": "No tests are carried out"}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": "No tests are carried out"}, status=status.HTTP_200_OK)
         for tar in target:
             dataset = tar.dataset
             llm = tar.LLM
@@ -112,9 +123,10 @@ class testView(APIView):
             result = autoTest.whole_test(dataset.data_file.path)
             correct_amount = result[0]
             amount = result[1]
-            tar.credit = (100*correct_amount)/amount
+            tar.credit = (100 * correct_amount) / amount
             tar.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
 
 class battleMatchView(APIView):
     @login_required
@@ -124,14 +136,22 @@ class battleMatchView(APIView):
             llm = LLMs.objects.get(id=int(data['llmId']))
             all_others = LLMs.objects.exclude(id=llm.id)
             if all_others.count() == 0:
-                return Response({"message": "No other llms"}, status=status.HTTP_200_OK)
+                return Response({"message": "No other llms"},
+                                status=status.HTTP_200_OK)
             nearest = all_others[0]
             for other in all_others:
-                if abs(other.elo_credit - llm.elo_credit) < abs(nearest.elo_credit - llm.elo_credit):
+                if abs(
+                        other.elo_credit -
+                        llm.elo_credit) < abs(
+                        nearest.elo_credit -
+                        llm.elo_credit):
                     nearest = other
-            return Response({"message": "ok", "llmId": nearest.id}, status=status.HTTP_200_OK)
-        except:
-            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "ok", "llmId": nearest.id},
+                            status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid parameters"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
 
 class battleResultView(mixins.CreateModelMixin, generics.GenericAPIView):
     queryset = BattleHistory.objects.all()
@@ -145,31 +165,43 @@ class battleResultView(mixins.CreateModelMixin, generics.GenericAPIView):
             llm1 = LLMs.objects.get(id=int(data['llm1']))
             llm2 = LLMs.objects.get(id=int(data['llm2']))
             if llm1.id == llm2.id:
-                return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Invalid parameters"},
+                                status=status.HTTP_400_BAD_REQUEST)
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
-            sa = (int(data['winner'])+1.0)/2
+            sa = (int(data['winner']) + 1.0) / 2
             elo = EloRating()
-            llm1.elo_credit, llm2.elo_credit=elo.cal_result(llm1.elo_credit, llm2.elo_credit, sa)
+            llm1.elo_credit, llm2.elo_credit = elo.cal_result(
+                llm1.elo_credit, llm2.elo_credit, sa)
             llm1.save()
             llm2.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        except:
-            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED,
+                headers=headers)
+        except BaseException:
+            return Response({"message": "Invalid parameters"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 class battleHistoryView(APIView):
     def post(self, request, *args, **kwargs):
         try:
             data = request.data
             llm = LLMs.objects.get(id=int(data['llm']))
-            history = BattleHistory.objects.filter(llm1=llm) | BattleHistory.objects.filter(llm2=llm)
-            return Response({"message": "ok", "data": BattleHistorySerializer(history, many=True).data}, status=status.HTTP_200_OK)
-        except:
-            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
-    
-class generateView(APIView):  
+            history = BattleHistory.objects.filter(
+                llm1=llm) | BattleHistory.objects.filter(
+                llm2=llm)
+            return Response({"message": "ok", "data": BattleHistorySerializer(
+                history, many=True).data}, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid parameters"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class generateView(APIView):
     @login_required
     def post(self, request):
         data = request.data
@@ -177,10 +209,13 @@ class generateView(APIView):
             llm = LLMs.objects.get(id=int(data['llmId']))
             autotest = AutoTest(llm)
             ans = autotest.call_api(data['prompt'])
-            return Response({"message": "ok", "content": ans}, status=status.HTTP_200_OK)
-        except:
-            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response({"message": "ok", "content": ans},
+                            status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid parameters"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
 class streamGenerateView(APIView):
     @login_required
     def post(self, request):
@@ -189,6 +224,8 @@ class streamGenerateView(APIView):
             llm = LLMs.objects.get(id=int(data['llmId']))
             autotest = AutoTest(llm)
             response_generator = autotest.stream_call_api(data['prompt'])
-            return StreamingHttpResponse(response_generator, content_type="text/plain")
-        except:
-            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+            return StreamingHttpResponse(
+                response_generator, content_type="text/plain")
+        except BaseException:
+            return Response({"message": "Invalid parameters"},
+                            status=status.HTTP_400_BAD_REQUEST)

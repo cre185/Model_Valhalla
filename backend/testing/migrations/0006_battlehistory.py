@@ -6,8 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("testing", "0005_remove_llms_api_data_remove_llms_api_headers_and_more"),
-    ]
+        ("testing", "0005_remove_llms_api_data_remove_llms_api_headers_and_more"), ]
 
     operations = [
         migrations.CreateModel(
