@@ -1,6 +1,7 @@
 import json
 from rest_framework import serializers
-from .models import LLMs
+from .models import *
+from user.models import *
 from utils.validation_error import ValidationErrorWithMsg
 
 class LLMsSerializer(serializers.ModelSerializer):
@@ -32,3 +33,20 @@ class LLMsSerializer(serializers.ModelSerializer):
         if api_RPM < 1:
             raise ValidationErrorWithMsg('Invalid RPM value.')
         return api_RPM
+    
+class BattleHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BattleHistory
+        fields = '__all__'
+    
+    def validate_user_id(self, user_id):
+        if not User.objects.filter(id=user_id).exists():
+            raise ValidationErrorWithMsg('User does not exist.')
+        return user_id
+    
+    def validate_winner(self, winner):
+        if winner != 1 and winner != 0 and winner != -1:
+            raise ValidationErrorWithMsg('Invalid winner value.')
+        return winner
+    
+    
