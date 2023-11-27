@@ -4,6 +4,7 @@
   - [更新与下载python依赖](#更新与下载python依赖)
   - [数据库迁移](#数据库迁移)
   - [数据库初始化](#数据库初始化)
+  - [单元测试](#单元测试)
 ### 更新与下载python依赖  
 下载python依赖：  
 ```bash
@@ -24,16 +25,19 @@ python manage.py migrate
 导入标准测试数据可以使用如下命令：  
 ```bash
 python manage.py flush
-python manage.py loaddata db.json
-```
-需要导出数据时可以使用  
-```bash
-python manage.py dumpdata --exclude auth.permission --exclude contenttypes > db_test.json
-```  
-正常情况下项目下的db.json为标准测试用数据，不定期更新，建议不要随意修改。  
-当前标准数据中包含：  
-* 管理员realadmin与一般用户testuser，密码与用户名一致；  
-* 两个测试用llm以及dataset（未绑定文件）；  
-* 对应的credits，其中有两个被修改。  
+python manage.py init_db
+``` 
+当前的标准测试数据包括：  
+* 一个管理员账户，用户名为realadmin，密码为realadmin  
+* 5个标准的数据集，名称分别为dataset1-5，并分别对应一个题目库  
+* 4个标准的模型，名称分别为llm1-4，并分别对应一个模型的调用接口  
+* 20个这些模型/数据集对应的测试分数  
 
-(上述信息修改于：2023.11.14)   
+如需更改init_db命令的行为，请修改`user/management/commands/init_db.py`  
+### 单元测试  
+单元测试使用了Django自带的测试框架，使用下列命令进行测试：  
+```bash
+python manage.py test
+```
+测试样例中有部分测试需要调用模型的api接口，较为费时，因此平时不会进行测试。  
+需要对这部分测试用例也进行测试时，将`settings.py`中的DEBUG设为False，再运行单元测试即可。  
