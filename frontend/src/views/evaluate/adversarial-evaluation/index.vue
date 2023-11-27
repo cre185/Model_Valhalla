@@ -216,80 +216,80 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
-import useVisible from '@/hooks/visible';
-import '@/assets/icondataset/iconfont.css'
-import EvaluateRound, { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
-import * as module from "module";
+  import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
+  import { useI18n } from 'vue-i18n';
+  import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
+  import useVisible from '@/hooks/visible';
+  import '@/assets/icondataset/iconfont.css'
+  import EvaluateRound, { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
+  import * as module from "module";
 
-const generateFormModel = () => {
-  return {
-    id: undefined,
+  const generateFormModel = () => {
+    return {
+      id: undefined,
+    };
+  }
+
+  const formModel = ref(generateFormModel());
+  const { t } = useI18n();
+  const visible = ref(false);
+  const selectVisible = ref(false);
+  const showButtons = ref(true);
+  const SelectedModelInfo = ref<SelectedModel[]>();
+  SelectedModelInfo.value = (await queryLLMevaluateList()).data;
+  const ModelSelectOptions = computed<SelectOptionData[]>(() => {
+    return (SelectedModelInfo.value || []).map((model) => ({
+      label: model.name,
+      value: model.id,
+    }));
+  });
+  const ModelAId = computed(() => formModel.value.id);
+  const ABresult = ref<EvaluateRound>();
+  const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
+    {
+      label: "鏈哄櫒缈昏瘧",
+      value: '鏈哄櫒缈昏瘧',
+    },
+    {
+      label: "鏁板�﹁繍绠�",
+      value: '鏁板�﹁繍绠�'
+    },
+  ]);
+  const QuestionSelectOptions = computed<SelectOptionData[]>(() => [
+    {
+      label: "Question A",
+      value: 'Question A',
+
+    },
+    {
+      label: "Question B",
+      value: 'Question B',
+    },
+    {
+      label: "Question C",
+      value: 'Question C',
+    },
+  ]);
+  const adviseClick = () => {
+    visible.value = true;
   };
-}
+  const selectClick = () => {
+    selectVisible.value = true;
+  }
+  const handleSubmit = () => {
 
-const formModel = ref(generateFormModel());
-const { t } = useI18n();
-const visible = ref(false);
-const selectVisible = ref(false);
-const showButtons = ref(true);
-const SelectedModelInfo = ref<SelectedModel[]>();
-SelectedModelInfo.value = (await queryLLMevaluateList()).data;
-const ModelSelectOptions = computed<SelectOptionData[]>(() => {
-  return (SelectedModelInfo.value || []).map((model) => ({
-    label: model.name,
-    value: model.id,
-  }));
-});
-const ModelAId = computed(() => formModel.value.id);
-const ABresult = ref<EvaluateRound>();
-const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
-  {
-    label: "鏈哄櫒缈昏瘧",
-    value: '鏈哄櫒缈昏瘧',
-  },
-  {
-    label: "鏁板�﹁繍绠�",
-    value: '鏁板�﹁繍绠�'
-  },
-]);
-const QuestionSelectOptions = computed<SelectOptionData[]>(() => [
-  {
-    label: "Question A",
-    value: 'Question A',
+  };
+  const handleCancel = () => {
+    visible.value = false;
+  };
 
-  },
-  {
-    label: "Question B",
-    value: 'Question B',
-  },
-  {
-    label: "Question C",
-    value: 'Question C',
-  },
-]);
-const adviseClick = () => {
-  visible.value = true;
-};
-const selectClick = () => {
-  selectVisible.value = true;
-}
-const handleSubmit = () => {
+  const handleSelect = () => {
 
-};
-const handleCancel = () => {
-  visible.value = false;
-};
+  };
 
-const handleSelect = () => {
+  const handleCancelSelect = () => {
 
-};
-
-const handleCancelSelect = () => {
-
-};
+  };
 </script>
 
 <script lang="ts">
