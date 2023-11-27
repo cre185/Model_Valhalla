@@ -1,7 +1,8 @@
 from django.db import models
-from user import models as user
+
 from dataset import models as dataset
 from testing import models as testing
+from user import models as user
 
 # Create your models here.
 

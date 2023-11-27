@@ -1,6 +1,8 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
+
 from .models import *
+
 # Create your tests here.
 
 class UserModelTests(TestCase):

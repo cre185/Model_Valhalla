@@ -1,19 +1,20 @@
 import datetime
 import random
-from .models import *
-from testing.models import LLMs
-from rest_framework import status
+
+from django.conf import settings
+from django.core.mail import send_mail
+from rest_framework import generics, mixins, status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
-from .serializers import *
+from rest_framework.views import APIView
+
+from testing.models import LLMs
 from testing.serializers import *
 from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
-from django.core.mail import send_mail
-from django.conf import settings
-from rest_framework.views import APIView
-from rest_framework import mixins
-from rest_framework import generics
+
+from .models import *
+from .serializers import *
 
 # Create your views here.
 

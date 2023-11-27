@@ -1,5 +1,6 @@
 from .jwt import *
 
+
 def admin_required(func):
     # @wraps(func)
     def wrapper(self, request, *args, **kwargs):

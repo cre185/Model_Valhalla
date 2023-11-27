@@ -1,14 +1,14 @@
-from utils.jwt import login_required
-from utils.admin_required import admin_required
-from .serializers import *
-from .models import *
-from testing import models as testing
-from ranking import models as ranking
-from rest_framework import status
+from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import mixins
-from rest_framework import generics
+
+from ranking import models as ranking
+from testing import models as testing
+from utils.admin_required import admin_required
+from utils.jwt import login_required
+
+from .models import *
+from .serializers import *
 
 # Create your views here.
 

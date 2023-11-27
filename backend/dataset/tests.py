@@ -1,7 +1,10 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from .models import Dataset
+
 from user.models import User
+
+from .models import Dataset
+
 # Create your tests here.
 
 class DatasetModelTests(TestCase):

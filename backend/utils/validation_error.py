@@ -1,6 +1,6 @@
 from rest_framework import status
 from rest_framework.exceptions import APIException, ErrorDetail
-from rest_framework.utils.serializer_helpers import ReturnList, ReturnDict
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 '''
 The ValidationErrorWithMsg is a customized exception class that inherits from APIException.

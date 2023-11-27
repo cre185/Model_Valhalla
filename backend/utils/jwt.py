@@ -6,6 +6,7 @@ import jwt
 import scrypt
 from django.conf import settings
 from django.http import JsonResponse
+
 from user.models import User
 
 

@@ -1,8 +1,10 @@
 from django.core.management.base import BaseCommand
-from user.models import *
-from testing.models import *
+
 from dataset.models import *
 from ranking.models import *
+from testing.models import *
+from user.models import *
+
 
 class Command(BaseCommand):
     help = "Initialize Database with test data"

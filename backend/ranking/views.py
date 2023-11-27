@@ -1,15 +1,15 @@
-from utils.jwt import login_required
-from utils.admin_required import admin_required
-from .serializers import *
-from .models import *
-from dataset import models as dataset
-from testing import models as testing
-from rest_framework import status
+from rest_framework import generics, mixins, status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import mixins
-from rest_framework import generics
+
+from dataset import models as dataset
+from testing import models as testing
+from utils.admin_required import admin_required
+from utils.jwt import login_required
+
+from .models import *
+from .serializers import *
 
 # Create your views here.
 

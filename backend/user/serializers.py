@@ -1,8 +1,12 @@
 import datetime
-from rest_framework import serializers
-from .models import User, VerifyMsg, VerifyEmail
 import re
+
+from rest_framework import serializers
+
 from utils.validation_error import ValidationErrorWithMsg
+
+from .models import User, VerifyEmail, VerifyMsg
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

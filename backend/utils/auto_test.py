@@ -1,6 +1,8 @@
 import json
-import requests
 import time
+
+import requests
+
 
 class AutoTest():
     def __init__(self, llm):

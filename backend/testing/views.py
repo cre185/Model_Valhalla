@@ -1,18 +1,18 @@
-from .serializers import *
-from .models import *
-from dataset.models import *
-from ranking.models import *
-from rest_framework import status
+from django.http import StreamingHttpResponse
+from rest_framework import generics, mixins, status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import mixins
-from rest_framework import generics
-from utils.jwt import login_required
+
+from dataset.models import *
+from ranking.models import *
 from utils.admin_required import admin_required
 from utils.auto_test import *
 from utils.elo_rating import *
-from django.http import StreamingHttpResponse
+from utils.jwt import login_required
+
+from .models import *
+from .serializers import *
 
 # Create your views here.
 

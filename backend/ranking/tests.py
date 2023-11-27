@@ -1,9 +1,12 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from .models import *
-from user.models import User
+
 from dataset.models import Dataset
 from testing.models import LLMs
+from user.models import User
+
+from .models import *
+
 # Create your tests here.
 
 class CreditModelTests(TestCase):
