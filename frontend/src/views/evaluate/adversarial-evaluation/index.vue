@@ -74,7 +74,7 @@
           </a-row>
         </a-card>
         <a-card class="questionInput">
-          <a-row :gutter="16" v-if="evaluateButtons" style="padding-bottom: 20px;">
+          <a-row :gutter="16" v-if="evaluateFourButtonsVisible" style="padding-bottom: 20px;">
             <a-col :span="6">
               <a-button @click="aBetterClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
@@ -124,7 +124,7 @@
                 </template>
                 {{ $t('evaluation.question.button.fill') }}
               </a-button>
-              <a-button type="primary" @click="evaluateClick">
+              <a-button type="primary" @click="evaluateClick" :disabled="sendQuestionsDisabled">
                 <template #icon>
                   <icon-arrow-up></icon-arrow-up>
                 </template>
@@ -134,15 +134,15 @@
           </a-row>
           <a-row :gutter="16">
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%;" :disabled=false>
+              <a-button style="margin-right: 20px; width: 100%;" :disabled="newRoundButtonDisabled">
                 <template #icon>
-                  <icon-delete></icon-delete>
+                  <icon-dice></icon-dice>
                 </template>
-                {{ $t('evaluation.result.button.clear') }}
+                {{ $t('evaluation.result.button.newround') }}
               </a-button>
             </a-col>
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%" :disabled=false>
+              <a-button style="margin-right: 20px; width: 100%;" :disabled="regenerateButtonDisabled">
                 <template #icon>
                   <icon-loop></icon-loop>
                 </template>
@@ -150,7 +150,7 @@
               </a-button>
             </a-col>
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%" :disabled=false @click="adviseClick">
+              <a-button class="aaa" style="margin-right: 20px; width: 100%" :disabled="adviseButtonDisabled" @click="adviseClick">
                 <template #icon>
                   <icon-book></icon-book>
                 </template>
@@ -259,7 +259,11 @@ const formModel = ref(generateFormModel());
 const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
-const evaluateButtons = ref(true);
+const evaluateFourButtonsVisible = ref(false);
+const sendQuestionsDisabled = ref(true); // 发送按钮是否禁用，true表示禁用
+const adviseButtonDisabled = ref(true); // 建议按钮是否禁用，true表示禁用
+const newRoundButtonDisabled = ref(true);
+const regenerateButtonDisabled = ref(true);
 const isOkButtonDisabled = ref(false); // 反馈建议的ok按钮是否禁用属性,false表示没有禁用
 const { proxy } = getCurrentInstance();
 const SelectedModelInfo = ref<SelectedModel[]>();
@@ -283,15 +287,16 @@ const lengthRules = [
       return new Promise<void>((resolve) => {
         window.setTimeout(() => {
           value = formModel.value.advise;
+          isOkButtonDisabled.value = false;
           if (value.length > 100) { // 防止用户用大量字符串恶意攻击系统
             isOkButtonDisabled.value = true;
             callback(proxy.$t('evaluation.advice.error.default'));
           }
           resolve();
-        }, 1000);
+        }, 1);
       });
     },
-    trigger: ['change', 'blur'],
+    trigger: ['input'],
   },
 ];
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
@@ -336,6 +341,8 @@ const confirmClick = () => {
     ABresult.value.modelA = Number(formModel.value.id);
     ABresult.value.getModelB();
     formModel.value.question = ABresult.value.modelB.toString(); // 检验是否正确调用getModelB()
+    sendQuestionsDisabled.value = false; // 解除send按钮禁用
+    
 };
 const adviseClick = () => {
   visible.value = true;
@@ -345,10 +352,19 @@ const selectClick = () => {
   selectVisible.value = true;
 };
 const evaluateClick = () => {
-  evaluateButtons.value = true;
+  if (!formModel.value.question || formModel.value.question.trim() === '')
+  {
+    window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
+    return;
+  }
+  evaluateFourButtonsVisible.value = true; // 发送之后下面三个按钮应该解禁，四个评价按钮显示
+  newRoundButtonDisabled.value = false;
+  regenerateButtonDisabled.value = false;
+  adviseButtonDisabled.value = false;
 };
 const handleSubmit = () => {
   formModel.value.advise = '';
+  adviseButtonDisabled.value = true;
   // formModel.value.question = adviseText.value;
 };
 const handleCancel = () => {
@@ -368,36 +384,38 @@ const handleCancelSelect = () => {
 const aBetterClick = () => {
   if (ABresult.value?.modelA) {
     ABresult.value.result = 1;
-    formModel.value.question = ABresult.value.result.toString();
+    // formModel.value.question = ABresult.value.result.toString();
+    evaluateFourButtonsVisible.value = false;
+    sendQuestionsDisabled.value = true;
   }
 }
 
 const bBetterClick = () => {
   if (ABresult.value?.modelA) {
     ABresult.value.result = -1;
-    formModel.value.question = ABresult.value.result.toString();
+    // formModel.value.question = ABresult.value.result.toString();
+    evaluateFourButtonsVisible.value = false;
+    sendQuestionsDisabled.value = true;
   }
 }
 
 const abGoodClick = () => {
   if (ABresult.value?.modelA) {
     ABresult.value.result = 0;
-    formModel.value.question = ABresult.value.result.toString();
+    // formModel.value.question = ABresult.value.result.toString();
+    evaluateFourButtonsVisible.value = false;
+    sendQuestionsDisabled.value = true;
   }
 }
 
 const abBadClick = () => {
   if (ABresult.value?.modelA) {
     ABresult.value.result = 0;
-    formModel.value.question = ABresult.value.result.toString();
+    // formModel.value.question = ABresult.value.result.toString();
+    evaluateFourButtonsVisible.value = false;
+    sendQuestionsDisabled.value = true;
   }
 }
-</script>
-
-<script lang="ts">
-export default {
-  name: 'Card',
-};
 </script>
 
 <style scoped lang="less">
