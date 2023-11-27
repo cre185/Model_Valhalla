@@ -17,3 +17,13 @@ class LLMs(models.Model):
     def __str__(self):
         return self.name
 
+class BattleHistory(models.Model):
+    llm1 = models.ForeignKey(LLMs, on_delete=models.CASCADE, related_name='llm1')
+    llm2 = models.ForeignKey(LLMs, on_delete=models.CASCADE, related_name='llm2')
+    round = models.IntegerField()
+    result = models.JSONField()
+    user_id = models.IntegerField()
+    winner = models.IntegerField()
+    add_time = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return str(self.llm1) + ' vs ' + str(self.llm2)

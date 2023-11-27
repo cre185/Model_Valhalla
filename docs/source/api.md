@@ -42,6 +42,7 @@
     - [retrieve](#retrieve-2)
     - [update](#update-2)
   - [模型测试部分](#模型测试部分)
+    - [battle\_history](#battle_history)
     - [battle\_match](#battle_match)
     - [battle\_result](#battle_result)
     - [create](#create-1)
@@ -799,6 +800,41 @@ status=400
 **特殊说明**：接口会检查数据集是否为主观题，正常用户仅能对主观题进行评分，管理员则不受限制。  
 ***
 ### 模型测试部分  
+#### battle_history  
+**功能描述**：获取指定模型的对战历史。  
+**请求方式**：POST  
+**请求URL**：`/testing/battle_history`  
+**请求参数**：  
+```python
+{
+    "llm": "模型id"
+}
+```
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "data": [
+        {
+            "id": "对战记录id",
+            "round": "回合数",
+            "result": "JSON对象，包含每一回合的prompt和双方response",
+            "llm1": "1号模型id",
+            "llm2": "2号模型id",
+            "winner": "结果，0为平局，1为1号胜利，-1为1号失败",
+            "user_id": "用户id",
+            "add_time": "添加时间(未格式化)"
+        },
+        ...
+    ]
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 #### battle_match  
 **功能描述**：通过一个模型id，返回一个与之势均力敌的模型id。  
 **请求方式**：POST  
@@ -831,9 +867,11 @@ status=400
 **请求参数**：  
 ```python
 {
-    "llmId1": "1号模型id",
-    "llmId2": "2号模型id",
-    "result": "结果，0为平局，1为1号胜利，-1为1号失败"
+    "llm1": "1号模型id",
+    "llm2": "2号模型id",
+    "winner": "结果，0为平局，1为1号胜利，-1为1号失败",
+    "round": "回合数",
+    "result": "JSON对象，包含每一回合的prompt和双方response"
 }
 ```
 **额外需求**：login_required  
@@ -843,7 +881,7 @@ status=400
 {
     "message": "ok"
 },
-status=200
+status=201
 ```
 * 参数异常  
 ```python

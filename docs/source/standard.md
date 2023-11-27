@@ -56,9 +56,9 @@ Question,A,B,C,D,Answer
 * model_name：一个字符串，用于标识调用接口时使用的模型的名称  
 * api_RPM：可选，一个整数，表示模型每分钟可以被请求进行生成的次数，不指定时默认无限制  
 
-作为示例，下面给出chatgpt3.5的api接口在上述字段中的对应值：  
+作为示例，下面给出默认支持模型平台的mistral_7b模型的api接口在上述字段中的对应值：  
 ```python
 api_url = 'http://111.202.73.146:10510/v1/chat/completions'  
 model_name = 'mistral_7b'  
-api_RPM = 3 
+api_RPM = None
 ```

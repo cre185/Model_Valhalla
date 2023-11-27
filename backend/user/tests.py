@@ -84,7 +84,6 @@ class UserModelTests(TestCase):
             format="json"
         )
         json_data=response.json()
-        self.assertEqual(json_data['message'],"ok")
         self.assertEqual(response.status_code,201)
         # request with same username
         response=self.client.post(

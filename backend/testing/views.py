@@ -35,7 +35,7 @@ class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
     def delete(self, request, *args, **kwargs):
         try:
             instance = LLMs.objects.get(id=int(kwargs['id']))
-            self.perform_destroy(instance)
+            instance.delete()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid llm id"}, status=status.HTTP_400_BAD_REQUEST)
@@ -131,37 +131,40 @@ class battleMatchView(APIView):
             return Response({"message": "ok", "llmId": nearest.id}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
-        
-class generateView(APIView):  
-    @login_required
-    def post(self, request):
-        data = request.data
-        try:
-            llm = LLMs.objects.get(id=int(data['llmId']))
-            # todo: return the generate result
-            return Response({"message": "ok"}, status=status.HTTP_200_OK)
-        except:
-            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
 
-class battleResultView(APIView):
+class battleResultView(mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = BattleHistory.objects.all()
+    serializer_class = BattleHistorySerializer
+
     @login_required
     def post(self, request):
-        data = request.data
-        if 'llmId1' not in data or 'llmId2' not in data or 'result' not in data:
-            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            llm1 = LLMs.objects.get(id=int(data['llmId1']))
-            llm2 = LLMs.objects.get(id=int(data['llmId2']))
+            data = request.data
+            data['user_id'] = request.user.id
+            llm1 = LLMs.objects.get(id=int(data['llm1']))
+            llm2 = LLMs.objects.get(id=int(data['llm2']))
             if llm1.id == llm2.id:
                 return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
-            if int(data['result']) not in [-1, 0, 1]:
-                return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
-            sa = (int(data['result'])+1.0)/2
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            sa = (int(data['winner'])+1.0)/2
             elo = EloRating()
             llm1.elo_credit, llm2.elo_credit=elo.cal_result(llm1.elo_credit, llm2.elo_credit, sa)
             llm1.save()
             llm2.save()
-            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        except:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class battleHistoryView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = request.data
+            llm = LLMs.objects.get(id=int(data['llm']))
+            history = BattleHistory.objects.filter(llm1=llm) | BattleHistory.objects.filter(llm2=llm)
+            return Response({"message": "ok", "data": BattleHistorySerializer(history, many=True).data}, status=status.HTTP_200_OK)
         except:
             return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
     
