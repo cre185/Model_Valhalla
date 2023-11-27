@@ -34,7 +34,7 @@
               </a-form>
             </a-col>
             <a-col :span="6">
-              <a-button type="primary" style="margin-right: 20px;">
+              <a-button type="primary" style="margin-right: 20px;" @click="confirmClick">
                 <template #icon>
                   <icon-check></icon-check>
                 </template>
@@ -74,9 +74,9 @@
           </a-row>
         </a-card>
         <a-card class="questionInput">
-          <a-row :gutter="16" v-if="showButtons" style="padding-bottom: 20px;">
+          <a-row :gutter="16" v-if="evaluateButtons" style="padding-bottom: 20px;">
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button @click="aBetterClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-hand-left1"></span>
                 </template>
@@ -84,7 +84,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button @click="bBetterClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-hand-right1"></span>
                 </template>
@@ -92,7 +92,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button @click="abGoodClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben11"></span>
                 </template>
@@ -100,7 +100,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button @click="abBadClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben24"></span>
                 </template>
@@ -110,7 +110,11 @@
           </a-row>
           <a-row :gutter="16" style="padding-bottom: 20px;">
             <a-col :span="18">
-              <a-input :placeholder="$t('evaluation.question.input')" allow-clear>
+              <a-input
+                v-model="formModel.question"
+                :placeholder="$t('evaluation.question.input')"
+                allow-clear
+              >
               </a-input>
             </a-col>
             <a-col :span="6">
@@ -120,7 +124,7 @@
                 </template>
                 {{ $t('evaluation.question.button.fill') }}
               </a-button>
-              <a-button type="primary">
+              <a-button type="primary" @click="evaluateClick">
                 <template #icon>
                   <icon-arrow-up></icon-arrow-up>
                 </template>
@@ -170,6 +174,7 @@
           <a-row :gutter="16">
             <a-col :span="8">
               <a-select
+                  v-model="formModel.questionType"
                   :placeholder="$t('evaluation.question.select.type.default')"
                   :options="QuestionTypeSelectOptions"
               >
@@ -178,6 +183,7 @@
             </a-col>
             <a-col :span="16">
               <a-select
+                  v-model="selectedQuestions"
                   :placeholder="$t('evaluation.question.select.content.default')"
                   :options="QuestionSelectOptions"
               >
@@ -196,18 +202,34 @@
             @ok="handleSubmit"
             :cancel-text="$t('evaluation.advise.button.cancel')"
             @cancel="handleCancel"
+            :ok-button-props="{ disabled: isOkButtonDisabled }"
         >
           <template #title>
             <span style="color:dodgerblue">{{ $t('evaluation.advise.title') }}</span>
           </template>
           <a-row :gutter="-8">
-            <a-col :span="5">
-              <b><span>{{ $t('evaluation.advise.subtitle') }}</span></b>
-            </a-col>
-            <a-col :span="19">
-              <a-textarea class="adviseInput" display:center :placeholder="$t('evaluation.advise.default')" allow-clear :style="{height: '240px'}">
+          <a-form
+            :model="formModel"
+            label-align="right"
+          >
+            <a-form-item
+              field="advise"
+              :label="$t('evaluation.advise.subtitle')"
+              :rules="lengthRules"
+              :label-col-props="{ span: 5 }"
+              :wrapper-col-props="{ span: 19 }"
+              >
+              <a-textarea
+                class="adviseInput"
+                v-model="formModel.advise"
+                display:center
+                :placeholder="$t('evaluation.advise.default')"
+                allow-clear
+                :style="{height: '220px'}"
+              >
               </a-textarea>
-            </a-col>
+            </a-form-item>
+          </a-form>
           </a-row>
         </a-modal>
       </template>
@@ -216,80 +238,163 @@
 </template>
 
 <script lang="ts" setup>
-  import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
-  import { useI18n } from 'vue-i18n';
-  import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
-  import useVisible from '@/hooks/visible';
-  import '@/assets/icondataset/iconfont.css'
-  import EvaluateRound, { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
-  import * as module from "module";
+import {computed, ref, reactive, watch, nextTick, onMounted, getCurrentInstance} from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
+import useVisible from '@/hooks/visible';
+import '@/assets/icondataset/iconfont.css'
+import EvaluateRound, { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
+import * as module from "module";
 
-  const generateFormModel = () => {
-    return {
-      id: undefined,
-    };
-  }
-
-  const formModel = ref(generateFormModel());
-  const { t } = useI18n();
-  const visible = ref(false);
-  const selectVisible = ref(false);
-  const showButtons = ref(true);
-  const SelectedModelInfo = ref<SelectedModel[]>();
-  SelectedModelInfo.value = (await queryLLMevaluateList()).data;
-  const ModelSelectOptions = computed<SelectOptionData[]>(() => {
-    return (SelectedModelInfo.value || []).map((model) => ({
-      label: model.name,
-      value: model.id,
-    }));
-  });
-  const ModelAId = computed(() => formModel.value.id);
-  const ABresult = ref<EvaluateRound>();
-  const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: "鏈哄櫒缈昏瘧",
-      value: '鏈哄櫒缈昏瘧',
-    },
-    {
-      label: "鏁板�﹁繍绠�",
-      value: '鏁板�﹁繍绠�'
-    },
-  ]);
-  const QuestionSelectOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: "Question A",
-      value: 'Question A',
-
-    },
-    {
-      label: "Question B",
-      value: 'Question B',
-    },
-    {
-      label: "Question C",
-      value: 'Question C',
-    },
-  ]);
-  const adviseClick = () => {
-    visible.value = true;
+const generateFormModel = () => {
+  return {
+    id: '',
+    questionType: '',
+    question: '',
+    advise: '', // 增加建�??属性，方便表单验证
   };
   const selectClick = () => {
     selectVisible.value = true;
   }
   const handleSubmit = () => {
 
-  };
-  const handleCancel = () => {
-    visible.value = false;
-  };
+const formModel = ref(generateFormModel());
+const { t } = useI18n();
+const visible = ref(false);
+const selectVisible = ref(false);
+const evaluateButtons = ref(true);
+const isOkButtonDisabled = ref(false); // 反�?�建�?的ok按钮�?否�?�用属�?,false表示没有禁用
+const { proxy } = getCurrentInstance();
+const SelectedModelInfo = ref<SelectedModel[]>();
+SelectedModelInfo.value = (await queryLLMevaluateList()).data;
+const ModelSelectOptions = computed<SelectOptionData[]>(() => {
+  return (SelectedModelInfo.value || []).map((model) => ({
+    label: model.name,
+    value: model.id,
+  }));
+});
+const ModelAId = computed(() => formModel.value.id);
+const ABresult = ref<EvaluateRound>();
+const selectedQuestions = ref('');
+watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
+  selectedQuestions.value = '';
+}); // �?题�?�类改变时，�?题选项会清零，否则上�?�选择的内容会遗留
+const lengthRules = [
+  {
+    required: false,
+    validator: (value: string, callback: (error?: string) => void) => {
+      return new Promise<void>((resolve) => {
+        window.setTimeout(() => {
+          value = formModel.value.advise;
+          if (value.length > 100) { // 防�?�用户用大量字�?�串恶意攻击系统
+            isOkButtonDisabled.value = true;
+            callback(proxy.$t('evaluation.advice.error.default'));
+          }
+          resolve();
+        }, 1000);
+      });
+    },
+    trigger: ['change', 'blur'],
+  },
+];
+const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: "机器翻译",
+    value: '机器翻译',
+  },
+  {
+    label: "数�?�运�?",
+    value: '数�?�运�?'
+  },
+]);
+const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
+  if (formModel.value.questionType === '机器翻译') { // 之后�?充的�?题�?�定在�?��?�架上修改具体内容即�?
+    return [
+      {
+        label: "Question A(translate)",
+        value: 'Question A(translate)',
+      },
+      {
+        label: "Question D(translate)",
+        value: 'Question D(translate)',
+      },
+    ];
+  }
+  if (formModel.value.questionType === '数�?�运�?') {
+    return [
+      {
+        label: "Question B(evaluate)",
+        value: 'Question B(evaluate)',
+      },
+      {
+        label: "Question C(evaluate)",
+        value: 'Question C(evaluate)',
+      },
+    ];
+  }
+  return [];
+});
+const confirmClick = () => {
+    ABresult.value = new EvaluateRound(-1);
+    ABresult.value.modelA = Number(formModel.value.id);
+    ABresult.value.getModelB();
+    formModel.value.question = ABresult.value.modelB.toString(); // 检验是否�?�确调用getModelB()
+};
+const adviseClick = () => {
+  visible.value = true;
+  isOkButtonDisabled.value = false;
+};
+const selectClick = () => {
+  selectVisible.value = true;
+};
+const evaluateClick = () => {
+  evaluateButtons.value = true;
+};
+const handleSubmit = () => {
+  formModel.value.advise = '';
+  // formModel.value.question = adviseText.value;
+};
+const handleCancel = () => {
+  visible.value = false;
+  formModel.value.advise = '';
+};
 
-  const handleSelect = () => {
+const handleSelect = () => {
+  formModel.value.question = selectedQuestions.value; // �?充问题�?�话框确定按�?事件的绑�?
+  formModel.value.questionType = '';
+  selectedQuestions.value = '';
+};
 
-  };
+const handleCancelSelect = () => {
 
-  const handleCancelSelect = () => {
+};
+const aBetterClick = () => {
+  if (ABresult.value?.modelA) {
+    ABresult.value.result = 1;
+    formModel.value.question = ABresult.value.result.toString();
+  }
+}
 
-  };
+const bBetterClick = () => {
+  if (ABresult.value?.modelA) {
+    ABresult.value.result = -1;
+    formModel.value.question = ABresult.value.result.toString();
+  }
+}
+
+const abGoodClick = () => {
+  if (ABresult.value?.modelA) {
+    ABresult.value.result = 0;
+    formModel.value.question = ABresult.value.result.toString();
+  }
+}
+
+const abBadClick = () => {
+  if (ABresult.value?.modelA) {
+    ABresult.value.result = 0;
+    formModel.value.question = ABresult.value.result.toString();
+  }
+}
 </script>
 
 <script lang="ts">

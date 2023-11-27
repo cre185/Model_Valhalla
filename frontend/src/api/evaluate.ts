@@ -5,7 +5,7 @@ import { LLMListRes } from './model-list';
 import { updateComment } from "@/api/comment";
 
 export interface SelectedModel {
-    id: number;
+    id: string;
     name: string;
 }
 
@@ -15,8 +15,8 @@ export async function queryLLMevaluateList()
     const response = await axios.get<LLMListRes>(apiCat('/testing/list'));
     for(let i = 0; i < response.data.data.length; i += 1)
     {
-        const model = response.data.data[i] as {id: number, name: string};
-        LLMList.data.push({id: model.id, name: model.name});
+        const model = response.data.data[i] as {id: string, name: string};
+        LLMList.data.push({id: model.id.toString(), name: model.name});
     }
     return LLMList;
 }
