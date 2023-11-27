@@ -128,7 +128,44 @@ class AutoTest():
 
         result = self.call_api(prompt)
         return result
-    
+
+    def stream_call_api(self, prompt):
+        data_json={
+            "model": self.model_name,
+            "messages": [{"role":"user", "content":prompt}],
+            "temperature": 0.7,
+            "top_p": 1,
+            "top_k": -1,
+            "n": 1,
+            "max_tokens": 200,
+            "stop": [
+                "\n\n"
+            ],
+            "stream": True,
+            "presence_penalty": 0,
+            "frequency_penalty": 0,
+            "user": "user"
+        }
+        headers={
+            "Content-Type": "application/json"
+        }
+        try:
+            data = json.dumps(data_json)
+        except:
+            print('json error')
+            return None
+        response = requests.post(self.url, headers=headers, data=data, stream=True)
+        for line in response.iter_lines():
+            try:
+                json_str = line.decode('utf-8')
+                if json_str.startswith('data: '): 
+                    json_str = json_str[6:]
+                result = json.loads(json_str)
+                if 'choices' in result:
+                    yield result['choices'][0]['delta']['content']
+            except:
+                pass
+
     def call_api(self, prompt):
         data_json={
             "model": self.model_name,
@@ -137,7 +174,7 @@ class AutoTest():
             "top_p": 1,
             "top_k": -1,
             "n": 1,
-            "max_tokens": 100,
+            "max_tokens": 200,
             "stop": [
                 "\n\n"
             ],

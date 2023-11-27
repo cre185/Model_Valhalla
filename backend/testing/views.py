@@ -12,6 +12,7 @@ from utils.jwt import login_required
 from utils.admin_required import admin_required
 from utils.auto_test import *
 from utils.elo_rating import *
+from django.http import StreamingHttpResponse
 
 # Create your views here.
 
@@ -177,5 +178,17 @@ class generateView(APIView):
             autotest = AutoTest(llm)
             ans = autotest.call_api(data['prompt'])
             return Response({"message": "ok", "content": ans}, status=status.HTTP_200_OK)
+        except:
+            return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class streamGenerateView(APIView):
+    @login_required
+    def post(self, request):
+        data = request.data
+        try:
+            llm = LLMs.objects.get(id=int(data['llmId']))
+            autotest = AutoTest(llm)
+            response_generator = autotest.stream_call_api(data['prompt'])
+            return StreamingHttpResponse(response_generator, content_type="text/plain")
         except:
             return Response({"message": "Invalid parameters"}, status=status.HTTP_400_BAD_REQUEST)

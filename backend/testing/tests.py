@@ -427,6 +427,7 @@ class BattleHistoryTests(TestCase):
         )
         json_data=response.json()
         self.assertEqual(response.status_code, 400)
+    
 
 @unittest.skipUnless(settings.DEBUG == False, "skip ok")
 class GenerateRelatedTests(TestCase):
@@ -539,3 +540,30 @@ class GenerateRelatedTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
         print('credit for model mistral_7b: ', Credit.objects.get(LLM_id=1, dataset_id=1).credit)
+    
+    def test_stream_generate(self):
+        # the correct case
+        print('')
+        response=self.client.post(
+            '/user/login',
+            {
+                "username":"testuser",
+                "password":"testpassword",
+            },
+            format="json"
+        )
+        jwt=response.json()['jwt']
+        response=self.client.post(
+            '/testing/stream_generate', 
+            {
+                "llmId":1,
+                "prompt":"hello!",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        text = ''
+        for line in response.streaming_content:
+            text += line.decode('utf-8')
+            print('Line:', line.decode('utf-8'))
+        print('stream generation complete: ', text)

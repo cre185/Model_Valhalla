@@ -50,6 +50,7 @@
     - [generate](#generate)
     - [list](#list-2)
     - [retrieve](#retrieve-3)
+    - [stream\_generate](#stream_generate)
     - [test](#test)
     - [update](#update-3)
   - [额外需求](#额外需求)
@@ -1005,6 +1006,24 @@ status=200
 * ID异常  
 ```python
 status=404
+```
+#### stream_generate  
+**功能描述**：基于某个模型的api信息，用提供的prompt进行一次生成，生成内容为流式产生。返回的结果暂时为纯文本类型。    
+**请求方式**：POST  
+**请求URL**：`/testing/stream_generate`  
+**请求参数**：  
+```python
+{
+    "llmId": "模型id",
+    "prompt": "生成的prompt"
+}
+```
+**额外需求**：login_required  
+**返回情况**：  
+* 正常返回  
+```python
+"生成结果"
+status=200
 ```
 #### test  
 **功能描述**：对指定模型测试进行测试。使用llmId和datasetId筛选后，会对指定的模型和数据集对应的行/列所有单元进行测试。  
