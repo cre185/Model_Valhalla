@@ -817,11 +817,14 @@ status=400
     "message": "ok",
     "data": [
         {
+            "id": "对战记录id",
+            "round": "回合数",
+            "result": "JSON对象，包含每一回合的prompt和双方response",
             "llm1": "1号模型id",
             "llm2": "2号模型id",
             "winner": "结果，0为平局，1为1号胜利，-1为1号失败",
-            "round": "回合数",
-            "result": "JSON对象，包含每一回合的prompt和双方response"
+            "user_id": "用户id",
+            "add_time": "添加时间(未格式化)"
         },
         ...
     ]
