@@ -21,6 +21,13 @@ export async function queryLLMevaluateList()
     return LLMList;
 }
 
+export async function getLLMName(modelID: string)
+{
+    const response = await axios.get(apiCat(`/testing/retrieve/${modelID}`))
+    const modelName = response.data.name;
+    return modelName;
+}
+
 class QuestionAndAnswer {
     question:string
     answerA:string

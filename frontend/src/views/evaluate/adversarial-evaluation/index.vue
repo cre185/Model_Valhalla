@@ -57,6 +57,9 @@
                   </div>
                 </a-space>
               </div>
+              <div>
+                {{ modelAname }}
+              </div>
             </a-col>
             <a-col :span="12">
               <div class="text-box">
@@ -69,6 +72,9 @@
                     这是文本框B
                   </div>
                 </a-space>
+              </div>
+              <div>
+                {{ modelBname }}
               </div>
             </a-col>
           </a-row>
@@ -243,7 +249,7 @@ import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
-import EvaluateRound, { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
+import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName } from "@/api/evaluate";
 import * as module from "module";
 
 const generateFormModel = () => {
@@ -262,6 +268,8 @@ const selectVisible = ref(false);
 const evaluateFourButtonsVisible = ref(false);
 const sendQuestionsDisabled = ref(true); // 发送按钮是否禁用，true表示禁用
 const adviseButtonDisabled = ref(true); // 建议按钮是否禁用，true表示禁用
+const modelAname = ref('');
+const modelBname = ref('');
 const newRoundButtonDisabled = ref(true);
 const regenerateButtonDisabled = ref(true);
 const isOkButtonDisabled = ref(false); // 反馈建议的ok按钮是否禁用属性,false表示没有禁用
@@ -380,38 +388,54 @@ const handleSelect = () => {
 const handleCancelSelect = () => {
 
 };
-const aBetterClick = () => {
+const aBetterClick = async () => { // 前面的getmodelB调用后没有及时更新可能也是没有在调用时加await async?
   if (round.value?.modelA) {
     round.value.result = 1;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
+    let tempName = await getLLMName(round.value.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.value.modelB.toString());
+    modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
   }
 }
 
-const bBetterClick = () => {
+const bBetterClick = async () => {
   if (round.value?.modelA) {
     round.value.result = -1;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
+    let tempName = await getLLMName(round.value.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.value.modelB.toString());
+    modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
   }
 }
 
-const abGoodClick = () => {
+const abGoodClick = async () => {
   if (round.value?.modelA) {
     round.value.result = 0;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
+    let tempName = await getLLMName(round.value.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.value.modelB.toString());
+    modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
   }
 }
 
-const abBadClick = () => {
+const abBadClick = async () => {
   if (round.value?.modelA) {
     round.value.result = 0;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
+    let tempName = await getLLMName(round.value.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.value.modelB.toString());
+    modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
   }
 }
