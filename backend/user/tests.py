@@ -1,8 +1,12 @@
+import unittest
 from django.test import TestCase
 from rest_framework.test import APIClient
 
+from Model_Valhalla import settings
+
 from .models import *
 
+import jwt as pyjwt
 # Create your tests here.
 
 
@@ -651,3 +655,44 @@ class VerifyMsgModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
+
+@unittest.skipUnless(settings.DEBUG == False, "skip ok")
+class JwtTests(TestCase):
+    def setUp(self):
+        user = User(
+            username="testuser",
+            password="testuser",
+            mobile="12345678901"
+        )
+        user.save()
+        self.client = APIClient()
+
+    def test_jwt_expire(self):
+        # login first to get jwt
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testuser"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        # test jwt
+        import time
+        time.sleep(2)
+        response = self.client.post(
+            '/user/logout',
+            HTTP_AUTHORIZATION=jwt,
+            format="json",
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        new_jwt = json_data['jwt']
+        self.assertNotEqual(jwt, new_jwt)
+        # test new_jwt is newer
+        secret = settings.JWT_SECRET
+        payload = pyjwt.decode(jwt, secret, algorithms=["HS256"])
+        new_payload = pyjwt.decode(new_jwt, secret, algorithms=["HS256"])
+        self.assertGreater(new_payload['exp'], payload['exp'])
