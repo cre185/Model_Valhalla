@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
+
 import base64
 import datetime
 
 import jwt
+import pytz
 import scrypt
 from django.conf import settings
 from django.http import JsonResponse
@@ -18,7 +19,7 @@ def generate_jwt(payload, expiry=None):
     :return: 生成jwt
     """
     if expiry is None:
-        now = datetime.datetime.now()
+        now = datetime.datetime.now(tz=pytz.timezone("Asia/Shanghai"))
         expire_hours = (
             int(settings.JWT_EXPIRE_HOURS)
             if int(settings.JWT_EXPIRE_HOURS) > 0
@@ -75,19 +76,30 @@ def jwt_authentication(request):
             try:
                 user = User.objects.get(id=user_id)
                 request.user = user
+                return 1
             except User.DoesNotExist:
                 pass
+        else:
+            return 2
+    return 0
 
 
 def login_required(func):
     # @wraps(func)
     def wrapper(self, request, *args, **kwargs):
-        jwt_authentication(request)
-        if not request.user:
+        res = jwt_authentication(request)
+        if res == 0:
             return JsonResponse(
                 {"message": "User must be authorized."}, status=401
             )
+        elif res == 2:
+            return JsonResponse(
+                {"message": "Token has expired."}, status=401
+            )
         else:
-            return func(self, request, *args, **kwargs)
+            response = func(self, request, *args, **kwargs)
+            jwt = generate_jwt({"user_id": request.user.id, "is_admin": request.user.is_admin})
+            response.data['jwt'] = jwt
+            return response
 
     return wrapper
