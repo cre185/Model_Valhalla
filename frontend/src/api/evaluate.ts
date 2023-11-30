@@ -29,17 +29,20 @@ export async function getLLMName(modelID: string)
     return modelName;
 }
 
-export async function sendAdvise(jwt:string, advice:string)
+export async function sendAdvise(jwt:string, userAdvise:string)
 {
-    await axios.post('/user/create_message', {
-        target: ["1"],
-        msg: advice,
-        msg_type: "advice",
+    const response = await axios.post(apiCat('/user/create_message_to_admin'), {
+        body: {
+            target: "2",
+            msg: userAdvise,
+            msg_type: "advice",
+        },
         headers: {
             'Content-Type': 'application/json',
             Authorization: jwt
         },
     });
+    return response;
 }
 
 class QuestionAndAnswer {
