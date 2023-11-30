@@ -45,3 +45,27 @@ class Subscription(models.Model):
 
     def __str__(self):
         return self.user.username + " " + self.llm.name
+
+
+class Msg(models.Model):
+    msg = models.CharField(max_length=255)
+    msg_type = models.CharField(max_length=32)
+    add_time = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='author')
+    target = models.ManyToManyField(
+        User, related_name='target', through='MsgTarget')
+
+    def __str__(self):
+        return self.msg
+
+
+class MsgTarget(models.Model):
+    msg = models.ForeignKey(Msg, on_delete=models.CASCADE)
+    target = models.ForeignKey(User, on_delete=models.CASCADE)
+    read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.msg.msg + " " + self.target.username

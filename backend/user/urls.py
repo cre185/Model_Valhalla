@@ -63,4 +63,16 @@ urlpatterns = [
         "list_subscription/<int:id>",
         views.list_subscriptionView.as_view(),
         name="list_subscription"),
+    path(
+        "list_message",
+        views.list_messageView.as_view(),
+        name="list_message"),
+    path(
+        "create_message",
+        views.create_messageView.as_view(),
+        name="create_message"),
+    path(
+        "check_message",
+        views.check_messageView.as_view(),
+        name="check_message"),
 ]

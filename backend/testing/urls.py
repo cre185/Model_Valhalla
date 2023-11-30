@@ -47,4 +47,8 @@ urlpatterns = [
         'battle_history',
         views.battleHistoryView.as_view(),
         name='battle_history'),
+    path(
+        'upload',
+        views.uploadView.as_view(),
+        name='upload'),
 ]

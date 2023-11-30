@@ -96,6 +96,20 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
                         status=status.HTTP_200_OK)
 
 
+class uploadView(APIView):
+    @login_required
+    def post(self, request):
+        llm = LLMs.objects.get(id=int(request.data['llmId']))
+        if not llm:
+            return Response({"message": "Invalid dataset id"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        dict = request.FILES
+        logo = dict['file']
+        llm.logo = logo
+        llm.save()
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+
+
 class testView(APIView):
     @login_required
     def post(self, request):
@@ -123,7 +137,7 @@ class testView(APIView):
             result = autoTest.whole_test(dataset.data_file.path)
             correct_amount = result[0]
             amount = result[1]
-            tar.credit = (100 * correct_amount) / amount
+            tar.credit = (100.0 * correct_amount) / amount
             tar.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 

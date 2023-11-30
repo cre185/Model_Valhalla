@@ -98,10 +98,11 @@ def login_required(func):
             )
         else:
             response = func(self, request, *args, **kwargs)
-            jwt = generate_jwt({"user_id": request.user.id, "is_admin": request.user.is_admin})
+            jwt = generate_jwt({"user_id": request.user.id,
+                               "is_admin": request.user.is_admin})
             try:
                 response.data['jwt'] = jwt
-            except:
+            except BaseException:
                 pass
             return response
 
