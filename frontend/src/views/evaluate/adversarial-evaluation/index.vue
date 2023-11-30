@@ -47,13 +47,22 @@
           <a-row :gutter="16">
             <a-col :span="12">
               <div class="text-box">
-                <a-space direction="vertical" :size="10">
+                <a-space direction="vertical" :size="10" class="QAShower">
                   <div class="box-header">
-                    <icon-message style="margin-right: 8px; font-size: 20px;"/>
-                    <span style="font-size: 18px;">Model A</span>
+                    <a-space>
+                      <icon-message/>
+                      <span style="font-size: 13px;">Model A</span>
+                    </a-space>
                   </div>
-                  <div class="box-textA">
-                    这是文本框A
+                  <div class="QA" ref="QAModelA">
+                    <a-space direction="vertical" :size="15" v-for="(divItem, index) in round.QA" :key="index" class="added-div">
+                      <div class="userQuestion">
+                        {{ divItem.question }}
+                      </div>
+                      <div class="modelResponse">
+                        {{ divItem.answerA }}
+                      </div>
+                    </a-space>
                   </div>
                 </a-space>
               </div>
@@ -62,15 +71,22 @@
               </div>
             </a-col>
             <a-col :span="12">
-              <div class="text-box">
-                <a-space direction="vertical" :size="10">
+              <div class="text-box" ref="QAModelB">
+                <a-space direction="vertical" :size="10" class="QAShower">
                   <div class="box-header">
-                    <icon-message style="margin-right: 8px; font-size: 20px;"/>
-                    <span style="font-size: 18px;">Model B</span>
+                    <a-space>
+                      <icon-message/>
+                      <span style="font-size: 13px;">Model B</span>
+                    </a-space>
                   </div>
-                  <div class="box-textB">
-                    这是文本框B
-                  </div>
+                  <a-space direction="vertical" :size="15" v-for="(divItem, index) in round.QA" :key="index" class="added-div">
+                    <div class="userQuestion">
+                      {{ divItem.question }}
+                    </div>
+                    <div class="modelResponse">
+                      {{ divItem.answerB }}
+                    </div>
+                  </a-space>
                 </a-space>
               </div>
               <div>
@@ -115,7 +131,7 @@
             </a-col>
           </a-row>
           <a-row :gutter="16" style="padding-bottom: 20px;">
-            <a-col :span="18">
+            <a-col :span="20">
               <a-input
                 v-model="formModel.question"
                 :placeholder="$t('evaluation.question.input')"
@@ -123,8 +139,8 @@
               >
               </a-input>
             </a-col>
-            <a-col :span="6">
-              <a-button style="margin-right: 20px;" @click="selectClick">
+            <a-col :span="4">
+              <a-button style="margin-right: 24px;" @click="selectClick">
                 <template #icon>
                   <icon-plus></icon-plus>
                 </template>
@@ -140,7 +156,7 @@
           </a-row>
           <a-row :gutter="16">
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%;" :disabled="newRoundButtonDisabled">
+              <a-button style="margin-right: 20px; width: 100%;" :disabled="newRoundButtonDisabled" @click="newRoundClick">
                 <template #icon>
                   <icon-dice></icon-dice>
                 </template>
@@ -148,7 +164,7 @@
               </a-button>
             </a-col>
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%;" :disabled="regenerateButtonDisabled">
+              <a-button style="margin-right: 20px; width: 100%;" :disabled="regenerateButtonDisabled" @click="regenerateClick">
                 <template #icon>
                   <icon-loop></icon-loop>
                 </template>
@@ -249,7 +265,7 @@ import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
-import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName } from "@/api/evaluate";
+import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName, QuestionAndAnswer } from "@/api/evaluate";
 import * as module from "module";
 
 const generateFormModel = () => {
@@ -262,10 +278,11 @@ const generateFormModel = () => {
 }
 
 const formModel = ref(generateFormModel());
+const lastQuestion = ref(''); // 存储上一个问题，用来重新生成结果
 const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
-const evaluateFourButtonsVisible = ref(false);
+const evaluateFourButtonsVisible = ref(false); // 四个评价按钮是否可见，false表示不可见
 const sendQuestionsDisabled = ref(true); // 发送按钮是否禁用，true表示禁用
 const adviseButtonDisabled = ref(true); // 建议按钮是否禁用，true表示禁用
 const modelAname = ref('');
@@ -283,8 +300,10 @@ const ModelSelectOptions = computed<SelectOptionData[]>(() => {
   }));
 });
 const ModelAId = computed(() => formModel.value.id);
-const round = ref(new EvaluateRound(-1));
+const round = reactive(new EvaluateRound(-1));
 const selectedQuestions = ref('');
+const QAModelA = ref();
+const QAModelB = ref();
 watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
   selectedQuestions.value = '';
 }); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
@@ -344,9 +363,15 @@ const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
   }
   return [];
 });
+
+const scrollToBottom = () => {
+    QAModelA.value.scrollTop = QAModelA.value.scrollHeight;
+    QAModelB.value.scrollTop = QAModelB.value.scrollHeight;
+  }
+
 const confirmClick = () => {
-    round.value.modelA = Number(formModel.value.id);
-    round.value.getModelB();
+    round.modelA = Number(formModel.value.id);
+    round.getModelB();
     // formModel.value.question = round.value.modelB.toString(); // 检验是否正确调用getModelB()
     sendQuestionsDisabled.value = false; // 解除send按钮禁用
     
@@ -362,9 +387,19 @@ const evaluateClick = () => {
   if (!formModel.value.question || formModel.value.question.trim() === '')
   {
     window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
-    return;
+    // return;
   }
-  evaluateFourButtonsVisible.value = true; // 发送之后下面三个按钮应该解禁，四个评价按钮显示
+  else {
+    round.QA.push(new QuestionAndAnswer(formModel.value.question, '...', '...'));
+    lastQuestion.value = formModel.value.question;
+    formModel.value.question = '';
+    round.getResponse()
+    nextTick(() => {
+      scrollToBottom();
+    });
+    evaluateFourButtonsVisible.value = true;
+  }
+  // formModel.value.question = '';
   newRoundButtonDisabled.value = false;
   regenerateButtonDisabled.value = false;
   adviseButtonDisabled.value = false;
@@ -386,58 +421,87 @@ const handleSelect = () => {
 };
 
 const handleCancelSelect = () => {
-
+  formModel.value.question = '';
+  formModel.value.questionType = '';
 };
 const aBetterClick = async () => { // 前面的getmodelB调用后没有及时更新可能也是没有在调用时加await async?
-  if (round.value?.modelA) {
-    round.value.result = 1;
+  if (round.modelA) {
+    round.result = 1;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
-    let tempName = await getLLMName(round.value.modelA.toString());
+    let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
-    tempName = await getLLMName(round.value.modelB.toString());
+    tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
   }
 }
 
 const bBetterClick = async () => {
-  if (round.value?.modelA) {
-    round.value.result = -1;
+  if (round.modelA) {
+    round.result = -1;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
-    let tempName = await getLLMName(round.value.modelA.toString());
+    let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
-    tempName = await getLLMName(round.value.modelB.toString());
+    tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
   }
 }
 
 const abGoodClick = async () => {
-  if (round.value?.modelA) {
-    round.value.result = 0;
+  if (round.modelA) {
+    round.result = 0;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
-    let tempName = await getLLMName(round.value.modelA.toString());
+    let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
-    tempName = await getLLMName(round.value.modelB.toString());
+    tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
   }
 }
-
 const abBadClick = async () => {
-  if (round.value?.modelA) {
-    round.value.result = 0;
+  if (round.modelA) {
+    round.result = 0;
     // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
-    let tempName = await getLLMName(round.value.modelA.toString());
+    let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
-    tempName = await getLLMName(round.value.modelB.toString());
+    tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
   }
+}
+const newRoundClick = async () => {
+  round.QA = [] as QuestionAndAnswer[];
+  round.modelA = -1;
+  round.modelB = -1;
+  modelAname.value = '';
+  modelBname.value = '';
+
+  formModel.value.id = '';
+
+  sendQuestionsDisabled.value = true;
+  adviseButtonDisabled.value = true;
+  isOkButtonDisabled.value = true;
+  newRoundButtonDisabled.value = true;
+  regenerateButtonDisabled.value = true;
+  evaluateFourButtonsVisible.value = false;
+
+}
+const regenerateClick = async () => {
+  round.QA.pop();
+  round.QA.push(new QuestionAndAnswer(lastQuestion.value, '...', '...'));
+  round.getResponse();
+  nextTick(() => {
+    scrollToBottom();
+  });
 }
 </script>
 
@@ -496,12 +560,53 @@ const abBadClick = async () => {
 }
 .text-box {
   border: 1px solid #ccc;
-  padding: 10px;
-  height: 300px;
+  border-radius: 10px;
+  height: 500px;
+  padding-bottom: 2%;
 }
+.QAShower
+  {
+    width: 100%;
+  }
+
 .box-header {
   display: flex;
+  justify-content: center;
   align-items: center;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-radius: 10px 0 10px 0;
+  width: 100px;
+  height: 30px;
+}
+
+.QA {
+  height: 450px;
+  overflow: auto;
+}
+
+.added-div {
+  width: 100%;
+}
+
+.userQuestion {
+  background-color: #fff7ed;
+  margin-left: 7%;
+  padding: 15px;
+  width: 91%;
+  border: 1px solid #fee6ca;
+  border-radius: 20px 20px 0 20px;
+  font-size: 20px;
+}
+
+.modelResponse {
+  background-color: #f9fafb;
+  margin-left: 2%;
+  padding: 15px;
+  width: 91%;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px 20px 20px 0;
+  font-size: 20px;
 }
 
 </style>
