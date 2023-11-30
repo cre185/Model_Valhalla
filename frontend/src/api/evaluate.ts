@@ -87,4 +87,4 @@ class EvaluateRound {
 }
 
 export default EvaluateRound;
-export { QuestionAndAnswer } ;
+export { QuestionAndAnswer };

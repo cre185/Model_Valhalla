@@ -1,12 +1,13 @@
 from rest_framework import status
 from rest_framework.exceptions import APIException, ErrorDetail
-from rest_framework.utils.serializer_helpers import ReturnList, ReturnDict
+from rest_framework.utils.serializer_helpers import ReturnDict, ReturnList
 
 '''
 The ValidationErrorWithMsg is a customized exception class that inherits from APIException.
 It is used to raise a 400 error with customized error message.
 The error message will be placed in data['message']
 '''
+
 
 def get_error_details(data, default_code=None):
     if isinstance(data, list):
@@ -18,8 +19,10 @@ def get_error_details(data, default_code=None):
         return ret
     elif isinstance(data, dict):
         ret = {
-            key: get_error_details(value, default_code) for key, value in data.items()
-        }
+            key: get_error_details(
+                value,
+                default_code) for key,
+            value in data.items()}
         if isinstance(data, ReturnDict):
             return ReturnDict(ret, serializer=data.serializer)
         return ret

@@ -71,7 +71,7 @@
               </div>
             </a-col>
             <a-col :span="12">
-              <div class="text-box" ref="QAModelB">
+              <div class="text-box">
                 <a-space direction="vertical" :size="10" class="QAShower">
                   <div class="box-header">
                     <a-space>
@@ -79,14 +79,16 @@
                       <span style="font-size: 13px;">Model B</span>
                     </a-space>
                   </div>
-                  <a-space direction="vertical" :size="15" v-for="(divItem, index) in round.QA" :key="index" class="added-div">
-                    <div class="userQuestion">
-                      {{ divItem.question }}
-                    </div>
-                    <div class="modelResponse">
-                      {{ divItem.answerB }}
-                    </div>
-                  </a-space>
+                  <div class="QA" ref="QAModelB">
+                    <a-space direction="vertical" :size="15" v-for="(divItem, index) in round.QA" :key="index" class="added-div">
+                      <div class="userQuestion">
+                        {{ divItem.question }}
+                      </div>
+                      <div class="modelResponse">
+                        {{ divItem.answerB }}
+                      </div>
+                    </a-space>
+                  </div>
                 </a-space>
               </div>
               <div>
@@ -383,21 +385,21 @@ const adviseClick = () => {
 const selectClick = () => {
   selectVisible.value = true;
 };
-const evaluateClick = () => {
+const evaluateClick = async () => {
   sendQuestionsDisabled.value = true;
   if (!formModel.value.question || formModel.value.question.trim() === '')
   {
     window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
     // return;
-  }
-  else {
+  } else {
     round.QA.push(new QuestionAndAnswer(formModel.value.question, '...', '...'));
-    lastQuestion.value = formModel.value.question;
-    formModel.value.question = '';
-    round.getResponse()
-    nextTick(() => {
+    await nextTick(() => {
       scrollToBottom();
     });
+    lastQuestion.value = formModel.value.question;
+    formModel.value.question = '';
+    await round.getResponse();
+    scrollToBottom();
     evaluateFourButtonsVisible.value = true;
   }
   // formModel.value.question = '';
@@ -500,10 +502,11 @@ const newRoundClick = async () => {
 const regenerateClick = async () => {
   round.QA.pop();
   round.QA.push(new QuestionAndAnswer(lastQuestion.value, '...', '...'));
-  round.getResponse();
-  nextTick(() => {
+  await nextTick(() => {
     scrollToBottom();
   });
+  await round.getResponse();
+  scrollToBottom();
 }
 </script>
 
@@ -583,6 +586,9 @@ const regenerateClick = async () => {
 }
 
 .QA {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
   height: 450px;
   overflow: auto;
 }
