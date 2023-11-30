@@ -20,6 +20,7 @@ class LLMs(models.Model):
     license = models.TextField(default='')
     elo_credit = models.FloatField(default=1500)
     add_time = models.DateTimeField(auto_now_add=True)
+    released_time = models.CharField(max_length=255, default='')
 
     def __str__(self):
         return self.name
