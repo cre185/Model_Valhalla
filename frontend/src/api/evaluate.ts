@@ -45,14 +45,12 @@ class EvaluateRound {
     modelB:number
     QA:QuestionAndAnswer[]
     result:number
-    date:string
 
     constructor(modelA:number) {
         this.modelA = modelA;
         this.modelB = -1;
         this.QA = [] as QuestionAndAnswer[];
         this.result = 0;
-        this.date = '';
     }
 
     async getModelB() {
@@ -132,7 +130,7 @@ class EvaluateRound {
             llm2: this.modelB,
             result: this.QA,
             winner: this.result,
-            round: this.QA.length,
+            round: this.QA.length
         });
     }
 }
