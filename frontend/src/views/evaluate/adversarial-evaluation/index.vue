@@ -306,6 +306,7 @@ const round = reactive(new EvaluateRound(-1));
 const selectedQuestions = ref('');
 const QAModelA = ref();
 const QAModelB = ref();
+
 watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
   selectedQuestions.value = '';
 }); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
@@ -374,7 +375,6 @@ const scrollToBottom = () => {
 const confirmClick = () => {
     round.modelA = Number(formModel.value.id);
     round.getModelB();
-    // formModel.value.question = round.value.modelB.toString(); // 检验是否正确调用getModelB()
     sendQuestionsDisabled.value = false; // 解除send按钮禁用
     
 };
@@ -390,7 +390,6 @@ const evaluateClick = async () => {
   if (!formModel.value.question || formModel.value.question.trim() === '')
   {
     window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
-    // return;
   } else {
     round.QA.push(new QuestionAndAnswer(formModel.value.question, '...', '...'));
     await nextTick(() => {
@@ -402,7 +401,6 @@ const evaluateClick = async () => {
     scrollToBottom();
     evaluateFourButtonsVisible.value = true;
   }
-  // formModel.value.question = '';
   sendQuestionsDisabled.value = false;
   newRoundButtonDisabled.value = false;
   regenerateButtonDisabled.value = false;
@@ -411,7 +409,6 @@ const evaluateClick = async () => {
 const handleSubmit = () => {
   formModel.value.advise = '';
   adviseButtonDisabled.value = true;
-  // formModel.value.question = adviseText.value;
 };
 const handleCancel = () => {
   visible.value = false;
@@ -431,7 +428,6 @@ const handleCancelSelect = () => {
 const aBetterClick = async () => { // 前面的getmodelB调用后没有及时更新可能也是没有在调用时加await async?
   if (round.modelA) {
     round.result = 1;
-    // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
@@ -439,13 +435,14 @@ const aBetterClick = async () => { // 前面的getmodelB调用后没有及时更
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
+    console.log(round);
+    round.updateEloResult();
   }
 }
 
 const bBetterClick = async () => {
   if (round.modelA) {
     round.result = -1;
-    // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
@@ -453,13 +450,13 @@ const bBetterClick = async () => {
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
+    round.updateEloResult();
   }
 }
 
 const abGoodClick = async () => {
   if (round.modelA) {
     round.result = 0;
-    // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
@@ -467,12 +464,12 @@ const abGoodClick = async () => {
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
+    round.updateEloResult();
   }
 }
 const abBadClick = async () => {
   if (round.modelA) {
     round.result = 0;
-    // formModel.value.question = ABresult.value.result.toString();
     evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
@@ -480,6 +477,7 @@ const abBadClick = async () => {
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
+    round.updateEloResult();
   }
 }
 const newRoundClick = async () => {

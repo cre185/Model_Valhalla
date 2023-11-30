@@ -81,7 +81,7 @@ class EvaluateRound {
             llm2: this.modelB,
             result: this.QA,
             winner: this.result,
-            add_time: this.date,
+            round: this.date,
         });
     }
 }
