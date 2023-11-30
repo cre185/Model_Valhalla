@@ -7,43 +7,49 @@
           <template #title>
             <div class="custom-title"><b>{{ $t('evaluation.rules.title') }}</b></div>
           </template>
-          <a-timeline>
-            <a-timeline-item>{{ $t('evaluation.rules.one') }}</a-timeline-item>
-            <a-timeline-item>{{ $t('evaluation.rules.two') }}</a-timeline-item>
-            <a-timeline-item>{{ $t('evaluation.rules.three') }}</a-timeline-item>
-            <a-timeline-item>{{ $t('evaluation.rules.four') }}</a-timeline-item>
-          </a-timeline>
+          <a-space direction="vertical" size="large">
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.rules.one') }}
+                </h3>
+              </div>
+            </div>
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.rules.two') }}
+                </h3>
+              </div>
+            </div>
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.rules.three') }}
+                </h3>
+              </div>
+            </div>
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.rules.four') }}
+                </h3>
+              </div>
+            </div>
+          </a-space>
         </a-card>
-        <a-card :bordered=false>
-          <template #title>
-            <div class="custom-title"><b>{{ $t('evaluation.select.models') }}</b></div>
-          </template>
-          <a-row :gutter="16">
-            <a-col :span="18">
-              <a-form :model="formModel" :label-col-props="{ span: 4 }" :wrapper-col-props="{ span: 8 }"
-                      label-align="left">
-                <a-form-item
-                    field="filterType"
-                    :label="$t('evaluation.select.models.title')"
-                    :label-col-props="{ span: 4 }"
-                    :wrapper-col-props="{ span: 10 }"
-                >
-                  <a-select v-model="formModel.id" :options="ModelSelectOptions"
-                            :placeholder="$t('searchTable.form.selectDefault')" />
-                </a-form-item>
-              </a-form>
-            </a-col>
-            <a-col :span="6">
-              <a-button type="primary" style="margin-right: 20px;" @click="confirmClick">
-                <template #icon>
-                  <icon-check></icon-check>
-                </template>
-                {{ $t('evaluation.select.models.confirm') }}
-              </a-button>
-            </a-col>
-          </a-row>
-        </a-card>
+        <br>
         <a-card class="resultShow">
+          <div id="selectModel">
+            <a-select v-model="formModel.id" :options="ModelSelectOptions"
+                      :placeholder="$t('evaluation.select.models')" />
+            <a-button type="primary" style="margin-right: 20px;" @click="confirmClick">
+              <template #icon>
+                <icon-check></icon-check>
+              </template>
+              {{ $t('evaluation.select.models.confirm') }}
+            </a-button>
+          </div>
           <a-row :gutter="16">
             <a-col :span="12">
               <div class="text-box">
@@ -556,15 +562,47 @@ const regenerateClick = async () => {
     }
   }
 }
+
 .custom-title {
-  font-size: 18px;
+  font-size: 27px;
 }
+
+  .boxTest {
+    height: 30px;
+  }
+
+  .boxTest::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 30px;
+    background: rgb(45, 92, 246);
+  }
+
+  .contentTest {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-left: 20px;
+  }
+
 .text-box {
   border: 1px solid #ccc;
   border-radius: 10px;
   height: 500px;
   padding-bottom: 2%;
 }
+
+  #selectModel {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    width: 45%;
+    height: 50px;
+    margin-bottom: 20px;
+  }
+
 .QAShower
   {
     width: 100%;
