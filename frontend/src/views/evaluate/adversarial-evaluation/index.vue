@@ -399,6 +399,7 @@ const evaluateClick = async () => {
     await round.getResponse();
     scrollToBottom();
     evaluateFourButtonsVisible.value = true;
+    await round.getStreamResponse();
   }
   // formModel.value.question = '';
   newRoundButtonDisabled.value = false;

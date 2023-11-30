@@ -75,6 +75,37 @@ class EvaluateRound {
         this.QA[this.QA.length-1].answerB = response.data.content;
     }
 
+    async getStreamResponse() {
+        fetch(apiCat('/testing/stream_generate'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                llmId: this.modelA,
+                prompt: this.QA[this.QA.length-1].question
+            }),
+        })
+            .then(response => {
+                const reader = response.body!.getReader();
+                function read(target: EvaluateRound) {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                            console.log('Stream is done');
+                            return;
+                        }
+                        target.QA[target.QA.length-1].answerA += value;
+                        read(target);
+                    });
+                }
+                read(this);
+            })
+            .catch(error => {
+                console.error('Error fetching stream:', error);
+            });
+
+    }
+
     async updateEloResult() {
         await axios.post(apiCat('/testing/battle_result'), {
             llm1: this.modelA,
