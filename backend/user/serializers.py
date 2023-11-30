@@ -115,6 +115,7 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
 
         return email
 
+
 class MsgSerializer(serializers.ModelSerializer):
     class Meta:
         model = Msg

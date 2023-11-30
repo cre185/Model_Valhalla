@@ -1,4 +1,6 @@
 import unittest
+
+import jwt as pyjwt
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -6,7 +8,6 @@ from Model_Valhalla import settings
 
 from .models import *
 
-import jwt as pyjwt
 # Create your tests here.
 
 
@@ -656,6 +657,7 @@ class VerifyMsgModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
 
+
 @unittest.skipUnless(settings.DEBUG == False, "skip ok")
 class JwtTests(TestCase):
     def setUp(self):
@@ -697,6 +699,7 @@ class JwtTests(TestCase):
         new_payload = pyjwt.decode(new_jwt, secret, algorithms=["HS256"])
         self.assertGreater(new_payload['exp'], payload['exp'])
 
+
 class MsgModelTests(TestCase):
     def setUp(self):
         user = User(
@@ -719,7 +722,7 @@ class MsgModelTests(TestCase):
             {
                 "username": "testuser",
                 "password": "testuser"
-            }, 
+            },
             format="json"
         )
         json_data = response.json()
@@ -762,7 +765,7 @@ class MsgModelTests(TestCase):
             {
                 "username": "testtest",
                 "password": "testtest"
-            }, 
+            },
             format="json"
         )
         json_data = response.json()
@@ -841,7 +844,7 @@ class MsgModelTests(TestCase):
             {
                 "username": "testuser",
                 "password": "testuser"
-            }, 
+            },
             format="json"
         )
         json_data = response.json()
@@ -859,7 +862,7 @@ class MsgModelTests(TestCase):
             {
                 "username": "testtest",
                 "password": "testtest"
-            }, 
+            },
             format="json"
         )
         json_data = response.json()

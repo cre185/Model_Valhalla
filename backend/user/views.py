@@ -284,7 +284,7 @@ class list_messageView(APIView):
         except BaseException:
             return Response({"message": "Invalid userId"},
                             status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class create_messageView(APIView):
     @login_required
@@ -306,7 +306,8 @@ class create_messageView(APIView):
         except BaseException:
             return Response({"message": "Invalid data"},
                             status=status.HTTP_400_BAD_REQUEST)
-        
+
+
 class check_messageView(APIView):
     @login_required
     def post(self, request):
