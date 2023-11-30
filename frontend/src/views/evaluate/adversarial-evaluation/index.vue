@@ -274,7 +274,7 @@ import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
-import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName, QuestionAndAnswer, sendAdvise } from "@/api/evaluate";
+import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName, QuestionAndAnswer} from "@/api/evaluate";
 import * as module from "module";
 import {getToken} from "@/utils/auth";
 
@@ -417,6 +417,7 @@ const evaluateClick = async () => {
     formModel.value.question = '';
     await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value);
       evaluateFourButtonsVisible.value = true;
+      sendQuestionsDisabled.value = false;
 
   }
   confirmButtonDisabled.value = true;
@@ -425,7 +426,7 @@ const evaluateClick = async () => {
   adviseButtonDisabled.value = false;
 };
 const handleSubmit = async () => {
-  await sendAdvise(getToken()!, formModel.value.advise);
+  await round.sendAdvise(getToken()!, formModel.value.advise);
   formModel.value.advise = '';
   adviseButtonDisabled.value = true;
 };

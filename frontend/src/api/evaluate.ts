@@ -29,21 +29,6 @@ export async function getLLMName(modelID: string)
     return modelName;
 }
 
-export async function sendAdvise(jwt:string, userAdvise:string)
-{
-    const response = await axios.post(apiCat('/user/create_message_to_admin'), {
-        body: {
-            target: "2",
-            msg: userAdvise,
-            msg_type: "advice",
-        },
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: jwt
-        },
-    });
-    return response;
-}
 
 class QuestionAndAnswer {
     question:string
@@ -80,7 +65,7 @@ class EvaluateRound {
     async getStreamResponse(jwt:string, RefA:any, RefB:any) {
         fetch(apiCat('/testing/stream_generate'), {
             method: 'POST',
-            headers: {
+          headers: {
                 'Content-Type': 'application/json',
                 Authorization: jwt
             },
@@ -150,6 +135,23 @@ class EvaluateRound {
             round: this.QA.length
         });
     }
+
+    async sendAdvise(jwt:string, userAdvise:string)
+{
+    
+    fetch(apiCat('/user/create_message_to_admin'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: jwt,
+        },
+        body: JSON.stringify({
+            msg: userAdvise,
+            msg_type: 'advice',
+        }),
+    })
+    // return response;
+}
 }
 
 export default EvaluateRound;
