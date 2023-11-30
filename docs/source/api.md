@@ -7,7 +7,10 @@
 **目录**  
 - [API参考文档](#api参考文档)
   - [用户账号部分](#用户账号部分)
+    - [check\_message](#check_message)
+    - [create\_message](#create_message)
     - [delete](#delete)
+    - [list\_message](#list_message)
     - [list\_subscription](#list_subscription)
     - [login](#login)
     - [login\_with\_verify\_code](#login_with_verify_code)
@@ -50,13 +53,63 @@
     - [generate](#generate)
     - [list](#list-2)
     - [retrieve](#retrieve-3)
+    - [stream\_generate](#stream_generate)
     - [test](#test)
     - [update](#update-3)
+    - [upload](#upload-1)
   - [额外需求](#额外需求)
     - [jwt](#jwt)
     - [admin\_required](#admin_required)
 ***
 ### 用户账号部分  
+#### check_message  
+**功能描述**：用户确认已阅了某一条消息。  
+**请求方式**：POST  
+**请求URL**：`/user/check_message`  
+**请求参数**：  
+```python
+{
+    "id": "消息id"
+}
+```  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
+#### create_message  
+**功能描述**：创建新的消息。  
+**请求方式**：POST  
+**请求URL**：`/user/create_message`  
+**请求参数**：  
+```python
+{
+    "target": "接收者id数组",
+    "msg": "消息内容",
+    "msg_type": "消息类型"
+}
+```
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=201
+```
+* 参数异常  
+```python
+status=400
+```
 #### delete  
 **功能描述**：删除指定的用户。该api在传入的jwt对应一般用户时只允许删除用户自己，而在传入的jwt对应管理员时允许删除任意用户。  
 **请求方式**：POST  
@@ -71,6 +124,30 @@
 }, 
 status=200
 ``` 
+#### list_message  
+**功能描述**：列出指定用户收到的所有消息。  
+**请求方式**：GET  
+**请求URL**：`/user/list_message`  
+**请求参数**：无  
+**额外需求**：jwt  
+**返回情况**：  
+```python
+{
+    "message": "ok",
+    "msgs": [
+        {
+            "id": "消息id",
+            "author": "发送者id",
+            "target": "接收者id数组",
+            "msg": "消息内容",
+            "msg_type": "消息类型",
+            "add_time": "添加时间(未格式化)",
+            "read": "是否已读"
+        },
+        ...
+    ]
+},
+```
 #### list_subscription  
 **功能描述**：列出指定用户订阅的所有模型。  
 **请求方式**：GET  
@@ -997,14 +1074,40 @@ status=200
 {
     "message": "ok",
     "name": "模型名称",
-    "api_url": "api地址",
-    ...
+    "api_url": "api调用url",
+    "model_name": "模型名称",
+    "api_RPM": "api请求频率",
+    "official_website": "官方网站",
+    "description": "模型描述",
+    "document_name": "文档名称",
+    "document_website": "文档地址",
+    "license": "认证",
+    "add_time": "添加时间(未格式化)"
+    "elo_credit": "ELO分数"
 },
 status=200
 ```
 * ID异常  
 ```python
 status=404
+```
+#### stream_generate  
+**功能描述**：基于某个模型的api信息，用提供的prompt进行一次生成，生成内容为流式产生。返回的结果暂时为纯文本类型。    
+**请求方式**：POST  
+**请求URL**：`/testing/stream_generate`  
+**请求参数**：  
+```python
+{
+    "llmId": "模型id",
+    "prompt": "生成的prompt"
+}
+```
+**额外需求**：login_required  
+**返回情况**：  
+* 正常返回  
+```python
+"生成结果"
+status=200
 ```
 #### test  
 **功能描述**：对指定模型测试进行测试。使用llmId和datasetId筛选后，会对指定的模型和数据集对应的行/列所有单元进行测试。  
@@ -1073,6 +1176,25 @@ status=200
 ```python
 status=404
 ```
+#### upload  
+**功能描述**：上传模型logo。  
+**请求方式**：POST  
+**请求URL**：`/testing/upload`  
+**请求参数**：文件logo，字符串llmId  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "llmId": "模型id"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 ***
 ### 额外需求  
 此部分专门论述上述api中的额外需求要求明细。  
@@ -1080,12 +1202,25 @@ status=404
 jwt是一种用于身份验证的token，用于验证用户身份。大部分需要身份验证的api均需要提供jwt作为身份验证。  
 **获取方式**：在用户正确登录后会获得jwt，其中压缩包含了用户的id。  
 **返回情况**：  
-在所有需要jwt的接口中，如果jwt错误，会返回如下信息：  
+在所有需要jwt的接口中，如果请求没有携带jwt信息，会返回如下信息：  
 ```python
 {
     "message": "User must be authorized."
 },
 status=401
+```
+如果jwt信息不正确，会返回如下信息：  
+```python
+{
+    "message": "Token has expired."
+},
+status=401
+```
+此外，需要jwt的接口在正常返回时会额外携带以下字段用于更新jwt过期时间：  
+```python
+{
+    "jwt": "jwt字符串",
+}
 ```
 #### admin_required  
 admin_required标签仅用于管理员专用接口，其本质为强化版的jwt，在返回之前会检验用户是否具有管理员权限，故不需要跟jwt一起使用。  
@@ -1098,3 +1233,4 @@ admin_required标签仅用于管理员专用接口，其本质为强化版的jwt
 },
 status=401
 ```
+其余情况则与jwt相同。  

@@ -5,7 +5,7 @@ import { LLMListRes } from './model-list';
 import { updateComment } from "@/api/comment";
 
 export interface SelectedModel {
-    id: number;
+    id: string;
     name: string;
 }
 
@@ -15,10 +15,17 @@ export async function queryLLMevaluateList()
     const response = await axios.get<LLMListRes>(apiCat('/testing/list'));
     for(let i = 0; i < response.data.data.length; i += 1)
     {
-        const model = response.data.data[i] as {id: number, name: string};
-        LLMList.data.push({id: model.id, name: model.name});
+        const model = response.data.data[i] as {id: string, name: string};
+        LLMList.data.push({id: model.id.toString(), name: model.name});
     }
     return LLMList;
+}
+
+export async function getLLMName(modelID: string)
+{
+    const response = await axios.get(apiCat(`/testing/retrieve/${modelID}`))
+    const modelName = response.data.name;
+    return modelName;
 }
 
 class QuestionAndAnswer {
@@ -38,14 +45,12 @@ class EvaluateRound {
     modelB:number
     QA:QuestionAndAnswer[]
     result:number
-    date:string
 
     constructor(modelA:number) {
         this.modelA = modelA;
         this.modelB = -1;
         this.QA = [] as QuestionAndAnswer[];
         this.result = 0;
-        this.date = '';
     }
 
     async getModelB() {
@@ -55,17 +60,68 @@ class EvaluateRound {
         this.modelB = response.data.llmId;
     }
 
-    async getResponse() {
-        let response = await axios.post(apiCat('/testing/generate'), {
-            llmId: this.modelA,
-            prompt: this.QA[this.QA.length-1].question
-        });
-        this.QA[this.QA.length-1].answerA = response.data.content;
-        response = await axios.post(apiCat('/testing/generate'), {
-            llmId: this.modelB,
-            prompt: this.QA[this.QA.length-1].question
-        });
-        this.QA[this.QA.length-1].answerB = response.data.content;
+    async getStreamResponse(jwt:string, RefA:any, RefB:any) {
+        fetch(apiCat('/testing/stream_generate'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: jwt
+            },
+            body: JSON.stringify({
+                llmId: this.modelA,
+                prompt: this.QA[this.QA.length-1].question
+            }),
+        })
+            .then(response => {
+                const reader = response.body!.getReader();
+                function read(target: EvaluateRound) {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                            RefA.scrollTop = RefA.scrollHeight;
+                            return;
+                        }
+                        target.QA[target.QA.length-1].answerA += new TextDecoder('utf-8').decode(value);
+                        RefA.scrollTop = RefA.scrollHeight;
+                        read(target);
+                    });
+                }
+                this.QA[this.QA.length-1].answerA = '';
+                read(this);
+            })
+            .catch(error => {
+                console.error('Error fetching stream:', error);
+            });
+
+        fetch(apiCat('/testing/stream_generate'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: jwt
+            },
+            body: JSON.stringify({
+                llmId: this.modelB,
+                prompt: this.QA[this.QA.length-1].question
+            }),
+        })
+            .then(response => {
+                const reader = response.body!.getReader();
+                function read(target: EvaluateRound) {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                            RefB.scrollTop = RefB.scrollHeight;
+                            return;
+                        }
+                        target.QA[target.QA.length-1].answerB += new TextDecoder('utf-8').decode(value);
+                        RefB.scrollTop = RefB.scrollHeight;
+                        read(target);
+                    });
+                }
+                this.QA[this.QA.length-1].answerB = '';
+                read(this);
+            })
+            .catch(error => {
+                console.error('Error fetching stream:', error);
+            });
     }
 
     async updateEloResult() {
@@ -74,9 +130,10 @@ class EvaluateRound {
             llm2: this.modelB,
             result: this.QA,
             winner: this.result,
-            add_time: this.date,
+            round: this.QA.length
         });
     }
 }
 
 export default EvaluateRound;
+export { QuestionAndAnswer };
