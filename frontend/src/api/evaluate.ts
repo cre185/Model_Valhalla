@@ -62,24 +62,12 @@ class EvaluateRound {
         this.modelB = response.data.llmId;
     }
 
-    async getResponse() {
-        let response = await axios.post(apiCat('/testing/generate'), {
-            llmId: this.modelA,
-            prompt: this.QA[this.QA.length-1].question
-        });
-        this.QA[this.QA.length-1].answerA = response.data.content;
-        response = await axios.post(apiCat('/testing/generate'), {
-            llmId: this.modelB,
-            prompt: this.QA[this.QA.length-1].question
-        });
-        this.QA[this.QA.length-1].answerB = response.data.content;
-    }
-
-    async getStreamResponse() {
+    async getStreamResponse(jwt:string, RefA:any, RefB:any) {
         fetch(apiCat('/testing/stream_generate'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: jwt
             },
             body: JSON.stringify({
                 llmId: this.modelA,
@@ -91,19 +79,51 @@ class EvaluateRound {
                 function read(target: EvaluateRound) {
                     return reader.read().then(({ done, value }) => {
                         if (done) {
-                            console.log('Stream is done');
+                            RefA.scrollTop = RefA.scrollHeight;
                             return;
                         }
-                        target.QA[target.QA.length-1].answerA += value;
+                        target.QA[target.QA.length-1].answerA += new TextDecoder('utf-8').decode(value);
+                        RefA.scrollTop = RefA.scrollHeight;
                         read(target);
                     });
                 }
+                this.QA[this.QA.length-1].answerA = '';
                 read(this);
             })
             .catch(error => {
                 console.error('Error fetching stream:', error);
             });
 
+        fetch(apiCat('/testing/stream_generate'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: jwt
+            },
+            body: JSON.stringify({
+                llmId: this.modelB,
+                prompt: this.QA[this.QA.length-1].question
+            }),
+        })
+            .then(response => {
+                const reader = response.body!.getReader();
+                function read(target: EvaluateRound) {
+                    return reader.read().then(({ done, value }) => {
+                        if (done) {
+                            RefB.scrollTop = RefB.scrollHeight;
+                            return;
+                        }
+                        target.QA[target.QA.length-1].answerB += new TextDecoder('utf-8').decode(value);
+                        RefB.scrollTop = RefB.scrollHeight;
+                        read(target);
+                    });
+                }
+                this.QA[this.QA.length-1].answerB = '';
+                read(this);
+            })
+            .catch(error => {
+                console.error('Error fetching stream:', error);
+            });
     }
 
     async updateEloResult() {
