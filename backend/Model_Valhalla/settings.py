@@ -30,7 +30,7 @@ ACCESS_KEY_SECRET = '9tl5euDkZcI727MF5gUw92IXIhiBIW'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
