@@ -9,6 +9,7 @@
   - [用户账号部分](#用户账号部分)
     - [check\_message](#check_message)
     - [create\_message](#create_message)
+    - [create\_message\_to\_admin](#create_message_to_admin)
     - [delete](#delete)
     - [list\_message](#list_message)
     - [list\_subscription](#list_subscription)
@@ -93,6 +94,30 @@ status=400
 ```python
 {
     "target": "接收者id数组",
+    "msg": "消息内容",
+    "msg_type": "消息类型"
+}
+```
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=201
+```
+* 参数异常  
+```python
+status=400
+```
+#### create_message_to_admin  
+**功能描述**：创建新的消息并发送给管理员。  
+**请求方式**：POST  
+**请求URL**：`/user/create_message_to_admin`  
+**请求参数**：   
+```python
+{
     "msg": "消息内容",
     "msg_type": "消息类型"
 }
