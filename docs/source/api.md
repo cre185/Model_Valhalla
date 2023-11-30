@@ -1074,8 +1074,16 @@ status=200
 {
     "message": "ok",
     "name": "模型名称",
-    "api_url": "api地址",
-    ...
+    "api_url": "api调用url",
+    "model_name": "模型名称",
+    "api_RPM": "api请求频率",
+    "official_website": "官方网站",
+    "description": "模型描述",
+    "document_name": "文档名称",
+    "document_website": "文档地址",
+    "license": "认证",
+    "add_time": "添加时间(未格式化)"
+    "elo_credit": "ELO分数"
 },
 status=200
 ```
