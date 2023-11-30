@@ -384,6 +384,7 @@ const selectClick = () => {
   selectVisible.value = true;
 };
 const evaluateClick = () => {
+  sendQuestionsDisabled.value = true;
   if (!formModel.value.question || formModel.value.question.trim() === '')
   {
     window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
@@ -400,6 +401,7 @@ const evaluateClick = () => {
     evaluateFourButtonsVisible.value = true;
   }
   // formModel.value.question = '';
+  sendQuestionsDisabled.value = false;
   newRoundButtonDisabled.value = false;
   regenerateButtonDisabled.value = false;
   adviseButtonDisabled.value = false;
