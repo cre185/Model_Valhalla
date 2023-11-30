@@ -269,6 +269,7 @@ import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
 import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName, QuestionAndAnswer } from "@/api/evaluate";
 import * as module from "module";
+import {getToken} from "@/utils/auth";
 
 const generateFormModel = () => {
   return {
@@ -397,8 +398,7 @@ const evaluateClick = async () => {
     });
     lastQuestion.value = formModel.value.question;
     formModel.value.question = '';
-    await round.getResponse();
-    scrollToBottom();
+    await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value);
     evaluateFourButtonsVisible.value = true;
   }
   sendQuestionsDisabled.value = false;
@@ -503,8 +503,7 @@ const regenerateClick = async () => {
   await nextTick(() => {
     scrollToBottom();
   });
-  await round.getResponse();
-  scrollToBottom();
+  await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value);
 }
 </script>
 
