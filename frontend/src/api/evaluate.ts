@@ -80,3 +80,4 @@ class EvaluateRound {
 }
 
 export default EvaluateRound;
+export { QuestionAndAnswer };

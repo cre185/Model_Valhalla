@@ -47,27 +47,43 @@
           <a-row :gutter="16">
             <a-col :span="12">
               <div class="text-box">
-                <a-space direction="vertical" :size="10">
+                <a-space direction="vertical" :size="10" class="QAShower">
                   <div class="box-header">
-                    <icon-message style="margin-right: 8px; font-size: 20px;"/>
-                    <span style="font-size: 18px;">Model A</span>
+                    <a-space>
+                      <icon-message/>
+                      <span style="font-size: 13px;">Model A</span>
+                    </a-space>
                   </div>
-                  <div class="box-textA">
-                    这是文本框A
+                  <div class="QA" ref="QAModelA">
+                    <a-space direction="vertical" :size="15" v-for="(divItem, index) in round.QA" :key="index" class="added-div">
+                      <div class="userQuestion">
+                        {{ divItem.question }}
+                      </div>
+                      <div class="modelResponse">
+                        {{ divItem.answerA }}
+                      </div>
+                    </a-space>
                   </div>
                 </a-space>
               </div>
             </a-col>
             <a-col :span="12">
-              <div class="text-box">
-                <a-space direction="vertical" :size="10">
+              <div class="text-box" ref="QAModelB">
+                <a-space direction="vertical" :size="10" class="QAShower">
                   <div class="box-header">
-                    <icon-message style="margin-right: 8px; font-size: 20px;"/>
-                    <span style="font-size: 18px;">Model B</span>
+                    <a-space>
+                      <icon-message/>
+                      <span style="font-size: 13px;">Model B</span>
+                    </a-space>
                   </div>
-                  <div class="box-textB">
-                    这是文本框B
-                  </div>
+                  <a-space direction="vertical" :size="15" v-for="(divItem, index) in round.QA" :key="index" class="added-div">
+                    <div class="userQuestion">
+                      {{ divItem.question }}
+                    </div>
+                    <div class="modelResponse">
+                      {{ divItem.answerB }}
+                    </div>
+                  </a-space>
                 </a-space>
               </div>
             </a-col>
@@ -238,232 +254,295 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, reactive, watch, nextTick, onMounted, getCurrentInstance} from 'vue';
-import { useI18n } from 'vue-i18n';
-import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
-import useVisible from '@/hooks/visible';
-import '@/assets/icondataset/iconfont.css'
-import EvaluateRound, { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
-import * as module from "module";
+  import {computed, ref, reactive, watch, nextTick, onMounted, getCurrentInstance} from 'vue';
+  import { useI18n } from 'vue-i18n';
+  import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
+  import useVisible from '@/hooks/visible';
+  import '@/assets/icondataset/iconfont.css'
+  import EvaluateRound, {SelectedModel, queryLLMevaluateList, QuestionAndAnswer} from "@/api/evaluate";
+  import * as module from "module";
 
-const generateFormModel = () => {
-  return {
-    id: '',
-    questionType: '',
-    question: '',
-    advise: '', // 增加建�??属性，方便表单验证
+  const generateFormModel = () => {
+    return {
+      id: '',
+      questionType: '',
+      question: '',
+      advise: '', // 增加建议属性，方便表单验证
+    };
+  }
+
+  const formModel = ref(generateFormModel());
+  const { t } = useI18n();
+  const visible = ref(false);
+  const selectVisible = ref(false);
+  const evaluateButtons = ref(false);
+  const isOkButtonDisabled = ref(false); // 反馈建议的ok按钮是否禁用属性,false表示没有禁用
+  const { proxy } = getCurrentInstance();
+  const SelectedModelInfo = ref<SelectedModel[]>();
+  SelectedModelInfo.value = (await queryLLMevaluateList()).data;
+  const ModelSelectOptions = computed<SelectOptionData[]>(() => {
+    return (SelectedModelInfo.value || []).map((model) => ({
+      label: model.name,
+      value: model.id,
+    }));
+  });
+  const ModelAId = computed(() => formModel.value.id);
+  const round = reactive(new EvaluateRound(-1));
+  const QAModelA = ref();
+  const QAModelB = ref();
+  const selectedQuestions = ref('');
+  watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
+    selectedQuestions.value = '';
+  }); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
+  const lengthRules = [
+    {
+      required: false,
+      validator: (value: string, callback: (error?: string) => void) => {
+        return new Promise<void>((resolve) => {
+          window.setTimeout(() => {
+            value = formModel.value.advise;
+            isOkButtonDisabled.value = false;
+            if (value.length > 100) { // 防止用户用大量字符串恶意攻击系统
+              isOkButtonDisabled.value = true;
+              callback(proxy.$t('evaluation.advice.error.default'));
+            }
+            resolve();
+          }, 1);
+        });
+      },
+      trigger: ['input'],
+    },
+  ];
+  const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
+    {
+      label: "机器翻译",
+      value: '机器翻译',
+    },
+    {
+      label: "数学运算",
+      value: '数学运算'
+    },
+  ]);
+  const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
+    if (formModel.value.questionType === '机器翻译') { // 之后填充的问题设定在此框架上修改具体内容即可
+      return [
+        {
+          label: "Question A(translate)",
+          value: 'Question A(translate)',
+        },
+        {
+          label: "Question D(translate)",
+          value: 'Question D(translate)',
+        },
+      ];
+    }
+    if (formModel.value.questionType === '数学运算') {
+      return [
+        {
+          label: "Question B(evaluate)",
+          value: 'Question B(evaluate)',
+        },
+        {
+          label: "Question C(evaluate)",
+          value: 'Question C(evaluate)',
+        },
+      ];
+    }
+    return [];
+  });
+
+  const scrollToBottom = () => {
+    QAModelA.value.scrollTop = QAModelA.value.scrollHeight;
+    QAModelB.value.scrollTop = QAModelB.value.scrollHeight;
+  }
+
+  const confirmClick = () => {
+      round.modelA = Number(formModel.value.id);
+      round.getModelB();
+  };
+  const adviseClick = () => {
+    visible.value = true;
+    isOkButtonDisabled.value = false;
   };
   const selectClick = () => {
     selectVisible.value = true;
-  }
-  const handleSubmit = () => {
-
-const formModel = ref(generateFormModel());
-const { t } = useI18n();
-const visible = ref(false);
-const selectVisible = ref(false);
-const evaluateButtons = ref(true);
-const isOkButtonDisabled = ref(false); // 反�?�建�?的ok按钮�?否�?�用属�?,false表示没有禁用
-const { proxy } = getCurrentInstance();
-const SelectedModelInfo = ref<SelectedModel[]>();
-SelectedModelInfo.value = (await queryLLMevaluateList()).data;
-const ModelSelectOptions = computed<SelectOptionData[]>(() => {
-  return (SelectedModelInfo.value || []).map((model) => ({
-    label: model.name,
-    value: model.id,
-  }));
-});
-const ModelAId = computed(() => formModel.value.id);
-const ABresult = ref<EvaluateRound>();
-const selectedQuestions = ref('');
-watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
-  selectedQuestions.value = '';
-}); // �?题�?�类改变时，�?题选项会清零，否则上�?�选择的内容会遗留
-const lengthRules = [
-  {
-    required: false,
-    validator: (value: string, callback: (error?: string) => void) => {
-      return new Promise<void>((resolve) => {
-        window.setTimeout(() => {
-          value = formModel.value.advise;
-          if (value.length > 100) { // 防�?�用户用大量字�?�串恶意攻击系统
-            isOkButtonDisabled.value = true;
-            callback(proxy.$t('evaluation.advice.error.default'));
-          }
-          resolve();
-        }, 1000);
+  };
+  const evaluateClick = () => {
+    if (!formModel.value.question || formModel.value.question.trim() === '')
+    {
+      window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
+    }
+    else {
+      round.QA.push(new QuestionAndAnswer(formModel.value.question, '', ''));
+      formModel.value.question = '';
+      round.getResponse()
+      nextTick(() => {
+        scrollToBottom();
       });
-    },
-    trigger: ['change', 'blur'],
-  },
-];
-const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
-  {
-    label: "机器翻译",
-    value: '机器翻译',
-  },
-  {
-    label: "数�?�运�?",
-    value: '数�?�运�?'
-  },
-]);
-const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
-  if (formModel.value.questionType === '机器翻译') { // 之后�?充的�?题�?�定在�?��?�架上修改具体内容即�?
-    return [
-      {
-        label: "Question A(translate)",
-        value: 'Question A(translate)',
-      },
-      {
-        label: "Question D(translate)",
-        value: 'Question D(translate)',
-      },
-    ];
+      evaluateButtons.value = true;
+    }
+  };
+  const handleSubmit = () => {
+    formModel.value.advise = '';
+    // formModel.value.question = adviseText.value;
+  };
+  const handleCancel = () => {
+    visible.value = false;
+    formModel.value.advise = '';
+  };
+
+  const handleSelect = () => {
+    formModel.value.question = selectedQuestions.value; // 填充问题对话框确定按钮事件的绑定
+    formModel.value.questionType = '';
+    selectedQuestions.value = '';
+  };
+
+  const handleCancelSelect = () => {
+
+  };
+  const aBetterClick = () => {
+    if (round?.modelA) {
+      round.result = 1;
+      // formModel.value.question = round.value.result.toString();
+      evaluateButtons.value = false;
+    }
   }
-  if (formModel.value.questionType === '数�?�运�?') {
-    return [
-      {
-        label: "Question B(evaluate)",
-        value: 'Question B(evaluate)',
-      },
-      {
-        label: "Question C(evaluate)",
-        value: 'Question C(evaluate)',
-      },
-    ];
+
+  const bBetterClick = () => {
+    if (round?.modelA) {
+      round.result = -1;
+      // formModel.value.question = round.value.result.toString();
+      evaluateButtons.value = false;
+    }
   }
-  return [];
-});
-const confirmClick = () => {
-    ABresult.value = new EvaluateRound(-1);
-    ABresult.value.modelA = Number(formModel.value.id);
-    ABresult.value.getModelB();
-    formModel.value.question = ABresult.value.modelB.toString(); // 检验是否�?�确调用getModelB()
-};
-const adviseClick = () => {
-  visible.value = true;
-  isOkButtonDisabled.value = false;
-};
-const selectClick = () => {
-  selectVisible.value = true;
-};
-const evaluateClick = () => {
-  evaluateButtons.value = true;
-};
-const handleSubmit = () => {
-  formModel.value.advise = '';
-  // formModel.value.question = adviseText.value;
-};
-const handleCancel = () => {
-  visible.value = false;
-  formModel.value.advise = '';
-};
 
-const handleSelect = () => {
-  formModel.value.question = selectedQuestions.value; // �?充问题�?�话框确定按�?事件的绑�?
-  formModel.value.questionType = '';
-  selectedQuestions.value = '';
-};
-
-const handleCancelSelect = () => {
-
-};
-const aBetterClick = () => {
-  if (ABresult.value?.modelA) {
-    ABresult.value.result = 1;
-    formModel.value.question = ABresult.value.result.toString();
+  const abGoodClick = () => {
+    if (round?.modelA) {
+      round.result = 0;
+      // formModel.value.question = round.value.result.toString();
+      evaluateButtons.value = false;
+    }
   }
-}
 
-const bBetterClick = () => {
-  if (ABresult.value?.modelA) {
-    ABresult.value.result = -1;
-    formModel.value.question = ABresult.value.result.toString();
+  const abBadClick = () => {
+    if (round?.modelA) {
+      round.result = 0;
+      // formModel.value.question = round.value.result.toString();
+      evaluateButtons.value = false;
+    }
   }
-}
 
-const abGoodClick = () => {
-  if (ABresult.value?.modelA) {
-    ABresult.value.result = 0;
-    formModel.value.question = ABresult.value.result.toString();
-  }
-}
-
-const abBadClick = () => {
-  if (ABresult.value?.modelA) {
-    ABresult.value.result = 0;
-    formModel.value.question = ABresult.value.result.toString();
-  }
-}
-</script>
-
-<script lang="ts">
-export default {
-  name: 'Card',
-};
+  watch(round.QA, (newValue, oldValue) => {
+    setTimeout(() => {
+      scrollToBottom();
+    }, 500);
+  });
 </script>
 
 <style scoped lang="less">
-.container {
-  padding: 0 20px 20px 20px;
+  .container {
+    padding: 0 20px 20px 20px;
 
-  :deep(.arco-list-content) {
-    overflow-x: hidden;
-  }
+    :deep(.arco-list-content) {
+      overflow-x: hidden;
+    }
 
-  :deep(.arco-card-meta-title) {
-    font-size: 14px;
-  }
-}
-
-:deep(.arco-list-col) {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-:deep(.arco-list-item) {
-  width: 33%;
-}
-
-:deep(.block-title) {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-}
-
-:deep(.list-wrap) {
-
-  // min-height: 140px;
-  .list-row {
-    align-items: stretch;
-
-    .list-col {
-      margin-bottom: 16px;
+    :deep(.arco-card-meta-title) {
+      font-size: 14px;
     }
   }
 
-  :deep(.arco-space) {
-    width: 100%;
+  :deep(.arco-list-col) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 
-    .arco-space-item {
-      &:last-child {
-        flex: 1;
+  :deep(.arco-list-item) {
+    width: 33%;
+  }
+
+  :deep(.block-title) {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+  }
+
+  :deep(.list-wrap) {
+
+    // min-height: 140px;
+    .list-row {
+      align-items: stretch;
+
+      .list-col {
+        margin-bottom: 16px;
+      }
+    }
+
+    :deep(.arco-space) {
+      width: 100%;
+
+      .arco-space-item {
+        &:last-child {
+          flex: 1;
+        }
       }
     }
   }
-}
-.custom-title {
-  font-size: 18px;
-}
-.text-box {
-  border: 1px solid #ccc;
-  padding: 10px;
-  height: 300px;
-}
-.box-header {
-  display: flex;
-  align-items: center;
-}
 
+  .custom-title {
+    font-size: 18px;
+  }
+
+  .text-box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    height: 500px;
+    padding-bottom: 2%;
+  }
+
+  .QAShower
+  {
+    width: 100%;
+  }
+
+  .box-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-radius: 10px 0 10px 0;
+    width: 100px;
+    height: 30px;
+  }
+
+  .QA {
+    height: 450px;
+    overflow: auto;
+  }
+
+  .added-div {
+    width: 100%;
+  }
+
+  .userQuestion {
+    background-color: #fff7ed;
+    margin-left: 7%;
+    padding: 15px;
+    width: 91%;
+    border: 1px solid #fee6ca;
+    border-radius: 20px 20px 0 20px;
+    font-size: 20px;
+  }
+
+  .modelResponse {
+    background-color: #f9fafb;
+    margin-left: 2%;
+    padding: 15px;
+    width: 91%;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px 20px 20px 0;
+    font-size: 20px;
+  }
 </style>
