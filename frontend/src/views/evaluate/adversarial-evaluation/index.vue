@@ -3,7 +3,7 @@
     <Breadcrumb :items="['menu.evaluate', 'menu.evaluate.adversarialEvaluation']" />
     <a-row :gutter="20" align="stretch">
       <a-col :span="24">
-        <a-card class="general-card">
+        <a-card class="general-card" >
           <template #title>
             <div class="custom-title"><b>{{ $t('evaluation.rules.title') }}</b></div>
           </template>
@@ -18,15 +18,16 @@
           <template #title>
             <div class="custom-title"><b>{{ $t('evaluation.select.models') }}</b></div>
           </template>
-          <a-row :gutter="16">
-            <a-col :span="18">
+          <a-row :gutter="16" >
+            <a-col :span="18" >
               <a-form :model="formModel" :label-col-props="{ span: 4 }" :wrapper-col-props="{ span: 8 }"
-                      label-align="left">
+                      label-align="left" >
                 <a-form-item
                     field="filterType"
                     :label="$t('evaluation.select.models.title')"
                     :label-col-props="{ span: 4 }"
                     :wrapper-col-props="{ span: 10 }"
+                    
                 >
                   <a-select v-model="formModel.id" :options="ModelSelectOptions"
                             :placeholder="$t('searchTable.form.selectDefault')" />
@@ -34,7 +35,7 @@
               </a-form>
             </a-col>
             <a-col :span="6">
-              <a-button type="primary" style="margin-right: 20px;" @click="confirmClick">
+              <a-button type="primary" style="margin-right: 20px;" @click="confirmClick" :disabled="confirmButtonDisabled">
                 <template #icon>
                   <icon-check></icon-check>
                 </template>
@@ -43,7 +44,7 @@
             </a-col>
           </a-row>
         </a-card>
-        <a-card class="resultShow">
+        <a-card class="resultShow" >
           <a-row :gutter="16">
             <a-col :span="12">
               <div class="text-box">
@@ -100,7 +101,7 @@
         <a-card class="questionInput">
           <a-row :gutter="16" v-if="evaluateFourButtonsVisible" style="padding-bottom: 20px;">
             <a-col :span="6">
-              <a-button @click="aBetterClick" style="margin-right: 20px; width: 100%">
+              <a-button @click="aBetterClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-hand-left1"></span>
                 </template>
@@ -108,7 +109,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button @click="bBetterClick" style="margin-right: 20px; width: 100%">
+              <a-button @click="bBetterClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-hand-right1"></span>
                 </template>
@@ -116,7 +117,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button @click="abGoodClick" style="margin-right: 20px; width: 100%">
+              <a-button @click="abGoodClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben11"></span>
                 </template>
@@ -124,7 +125,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button @click="abBadClick" style="margin-right: 20px; width: 100%">
+              <a-button @click="abBadClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben24"></span>
                 </template>
@@ -138,6 +139,7 @@
                 v-model="formModel.question"
                 :placeholder="$t('evaluation.question.input')"
                 allow-clear
+                @press-enter="evaluateClick"
               >
               </a-input>
             </a-col>
@@ -286,8 +288,10 @@ const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
 const evaluateFourButtonsVisible = ref(false); // 四个评价按钮是否可见，false表示不可见
+const evaluateFourButtonsDisabled = ref(false); // 四个按钮是否可选
 const sendQuestionsDisabled = ref(true); // 发送按钮是否禁用，true表示禁用
 const adviseButtonDisabled = ref(true); // 建议按钮是否禁用，true表示禁用
+const confirmButtonDisabled = ref(false);
 const modelAname = ref('');
 const modelBname = ref('');
 const newRoundButtonDisabled = ref(true);
@@ -373,11 +377,11 @@ const scrollToBottom = () => {
     QAModelB.value.scrollTop = QAModelB.value.scrollHeight;
   }
 
-const confirmClick = () => {
+const confirmClick = async () => {
     round.modelA = Number(formModel.value.id);
-    round.getModelB();
+    round.QA = [] as QuestionAndAnswer[];
+    await round.getModelB();
     sendQuestionsDisabled.value = false; // 解除send按钮禁用
-    
 };
 const adviseClick = () => {
   visible.value = true;
@@ -401,6 +405,7 @@ const evaluateClick = async () => {
     await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value);
     evaluateFourButtonsVisible.value = true;
   }
+  confirmButtonDisabled.value = true;
   sendQuestionsDisabled.value = false;
   newRoundButtonDisabled.value = false;
   regenerateButtonDisabled.value = false;
@@ -428,56 +433,55 @@ const handleCancelSelect = () => {
 const aBetterClick = async () => { // 前面的getmodelB调用后没有及时更新可能也是没有在调用时加await async?
   if (round.modelA) {
     round.result = 1;
-    evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
     tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
-    console.log(round);
-    round.updateEloResult();
+    evaluateFourButtonsDisabled.value = true;
+    await round.updateEloResult();
   }
 }
 
 const bBetterClick = async () => {
   if (round.modelA) {
     round.result = -1;
-    evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
     tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
-    round.updateEloResult();
+    evaluateFourButtonsDisabled.value = true;
+    await round.updateEloResult();
   }
 }
 
 const abGoodClick = async () => {
   if (round.modelA) {
     round.result = 0;
-    evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
     tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
-    round.updateEloResult();
+    evaluateFourButtonsDisabled.value = true;
+    await round.updateEloResult();
   }
 }
 const abBadClick = async () => {
   if (round.modelA) {
     round.result = 0;
-    evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
     tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
-    round.updateEloResult();
+    evaluateFourButtonsDisabled.value = true;
+    await round.updateEloResult();
   }
 }
 const newRoundClick = async () => {
@@ -494,6 +498,7 @@ const newRoundClick = async () => {
   isOkButtonDisabled.value = true;
   newRoundButtonDisabled.value = true;
   regenerateButtonDisabled.value = true;
+  confirmButtonDisabled.value = false;
   evaluateFourButtonsVisible.value = false;
 
 }
