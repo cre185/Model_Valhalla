@@ -5,7 +5,7 @@ def admin_required(func):
     # @wraps(func)
     def wrapper(self, request, *args, **kwargs):
         res = jwt_authentication(request)
-        if res == 0 or request.user == None:
+        if res == 0 or request.user is None:
             return JsonResponse(
                 {"message": "User must be authorized."}, status=401
             )
@@ -19,7 +19,8 @@ def admin_required(func):
             )
         else:
             response = func(self, request, *args, **kwargs)
-            jwt = generate_jwt({"user_id": request.user.id, "is_admin": request.user.is_admin})
+            jwt = generate_jwt({"user_id": request.user.id,
+                               "is_admin": request.user.is_admin})
             response.data['jwt'] = jwt
             return response
 

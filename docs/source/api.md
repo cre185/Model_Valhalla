@@ -7,7 +7,10 @@
 **目录**  
 - [API参考文档](#api参考文档)
   - [用户账号部分](#用户账号部分)
+    - [check\_message](#check_message)
+    - [create\_message](#create_message)
     - [delete](#delete)
+    - [list\_message](#list_message)
     - [list\_subscription](#list_subscription)
     - [login](#login)
     - [login\_with\_verify\_code](#login_with_verify_code)
@@ -53,11 +56,60 @@
     - [stream\_generate](#stream_generate)
     - [test](#test)
     - [update](#update-3)
+    - [upload](#upload-1)
   - [额外需求](#额外需求)
     - [jwt](#jwt)
     - [admin\_required](#admin_required)
 ***
 ### 用户账号部分  
+#### check_message  
+**功能描述**：用户确认已阅了某一条消息。  
+**请求方式**：POST  
+**请求URL**：`/user/check_message`  
+**请求参数**：  
+```python
+{
+    "id": "消息id"
+}
+```  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
+#### create_message  
+**功能描述**：创建新的消息。  
+**请求方式**：POST  
+**请求URL**：`/user/create_message`  
+**请求参数**：  
+```python
+{
+    "target": "接收者id数组",
+    "msg": "消息内容",
+    "msg_type": "消息类型"
+}
+```
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=201
+```
+* 参数异常  
+```python
+status=400
+```
 #### delete  
 **功能描述**：删除指定的用户。该api在传入的jwt对应一般用户时只允许删除用户自己，而在传入的jwt对应管理员时允许删除任意用户。  
 **请求方式**：POST  
@@ -72,6 +124,30 @@
 }, 
 status=200
 ``` 
+#### list_message  
+**功能描述**：列出指定用户收到的所有消息。  
+**请求方式**：GET  
+**请求URL**：`/user/list_message`  
+**请求参数**：无  
+**额外需求**：jwt  
+**返回情况**：  
+```python
+{
+    "message": "ok",
+    "msgs": [
+        {
+            "id": "消息id",
+            "author": "发送者id",
+            "target": "接收者id数组",
+            "msg": "消息内容",
+            "msg_type": "消息类型",
+            "add_time": "添加时间(未格式化)",
+            "read": "是否已读"
+        },
+        ...
+    ]
+},
+```
 #### list_subscription  
 **功能描述**：列出指定用户订阅的所有模型。  
 **请求方式**：GET  
@@ -1091,6 +1167,25 @@ status=200
 * ID异常  
 ```python
 status=404
+```
+#### upload  
+**功能描述**：上传模型logo。  
+**请求方式**：POST  
+**请求URL**：`/testing/upload`  
+**请求参数**：文件logo，字符串llmId  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "llmId": "模型id"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
 ```
 ***
 ### 额外需求  
