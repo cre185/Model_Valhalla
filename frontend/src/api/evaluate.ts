@@ -132,7 +132,7 @@ class EvaluateRound {
             llm2: this.modelB,
             result: this.QA,
             winner: this.result,
-            round: this.date,
+            round: this.QA.length,
         });
     }
 }
