@@ -696,3 +696,178 @@ class JwtTests(TestCase):
         payload = pyjwt.decode(jwt, secret, algorithms=["HS256"])
         new_payload = pyjwt.decode(new_jwt, secret, algorithms=["HS256"])
         self.assertGreater(new_payload['exp'], payload['exp'])
+
+class MsgModelTests(TestCase):
+    def setUp(self):
+        user = User(
+            username="testuser",
+            password="testuser",
+            mobile="12345678901"
+        )
+        user.save()
+        user2 = User(
+            username="testtest",
+            password="testtest",
+            mobile="11122233344"
+        )
+        user2.save()
+        self.client = APIClient()
+
+    def test_create_message(self):
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testuser"
+            }, 
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        # send a message to user2
+        response = self.client.post(
+            '/user/create_message',
+            {
+                "target": [2],
+                "msg": "test message",
+                "msg_type": "test type"
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(Msg.objects.all().count(), 1)
+        self.assertEqual(MsgTarget.objects.all().count(), 1)
+        # send a message to all users
+        response = self.client.post(
+            '/user/create_message',
+            {
+                "target": [1, 2],
+                "msg": "test message",
+                "msg_type": "test type"
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(Msg.objects.all().count(), 2)
+        self.assertEqual(MsgTarget.objects.all().count(), 3)
+        # user2 send a message to all users
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testtest",
+                "password": "testtest"
+            }, 
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        response = self.client.post(
+            '/user/create_message',
+            {
+                "target": [1],
+                "msg": "test message",
+                "msg_type": "test type"
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json_data['message'], "ok")
+        response = self.client.post(
+            '/user/create_message',
+            {
+                "target": [1, 2],
+                "msg": "test message",
+                "msg_type": "test type"
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(Msg.objects.all().count(), 4)
+        self.assertEqual(MsgTarget.objects.all().count(), 6)
+        # test list message
+        response = self.client.get(
+            '/user/list_message',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(json_data['msgs']), 3)
+        # test check message
+        response = self.client.post(
+            '/user/check_message',
+            {
+                "id": 1
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(MsgTarget.objects.get(id=1).read, True)
+        response = self.client.get(
+            '/user/list_message',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['msgs'][0]['read'], True)
+        # test check of other user
+        response = self.client.post(
+            '/user/check_message',
+            {
+                "id": 3
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # test another's check
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testuser"
+            }, 
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        response = self.client.post(
+            '/user/check_message',
+            {
+                "id": 2
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testtest",
+                "password": "testtest"
+            }, 
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        response = self.client.get(
+            '/user/list_message',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['msgs'][1]['read'], False)

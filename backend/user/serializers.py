@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from utils.validation_error import ValidationErrorWithMsg
 
-from .models import User, VerifyEmail, VerifyMsg
+from .models import *
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -114,3 +114,8 @@ class VerifyEmailSerializer(serializers.ModelSerializer):
             history_records.delete()
 
         return email
+
+class MsgSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Msg
+        fields = '__all__'

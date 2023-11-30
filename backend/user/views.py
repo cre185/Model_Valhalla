@@ -265,3 +265,58 @@ class list_subscriptionView(APIView):
         except BaseException:
             return Response({"message": "Invalid userId"},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class list_messageView(APIView):
+    @login_required
+    def get(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            messages = Msg.objects.filter(target=user)
+            msgs = []
+            for message in messages:
+                serializer = MsgSerializer(message)
+                msgs.append(serializer.data)
+                read = MsgTarget.objects.get(msg=message, target=user)
+                msgs[-1]['read'] = read.read
+            return Response({"message": "ok", "msgs": msgs},
+                            status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid userId"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+
+class create_messageView(APIView):
+    @login_required
+    def post(self, request):
+        data = JSONParser().parse(request)
+        try:
+            data['author'] = request.user.id
+            serializer = MsgSerializer(data=data)
+            if not serializer.is_valid():
+                return Response({"message": "Invalid data"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+            msg_id = serializer.data['id']
+            for target in data['target']:
+                msg_target = MsgTarget.objects.create(
+                    msg_id=msg_id, target_id=target)
+                msg_target.save()
+            return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
+        except BaseException:
+            return Response({"message": "Invalid data"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+class check_messageView(APIView):
+    @login_required
+    def post(self, request):
+        data = JSONParser().parse(request)
+        try:
+            message = Msg.objects.get(id=data['id'])
+            read = MsgTarget.objects.get(msg=message, target=request.user)
+            read.read = True
+            read.save()
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid data"},
+                            status=status.HTTP_400_BAD_REQUEST)
