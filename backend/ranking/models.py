@@ -10,7 +10,7 @@ from user import models as user
 class Credit(models.Model):
     dataset = models.ForeignKey(to=dataset.Dataset, on_delete=models.CASCADE)
     LLM = models.ForeignKey(to=testing.LLMs, on_delete=models.CASCADE)
-    credit = models.IntegerField(null=True)
+    credit = models.FloatField(null=True)
     add_time = models.DateTimeField(auto_now_add=True)
 
 

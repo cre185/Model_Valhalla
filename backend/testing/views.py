@@ -137,7 +137,7 @@ class testView(APIView):
             result = autoTest.whole_test(dataset.data_file.path)
             correct_amount = result[0]
             amount = result[1]
-            tar.credit = (100 * correct_amount) / amount
+            tar.credit = (100.0 * correct_amount) / amount
             tar.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
