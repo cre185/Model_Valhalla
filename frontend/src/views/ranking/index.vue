@@ -190,7 +190,7 @@
             <DatasetProfile :modelid="ModelID" />
           </a-tab-pane>
           <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
-            <AdversarialRecords/>
+            <AdversarialRecords :modelID="ModelID"/>
           </a-tab-pane>
           <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
             <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
@@ -235,7 +235,6 @@
   const showColumns = ref<Column[]>([]);
   const currentLLM = ref<LLMRankingData>();
   const ModelID = ref('');
-  const ModelRanking = ref(0);
   const paintFirstTab = ref(false);
 
 

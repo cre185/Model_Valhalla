@@ -142,6 +142,7 @@ class EvaluateRound {
     }
 
     async updateEloResult() {
+        console.log(this.modelA)
         await axios.post(apiCat('/testing/battle_result'), {
             llm1: this.modelA,
             llm2: this.modelB,

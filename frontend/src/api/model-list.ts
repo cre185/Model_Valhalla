@@ -196,11 +196,11 @@ export async function queryDatasetColumnList() {
 }
 
 export async function GetModelInfo(modelID: number) {
-  const res = await axios.get(apiCat(`/ranking/list/${modelID}`));
+  const res = await axios.get(apiCat(`/testing/retrieve/${modelID}`));
   return res.data;
 }
 
 export async function queryLLMBattleRecords(modelID: number) {
-  const res = await axios.post<BattleRecords[]>(apiCat('/ranking/list'), {llm: modelID});
+  const res = await axios.post<BattleRecords[]>(apiCat('/testing/battle_history'), {llm: modelID});
   return res.data;
 }

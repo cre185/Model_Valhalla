@@ -79,11 +79,7 @@
   type Column = TableColumnData & { checked?: true };
 
   const { t } = useI18n();
-  const props = defineProps({
-    modelID: {
-      type: Number,
-    }
-  });
+  const props = defineProps(['modelID']);
   const columns = computed<TableColumnData[]>( ()=> [
     {
       title: t('ranking.adversarial.selector.title.user'),
@@ -125,7 +121,8 @@
     },
   ]);
   const battleHistory = ref<BattleRecords[]>([]);
-  const originalData = ref<BattleRecordsData[]>([{id: 1, testUser: 1, testUsername: await getUsername('1'),
+  const originalData = ref<BattleRecordsData[]>([]);
+  /* const originalData = ref<BattleRecordsData[]>([{id: 1, testUser: 1, testUsername: await getUsername('1'),
     testUserAvatar: await getAvatar('1'),
     result: 1, adversarialModel: 'test_model1', battleTime: '2023/11/27 21:17',
     QA: [new QuestionAndAnswer('Hi', 'Fine', 'Thank you'),
@@ -140,9 +137,8 @@
       result: -1, adversarialModel: 'test_model3', battleTime: '2023/11/27 21:17',
       QA: [new QuestionAndAnswer('Hi', 'Fine', 'Thank you'),
         new QuestionAndAnswer('Hi', 'I fell bad.', 'Hug me plz.')], displayRound: 0},
-  ]);
-  const renderData = ref<BattleRecordsData[]>();
-  renderData.value = cloneDeep(originalData.value);
+  ]); */
+  const renderData = ref<BattleRecordsData[]>([]);
   const buttonStatus = ref<boolean[]>([false, false, false]);
   const modelSelected = ref('');
   const dateRange = ref('');
@@ -207,16 +203,55 @@
 
   const fetchData = async () => {
     battleHistory.value = await queryLLMBattleRecords(props.modelID!);
-    renderData.value = [];
-    for(let i = 0; i < battleHistory.value.length; i += 1){
-      const data: BattleRecords = battleHistory.value[i];
-      renderData.value.push({id: data.id, testUser: data.user_id, testUsername: '1', testUserAvatar: '1',
-        adversarialModel: 'data.llm1 === props.modelID ? GetModelInfo(data.llm2).name: GetModelInfo(data.llm1).name',
-        battleTime: data.add_time, result: data.winner, QA: JSON.parse(data.result), displayRound: JSON.parse(data.result).length > 0 ? 0 : -1,
+    originalData.value = [];
+    /* for(const data of battleHistory.value.data){
+      console.log(data);
+      originalData.value.push({id: data.id, testUser: data.user_id, testUsername: '1', testUserAvatar: '1',
+        adversarialModel: (data.llm1 === props.modelID) ? (await GetModelInfo(data.llm2)).name: (await GetModelInfo(data.llm1)).name,
+        battleTime: data.add_time, result: data.winner, QA: data.result, displayRound: data.result.length > 0 ? 0 : -1,
       });
-    }
+      console.log(originalData);
+    } */
+
+    originalData.value = battleHistory.value.data.map(async (data) => {
+      console.log(props.modelID);
+      const adversarialModel =
+          (data.llm1 === props.modelID)
+              ? (await GetModelInfo(data.llm2)).name
+              : (await GetModelInfo(data.llm1)).name;
+
+      const QA = (data.llm1 === props.modelID) ?
+          data.result : data.result.map(async (qa: QuestionAndAnswer) => {
+            const { answerA, answerB, ...rest } = data;
+            const newItem = {
+              ...rest,
+              answerA: answerB,
+              answerB: answerA,
+            };
+            return newItem;
+          })
+
+      const options = {};
+      const newItem = {
+        id: data.id,
+        testUser: data.user_id,
+        testUsername: '1',
+        testUserAvatar: '1',
+        adversarialModel,
+        battleTime: new Intl.DateTimeFormat('en-US', options).format(data.add_time),
+        result: data.winner,
+        QA: data.result,
+        displayRound: data.result.length > 0 ? 0 : -1,
+      };
+
+      return newItem;
+    });
+
+    originalData.value = await Promise.all(originalData.value);
+    renderData.value = cloneDeep(originalData.value);
   }
 
+  fetchData();
   const handleClick = (index: number) => {
     renderData.value = [];
     if(buttonStatus.value[index] === false){
