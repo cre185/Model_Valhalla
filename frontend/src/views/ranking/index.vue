@@ -163,7 +163,7 @@
       <div>
         <a-tabs size="large">
           <a-tab-pane key="1" :title="$t('ranking.details.details')">
-            <ModelProfile />
+            <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('ranking.details.datasetScore')">
             <DatasetProfile :modelid="ModelID" />
@@ -213,6 +213,7 @@
   const showColumns = ref<Column[]>([]);
   const currentLLM = ref<LLMRankingData>();
   const ModelID = ref('');
+  const paintFirstTab = ref(false);
 
   const size = ref<SizeProps>('medium');
 
@@ -451,6 +452,7 @@
     }
 
     ModelID.value=currentLLM.value!.id.toString();
+    paintFirstTab.value = !paintFirstTab.value;
     getComment(ModelID.value!, commentDetails, jwt!);
   };
 

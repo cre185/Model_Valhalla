@@ -51,7 +51,7 @@ export default {
   'ranking.details.details': '详细信息',
   'ranking.details.datasetScore': '数据集表现',
   'ranking.details.competitionRecords': '对抗记录',
-  'ranking.details.discussions': '讨论区,',
+  'ranking.details.discussions': '讨论区',
   'ranking.behaviour.dataset.num.errormsg': '请输入大于0的整数',
   'ranking.behaviour.dataset.size.errormsg': '请输入正整数',
   'ranking.behaviour.dataset.score.errormsg': '得分区间为[0,100]间的整数',

@@ -51,7 +51,7 @@ export default {
   'ranking.details.details': 'Details',
   'ranking.details.datasetScore': 'Dataset Score',
   'ranking.details.competitionRecords': 'Competition Records',
-  'ranking.details.discussions': 'Discussions,',
+  'ranking.details.discussions': 'Discussions',
   'ranking.behaviour.dataset.num.errormsg': 'Please enter a positive integer',
   'ranking.behaviour.dataset.size.errormsg': 'Please enter a positive integer',
   'ranking.behaviour.dataset.score.errormsg': 'Integer scores within the range of [0, 100]',
