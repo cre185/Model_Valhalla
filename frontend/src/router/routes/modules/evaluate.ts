@@ -15,7 +15,8 @@ const Evaluate: AppRouteRecordRaw = {
     {
       path: 'subjective-evaluation',
       name: 'subjectiveEvaluation',
-      component: () => import('@/views/evaluate/subjective-evaluation/index.vue'),
+      component: () =>
+        import('@/views/evaluate/subjective-evaluation/index.vue'),
       meta: {
         locale: 'menu.evaluate.subjectiveEvaluation',
         requiresAuth: true,
@@ -25,7 +26,8 @@ const Evaluate: AppRouteRecordRaw = {
     {
       path: 'adversarial-evaluation',
       name: 'adversarialEvaluation',
-      component: () => import('@/views/evaluate/adversarial-evaluation/index.vue'),
+      component: () =>
+        import('@/views/evaluate/adversarial-evaluation/index.vue'),
       meta: {
         locale: 'menu.evaluate.adversarialEvaluation',
         requiresAuth: true,

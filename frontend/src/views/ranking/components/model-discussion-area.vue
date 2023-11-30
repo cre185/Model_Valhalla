@@ -109,7 +109,7 @@
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   const props = defineProps({
     commentDetails: {
-      type: Array<MyComment>,
+      type: Array<MyComment>
     },
     modelId: {
       type: String,

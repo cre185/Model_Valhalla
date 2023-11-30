@@ -1,10 +1,14 @@
 export default {
   'menu.list.cardList': 'Compared evaluation',
   'evaluation.rules.title': 'Compared evaluation Rules',
-  'evaluation.rules.one': 'You should first select one candidate model for adversarial evaluation, and we will provide another model for you. Subsequently, both models will be handled anonymously.',
-  'evaluation.rules.two': 'Two anonymous models will provide answers based on your questions. You can choose the one with better performance based on the models\' responses.',
-  'evaluation.rules.three': 'Of course, you can evaluate the models after multiple rounds of answers.',
-  'evaluation.rules.four': 'After you provide an evaluation, the model name will be disclosed, and your feedback will be organized and collected into the detailed information of the model.',
+  'evaluation.rules.one':
+    'You should first select one candidate model for adversarial evaluation, and we will provide another model for you. Subsequently, both models will be handled anonymously.',
+  'evaluation.rules.two':
+    "Two anonymous models will provide answers based on your questions. You can choose the one with better performance based on the models' responses.",
+  'evaluation.rules.three':
+    'Of course, you can evaluate the models after multiple rounds of answers.',
+  'evaluation.rules.four':
+    'After you provide an evaluation, the model name will be disclosed, and your feedback will be organized and collected into the detailed information of the model.',
   'evaluation.select.models': 'Select Models',
   'evaluation.select.models.title': 'Candidate models:',
   'evaluation.select.models.gpt3.5': 'GPT-3.5',
@@ -13,7 +17,8 @@ export default {
   'evaluation.select.models.Google': 'Google Bard',
   'evaluation.select.models.iFLYTEK': 'SparkDesk',
   'evaluation.select.models.confirm': 'Confirm',
-  'evaluation.question.input': 'Please Enter your question, or fill in a suggested question',
+  'evaluation.question.input':
+    'Please Enter your question, or fill in a suggested question',
   'evaluation.question.button.fill': 'Fill',
   'evaluation.question.button.send': 'Send',
   'evaluation.question.select.button.confirm': 'Confirm',

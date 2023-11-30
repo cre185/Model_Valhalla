@@ -9,7 +9,6 @@ import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
 import localeMonitor from '@/views/dashboard/monitor/locale/en-US';
 
-
 import localeSubjectiveEvaluation from '@/views/evaluate/subjective-evaluation/locale/en-US';
 import localeAdversarialEvaluation from '@/views/evaluate/adversarial-evaluation/locale/en-US';
 

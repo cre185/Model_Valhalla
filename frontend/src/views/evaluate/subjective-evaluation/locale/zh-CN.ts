@@ -1,5 +1,5 @@
 export default {
-  'menu.list.searchTable': '查询表格',
+  'menu.evaluate.subjective': '主观评测',
   'searchTable.form.number': '集合编号',
   'searchTable.form.number.placeholder': '请输入集合编号',
   'searchTable.form.name': '集合名称',

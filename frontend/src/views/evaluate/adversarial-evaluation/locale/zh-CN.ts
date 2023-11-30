@@ -1,10 +1,13 @@
 export default {
   'menu.list.cardList': '对抗评测',
   'evaluation.rules.title': '对抗评测规则',
-  'evaluation.rules.one': '您应当先选择要对抗评测的其中一个候选模型，我们会为您提供另一个模型，随后两个模型会被匿名处理',
-  'evaluation.rules.two': '两个匿名模型会根据您的提问做出回答，您可以根据模型的回答结果选择效果较好的一方',
+  'evaluation.rules.one':
+    '您应当先选择要对抗评测的其中一个候选模型，我们会为您提供另一个模型，随后两个模型会被匿名处理',
+  'evaluation.rules.two':
+    '两个匿名模型会根据您的提问做出回答，您可以根据模型的回答结果选择效果较好的一方',
   'evaluation.rules.three': '您当然可以经过多轮回答之后再做出对模型的评价',
-  'evaluation.rules.four': '在您做出评价后，模型名将会公布，您对模型的评价将会被整理收集到模型的详细信息中',
+  'evaluation.rules.four':
+    '在您做出评价后，模型名将会公布，您对模型的评价将会被整理收集到模型的详细信息中',
   'evaluation.select.models': '选择模型',
   'evaluation.select.models.title': '候选模型：',
   'evaluation.select.models.gpt3.5': 'GPT-3.5',

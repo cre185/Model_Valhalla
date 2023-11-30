@@ -1,7 +1,8 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.evaluate', 'menu.list.searchTable']" />
+    <Breadcrumb :items="['menu.evaluate', 'menu.evaluate.subjective']" />
     <a-card class="general-card" :title="$t('menu.list.searchTable')">
+      <a-rate :count="10"/>
       <a-row>
         <a-col :flex="1">
           <a-form

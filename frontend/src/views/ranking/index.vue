@@ -154,6 +154,7 @@
               @cancel="handleCancel"
               @open="setDrawer"
               unmountOnClose
+              v-if="currentLLM !== undefined"
     >
       <template #title>
         <header class="drawer-model-title">
@@ -170,6 +171,14 @@
             </template>
             <p>{{ $t('rankings.llm.details.subscribe.btn') }}</p>
           </a-button>
+          <div style="text-align: center; position: absolute; right: 20px; padding: 30px 20px 20px 0; border-right: 1px solid darkgray">
+            <div style="font-size: 30px; color: darkgray; font-weight: 500">
+              {{ $t('ranking.profile.ranking') }}
+            </div>
+            <div style="margin-top: 6px; font-size: 30px; color: darkgray; font-weight: 500">
+              {{currentLLM.ranking}}
+            </div>
+          </div>
         </header>
       </template>
       <div>
@@ -181,7 +190,7 @@
             <DatasetProfile :modelid="ModelID" />
           </a-tab-pane>
           <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
-            <p>TODO</p>
+            <AdversarialRecords/>
           </a-tab-pane>
           <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
             <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
@@ -209,7 +218,8 @@
   import MyComment, {getComment, updateComment} from "@/api/comment";
   import ModelDiscussionArea from "./components/model-discussion-area.vue";
   import ModelProfile from './components/model-profile.vue';
-  import DatasetProfile from './components/model-datasetbehavior.vue'
+  import DatasetProfile from './components/model-datasetbehavior.vue';
+  import AdversarialRecords from './components/model-adversarial-records.vue';
 
   type SizeProps = 'mini' | 'small' | 'medium' | 'large';
   type Column = TableColumnData & { checked?: true };
@@ -225,6 +235,7 @@
   const showColumns = ref<Column[]>([]);
   const currentLLM = ref<LLMRankingData>();
   const ModelID = ref('');
+  const ModelRanking = ref(0);
 
   const size = ref<SizeProps>('medium');
 

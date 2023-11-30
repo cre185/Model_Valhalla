@@ -23,7 +23,7 @@ export interface registerData {
   password: string;
   mobile: string;
   email: string;
-  is_admin: boolean
+  is_admin: boolean;
 }
 
 export interface LoginRes {

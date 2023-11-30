@@ -1,3 +1,3 @@
 export default {
-    'menu.dashboard.kaka': '小钱',
+  'menu.dashboard.kaka': '小钱',
 };
