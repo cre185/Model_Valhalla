@@ -306,6 +306,29 @@ class create_messageView(APIView):
         except BaseException:
             return Response({"message": "Invalid data"},
                             status=status.HTTP_400_BAD_REQUEST)
+        
+
+class create_message_to_adminView(APIView):
+    @login_required
+    def post(self, request):
+        data = JSONParser().parse(request)
+        try:
+            data['author'] = request.user.id
+            serializer = MsgSerializer(data=data)
+            if not serializer.is_valid():
+                return Response({"message": "Invalid data"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            serializer.save()
+            msg_id = serializer.data['id']
+            admin = User.objects.filter(is_admin=True)
+            for target in admin:
+                msg_target = MsgTarget.objects.create(
+                    msg_id=msg_id, target_id=target.id)
+                msg_target.save()
+            return Response({"message": "ok"}, status=status.HTTP_201_CREATED)
+        except BaseException:
+            return Response({"message": "Invalid data"},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class check_messageView(APIView):

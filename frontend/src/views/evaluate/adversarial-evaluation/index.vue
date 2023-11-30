@@ -3,7 +3,7 @@
     <Breadcrumb :items="['menu.evaluate', 'menu.evaluate.adversarialEvaluation']" />
     <a-row :gutter="20" align="stretch">
       <a-col :span="24">
-        <a-card class="general-card">
+        <a-card class="general-card" >
           <template #title>
             <div class="custom-title"><b>{{ $t('evaluation.rules.title') }}</b></div>
           </template>
@@ -43,7 +43,7 @@
           <div id="selectModel">
             <a-select v-model="formModel.id" :options="ModelSelectOptions"
                       :placeholder="$t('evaluation.select.models')" />
-            <a-button type="primary" style="margin-right: 20px;" @click="confirmClick">
+            <a-button type="primary" style="margin-right: 20px;" @click="confirmClick" :disabled="confirmButtonDisabled">
               <template #icon>
                 <icon-check></icon-check>
               </template>
@@ -106,7 +106,7 @@
         <a-card class="questionInput">
           <a-row :gutter="16" v-if="evaluateFourButtonsVisible" style="padding-bottom: 20px;">
             <a-col :span="6">
-              <a-button @click="aBetterClick" style="margin-right: 20px; width: 100%">
+              <a-button id="aBetter" @click="aBetterClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-hand-left1"></span>
                 </template>
@@ -114,7 +114,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button @click="bBetterClick" style="margin-right: 20px; width: 100%">
+              <a-button id="bBetter" @click="bBetterClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-hand-right1"></span>
                 </template>
@@ -122,7 +122,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button @click="abGoodClick" style="margin-right: 20px; width: 100%">
+              <a-button id="abGood" @click="abGoodClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben11"></span>
                 </template>
@@ -130,7 +130,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button @click="abBadClick" style="margin-right: 20px; width: 100%">
+              <a-button id="abBad" @click="abBadClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben24"></span>
                 </template>
@@ -144,6 +144,7 @@
                 v-model="formModel.question"
                 :placeholder="$t('evaluation.question.input')"
                 allow-clear
+                @press-enter="evaluateClick"
               >
               </a-input>
             </a-col>
@@ -273,7 +274,7 @@ import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
-import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName, QuestionAndAnswer } from "@/api/evaluate";
+import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName, QuestionAndAnswer, sendAdvise } from "@/api/evaluate";
 import * as module from "module";
 import {getToken} from "@/utils/auth";
 
@@ -292,8 +293,10 @@ const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
 const evaluateFourButtonsVisible = ref(false); // 四个评价按钮是否可见，false表示不可见
+const evaluateFourButtonsDisabled = ref(false); // 四个按钮是否可选
 const sendQuestionsDisabled = ref(true); // 发送按钮是否禁用，true表示禁用
 const adviseButtonDisabled = ref(true); // 建议按钮是否禁用，true表示禁用
+const confirmButtonDisabled = ref(false);
 const modelAname = ref('');
 const modelBname = ref('');
 const newRoundButtonDisabled = ref(true);
@@ -313,6 +316,7 @@ const round = reactive(new EvaluateRound(-1));
 const selectedQuestions = ref('');
 const QAModelA = ref();
 const QAModelB = ref();
+
 watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
   selectedQuestions.value = '';
 }); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
@@ -349,24 +353,32 @@ const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
   if (formModel.value.questionType === '机器翻译') { // 之后填充的问题设定在此框架上修改具体内容即可
     return [
       {
-        label: "Question A(translate)",
-        value: 'Question A(translate)',
+        label: "汉译日：大家早上好",
+        value: '请问“大家早上好”用日语怎么说',
       },
       {
-        label: "Question D(translate)",
-        value: 'Question D(translate)',
+        label: "英译汉：I have never had such a fantastic start",
+        value: '请将下面这句话翻译成中文: I have never had such a fantastic start',
+      },
+      {
+        label: "汉译英：今天早上你吃了什么",
+        value: '请将下面这句话翻译成英文: 今天早上你吃了什么'
       },
     ];
   }
   if (formModel.value.questionType === '数学运算') {
     return [
       {
-        label: "Question B(evaluate)",
-        value: 'Question B(evaluate)',
+        label: "114+514等于多少",
+        value: '114+514等于多少',
       },
       {
-        label: "Question C(evaluate)",
-        value: 'Question C(evaluate)',
+        label: "sin(x)的导数是多少",
+        value: 'sin(x)的导数是多少',
+      },
+      {
+        label: "7整除36，余数是多少",
+        value: '7整除36，余数是多少',
       },
     ];
   }
@@ -378,12 +390,11 @@ const scrollToBottom = () => {
     QAModelB.value.scrollTop = QAModelB.value.scrollHeight;
   }
 
-const confirmClick = () => {
+const confirmClick = async () => {
     round.modelA = Number(formModel.value.id);
-    round.getModelB();
-    // formModel.value.question = round.value.modelB.toString(); // 检验是否正确调用getModelB()
+    round.QA = [] as QuestionAndAnswer[];
+    await round.getModelB();
     sendQuestionsDisabled.value = false; // 解除send按钮禁用
-    
 };
 const adviseClick = () => {
   visible.value = true;
@@ -393,10 +404,11 @@ const selectClick = () => {
   selectVisible.value = true;
 };
 const evaluateClick = async () => {
-  if (!formModel.value.question || formModel.value.question.trim() === '') {
+  if (!formModel.value.question || formModel.value.question.trim() === '')
+  {
     window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
-    // return;
   } else {
+    sendQuestionsDisabled.value = true;
     round.QA.push(new QuestionAndAnswer(formModel.value.question, '...', '...'));
     await nextTick(() => {
       scrollToBottom();
@@ -404,17 +416,18 @@ const evaluateClick = async () => {
     lastQuestion.value = formModel.value.question;
     formModel.value.question = '';
     await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value);
-    evaluateFourButtonsVisible.value = true;
+      evaluateFourButtonsVisible.value = true;
+
   }
-  // formModel.value.question = '';
+  confirmButtonDisabled.value = true;
   newRoundButtonDisabled.value = false;
   regenerateButtonDisabled.value = false;
   adviseButtonDisabled.value = false;
 };
-const handleSubmit = () => {
+const handleSubmit = async () => {
+  await sendAdvise(getToken()!, formModel.value.advise);
   formModel.value.advise = '';
   adviseButtonDisabled.value = true;
-  // formModel.value.question = adviseText.value;
 };
 const handleCancel = () => {
   visible.value = false;
@@ -434,55 +447,75 @@ const handleCancelSelect = () => {
 const aBetterClick = async () => { // 前面的getmodelB调用后没有及时更新可能也是没有在调用时加await async?
   if (round.modelA) {
     round.result = 1;
-    // formModel.value.question = ABresult.value.result.toString();
-    evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
     tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
+    evaluateFourButtonsDisabled.value = true;
+    const element = document.getElementById('aBetter');
+
+    if (element) {
+      element.style.backgroundColor = 'dodgerblue';
+    }
+    await round.updateEloResult();
   }
 }
 
 const bBetterClick = async () => {
   if (round.modelA) {
     round.result = -1;
-    // formModel.value.question = ABresult.value.result.toString();
-    evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
     tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
+    evaluateFourButtonsDisabled.value = true;
+    const element = document.getElementById('bBetter');
+
+    if (element) {
+      element.style.backgroundColor = 'dodgerblue';
+    }
+    await round.updateEloResult();
   }
 }
 
 const abGoodClick = async () => {
   if (round.modelA) {
     round.result = 0;
-    // formModel.value.question = ABresult.value.result.toString();
-    evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
     tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
+    evaluateFourButtonsDisabled.value = true;
+    const element = document.getElementById('abGood');
+
+    if (element) {
+      element.style.backgroundColor = 'dodgerblue';
+    }
+    await round.updateEloResult();
   }
 }
 const abBadClick = async () => {
   if (round.modelA) {
     round.result = 0;
-    // formModel.value.question = ABresult.value.result.toString();
-    evaluateFourButtonsVisible.value = false;
     let tempName = await getLLMName(round.modelA.toString());
     modelAname.value = tempName;
     tempName = await getLLMName(round.modelB.toString());
     modelBname.value = tempName;
     sendQuestionsDisabled.value = true;
     regenerateButtonDisabled.value = true;
+    evaluateFourButtonsDisabled.value = true;
+    const element = document.getElementById('abBad');
+
+    if (element) {
+      element.style.backgroundColor = 'dodgerblue';
+    }
+    await round.updateEloResult();
   }
 }
 const newRoundClick = async () => {
@@ -499,6 +532,7 @@ const newRoundClick = async () => {
   isOkButtonDisabled.value = true;
   newRoundButtonDisabled.value = true;
   regenerateButtonDisabled.value = true;
+  confirmButtonDisabled.value = false;
   evaluateFourButtonsVisible.value = false;
 
 }

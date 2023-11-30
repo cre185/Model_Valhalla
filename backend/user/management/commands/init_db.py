@@ -52,13 +52,13 @@ class Command(BaseCommand):
             subjective=True)
         dataset5.save()
         # Create the four standard llms
-        llm1 = LLMs(name="llm1", description="llm1", model_name="mistral_7b")
+        llm1 = LLMs(name="llm1", description="llm1", model_name="mistral_7b", logo="static/logo/mistral_7b.png")
         llm1.save()
-        llm2 = LLMs(name="llm2", description="llm2", model_name="qwen_7b_chat")
+        llm2 = LLMs(name="llm2", description="llm2", model_name="qwen_7b_chat", logo="static/logo/qwen_7b_chat.jpg")
         llm2.save()
-        llm3 = LLMs(name="llm3", description="llm3", model_name="vicuna_7b")
+        llm3 = LLMs(name="llm3", description="llm3", model_name="vicuna_7b", logo="static/logo/vicuna_7b.jpg")
         llm3.save()
-        llm4 = LLMs(name="llm4", description="llm4", model_name="zephyr_7b")
+        llm4 = LLMs(name="llm4", description="llm4", model_name="zephyr_7b", logo="static/logo/zephyr_7b.png")
         llm4.save()
         # Create credits
         credit_list = [31, 41, 25, 29, 29, 44, 22, 28, 37, 37, 37, 42]

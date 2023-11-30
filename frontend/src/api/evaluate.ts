@@ -3,6 +3,7 @@ import axios from 'axios';
 import apiCat from '@/api/main';
 import { LLMListRes } from './model-list';
 import { updateComment } from "@/api/comment";
+import { Button } from '@arco-design/web-vue';
 
 export interface SelectedModel {
     id: string;
@@ -26,6 +27,22 @@ export async function getLLMName(modelID: string)
     const response = await axios.get(apiCat(`/testing/retrieve/${modelID}`))
     const modelName = response.data.name;
     return modelName;
+}
+
+export async function sendAdvise(jwt:string, userAdvise:string)
+{
+    const response = await axios.post(apiCat('/user/create_message_to_admin'), {
+        body: {
+            target: "2",
+            msg: userAdvise,
+            msg_type: "advice",
+        },
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: jwt
+        },
+    });
+    return response;
 }
 
 class QuestionAndAnswer {
