@@ -56,6 +56,7 @@
     - [stream\_generate](#stream_generate)
     - [test](#test)
     - [update](#update-3)
+    - [upload](#upload-1)
   - [额外需求](#额外需求)
     - [jwt](#jwt)
     - [admin\_required](#admin_required)
@@ -1166,6 +1167,25 @@ status=200
 * ID异常  
 ```python
 status=404
+```
+#### upload  
+**功能描述**：上传模型logo。  
+**请求方式**：POST  
+**请求URL**：`/testing/upload`  
+**请求参数**：文件logo，字符串llmId  
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "llmId": "模型id"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
 ```
 ***
 ### 额外需求  
