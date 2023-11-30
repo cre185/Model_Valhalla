@@ -1,0 +1,55 @@
+version: "3"
+services:
+  app:
+    container_name: app
+    restart: always
+    build: .
+    command: >
+      bash -c
+      "python3 manage.py makemigrations --settings=Model_Valhalla.settings_prod &&
+      python3 manage.py migrate --settings=Model_Valhalla.settings_prod &&
+      python3 manage.py runserver 0.0.0.0:8000 --settings=Model_Valhalla.settings_prod"
+    volumes:
+      - .:/backend
+    expose:
+      - "8000"
+    depends_on:
+      - mysql
+    networks:
+      - web_network
+      - db_network
+  mysql:
+    container_name: mysql
+    image: mysql:8.1
+    volumes:
+      - "/home/ubuntu/mysql/:/var/lib/mysql"
+    env_file: .env
+    expose:
+      - "3306"
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=20231112
+      - MYSQL_DATABASE=model_valhalla
+      - TZ=Asia/Shanghai
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    networks:
+      - db_network
+  nginx:
+    container_name: nginx
+    restart: always
+    image: nginx:latest
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./build/static:/backend/build/static
+    depends_on:
+      - app
+    networks:
+      - web_network
+  
+networks:
+  web_network:
+    driver: bridge
+  db_network:
+    driver: bridge
