@@ -66,6 +66,9 @@
                   </div>
                 </a-space>
               </div>
+              <div>
+                {{ modelAname }}
+              </div>
             </a-col>
             <a-col :span="12">
               <div class="text-box" ref="QAModelB">
@@ -86,11 +89,14 @@
                   </a-space>
                 </a-space>
               </div>
+              <div>
+                {{ modelBname }}
+              </div>
             </a-col>
           </a-row>
         </a-card>
         <a-card class="questionInput">
-          <a-row :gutter="16" v-if="evaluateButtons" style="padding-bottom: 20px;">
+          <a-row :gutter="16" v-if="evaluateFourButtonsVisible" style="padding-bottom: 20px;">
             <a-col :span="6">
               <a-button @click="aBetterClick" style="margin-right: 20px; width: 100%">
                 <template #icon>
@@ -125,7 +131,7 @@
             </a-col>
           </a-row>
           <a-row :gutter="16" style="padding-bottom: 20px;">
-            <a-col :span="18">
+            <a-col :span="20">
               <a-input
                 v-model="formModel.question"
                 :placeholder="$t('evaluation.question.input')"
@@ -133,14 +139,14 @@
               >
               </a-input>
             </a-col>
-            <a-col :span="6">
-              <a-button style="margin-right: 20px;" @click="selectClick">
+            <a-col :span="4">
+              <a-button style="margin-right: 24px;" @click="selectClick">
                 <template #icon>
                   <icon-plus></icon-plus>
                 </template>
                 {{ $t('evaluation.question.button.fill') }}
               </a-button>
-              <a-button type="primary" @click="evaluateClick">
+              <a-button type="primary" @click="evaluateClick" :disabled="sendQuestionsDisabled">
                 <template #icon>
                   <icon-arrow-up></icon-arrow-up>
                 </template>
@@ -150,15 +156,15 @@
           </a-row>
           <a-row :gutter="16">
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%;" :disabled=false>
+              <a-button style="margin-right: 20px; width: 100%;" :disabled="newRoundButtonDisabled" @click="newRoundClick">
                 <template #icon>
-                  <icon-delete></icon-delete>
+                  <icon-dice></icon-dice>
                 </template>
-                {{ $t('evaluation.result.button.clear') }}
+                {{ $t('evaluation.result.button.newround') }}
               </a-button>
             </a-col>
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%" :disabled=false>
+              <a-button style="margin-right: 20px; width: 100%;" :disabled="regenerateButtonDisabled" @click="regenerateClick">
                 <template #icon>
                   <icon-loop></icon-loop>
                 </template>
@@ -166,7 +172,7 @@
               </a-button>
             </a-col>
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%" :disabled=false @click="adviseClick">
+              <a-button class="aaa" style="margin-right: 20px; width: 100%" :disabled="adviseButtonDisabled" @click="adviseClick">
                 <template #icon>
                   <icon-book></icon-book>
                 </template>
@@ -254,295 +260,353 @@
 </template>
 
 <script lang="ts" setup>
-  import {computed, ref, reactive, watch, nextTick, onMounted, getCurrentInstance} from 'vue';
-  import { useI18n } from 'vue-i18n';
-  import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
-  import useVisible from '@/hooks/visible';
-  import '@/assets/icondataset/iconfont.css'
-  import EvaluateRound, {SelectedModel, queryLLMevaluateList, QuestionAndAnswer} from "@/api/evaluate";
-  import * as module from "module";
+import {computed, ref, reactive, watch, nextTick, onMounted, getCurrentInstance} from 'vue';
+import { useI18n } from 'vue-i18n';
+import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
+import useVisible from '@/hooks/visible';
+import '@/assets/icondataset/iconfont.css'
+import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName, QuestionAndAnswer } from "@/api/evaluate";
+import * as module from "module";
 
-  const generateFormModel = () => {
-    return {
-      id: '',
-      questionType: '',
-      question: '',
-      advise: '', // 增加建议属性，方便表单验证
-    };
-  }
+const generateFormModel = () => {
+  return {
+    id: '',
+    questionType: '',
+    question: '',
+    advise: '', // 增加建议属性，方便表单验证
+  };
+}
 
-  const formModel = ref(generateFormModel());
-  const { t } = useI18n();
-  const visible = ref(false);
-  const selectVisible = ref(false);
-  const evaluateButtons = ref(false);
-  const isOkButtonDisabled = ref(false); // 反馈建议的ok按钮是否禁用属性,false表示没有禁用
-  const { proxy } = getCurrentInstance();
-  const SelectedModelInfo = ref<SelectedModel[]>();
-  SelectedModelInfo.value = (await queryLLMevaluateList()).data;
-  const ModelSelectOptions = computed<SelectOptionData[]>(() => {
-    return (SelectedModelInfo.value || []).map((model) => ({
-      label: model.name,
-      value: model.id,
-    }));
-  });
-  const ModelAId = computed(() => formModel.value.id);
-  const round = reactive(new EvaluateRound(-1));
-  const QAModelA = ref();
-  const QAModelB = ref();
-  const selectedQuestions = ref('');
-  watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
-    selectedQuestions.value = '';
-  }); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
-  const lengthRules = [
-    {
-      required: false,
-      validator: (value: string, callback: (error?: string) => void) => {
-        return new Promise<void>((resolve) => {
-          window.setTimeout(() => {
-            value = formModel.value.advise;
-            isOkButtonDisabled.value = false;
-            if (value.length > 100) { // 防止用户用大量字符串恶意攻击系统
-              isOkButtonDisabled.value = true;
-              callback(proxy.$t('evaluation.advice.error.default'));
-            }
-            resolve();
-          }, 1);
-        });
+const formModel = ref(generateFormModel());
+const lastQuestion = ref(''); // 存储上一个问题，用来重新生成结果
+const { t } = useI18n();
+const visible = ref(false);
+const selectVisible = ref(false);
+const evaluateFourButtonsVisible = ref(false); // 四个评价按钮是否可见，false表示不可见
+const sendQuestionsDisabled = ref(true); // 发送按钮是否禁用，true表示禁用
+const adviseButtonDisabled = ref(true); // 建议按钮是否禁用，true表示禁用
+const modelAname = ref('');
+const modelBname = ref('');
+const newRoundButtonDisabled = ref(true);
+const regenerateButtonDisabled = ref(true);
+const isOkButtonDisabled = ref(false); // 反馈建议的ok按钮是否禁用属性,false表示没有禁用
+const { proxy } = getCurrentInstance();
+const SelectedModelInfo = ref<SelectedModel[]>();
+SelectedModelInfo.value = (await queryLLMevaluateList()).data;
+const ModelSelectOptions = computed<SelectOptionData[]>(() => {
+  return (SelectedModelInfo.value || []).map((model) => ({
+    label: model.name,
+    value: model.id,
+  }));
+});
+const ModelAId = computed(() => formModel.value.id);
+const round = reactive(new EvaluateRound(-1));
+const selectedQuestions = ref('');
+const QAModelA = ref();
+const QAModelB = ref();
+watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
+  selectedQuestions.value = '';
+}); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
+const lengthRules = [
+  {
+    required: false,
+    validator: (value: string, callback: (error?: string) => void) => {
+      return new Promise<void>((resolve) => {
+        window.setTimeout(() => {
+          value = formModel.value.advise;
+          isOkButtonDisabled.value = false;
+          if (value.length > 100) { // 防止用户用大量字符串恶意攻击系统
+            isOkButtonDisabled.value = true;
+            callback(proxy.$t('evaluation.advice.error.default'));
+          }
+          resolve();
+        }, 1);
+      });
+    },
+    trigger: ['input'],
+  },
+];
+const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
+  {
+    label: "机器翻译",
+    value: '机器翻译',
+  },
+  {
+    label: "数学运算",
+    value: '数学运算',
+  },
+]);
+const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
+  if (formModel.value.questionType === '机器翻译') { // 之后填充的问题设定在此框架上修改具体内容即可
+    return [
+      {
+        label: "Question A(translate)",
+        value: 'Question A(translate)',
       },
-      trigger: ['input'],
-    },
-  ];
-  const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: "机器翻译",
-      value: '机器翻译',
-    },
-    {
-      label: "数学运算",
-      value: '数学运算'
-    },
-  ]);
-  const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
-    if (formModel.value.questionType === '机器翻译') { // 之后填充的问题设定在此框架上修改具体内容即可
-      return [
-        {
-          label: "Question A(translate)",
-          value: 'Question A(translate)',
-        },
-        {
-          label: "Question D(translate)",
-          value: 'Question D(translate)',
-        },
-      ];
-    }
-    if (formModel.value.questionType === '数学运算') {
-      return [
-        {
-          label: "Question B(evaluate)",
-          value: 'Question B(evaluate)',
-        },
-        {
-          label: "Question C(evaluate)",
-          value: 'Question C(evaluate)',
-        },
-      ];
-    }
-    return [];
-  });
+      {
+        label: "Question D(translate)",
+        value: 'Question D(translate)',
+      },
+    ];
+  }
+  if (formModel.value.questionType === '数学运算') {
+    return [
+      {
+        label: "Question B(evaluate)",
+        value: 'Question B(evaluate)',
+      },
+      {
+        label: "Question C(evaluate)",
+        value: 'Question C(evaluate)',
+      },
+    ];
+  }
+  return [];
+});
 
-  const scrollToBottom = () => {
+const scrollToBottom = () => {
     QAModelA.value.scrollTop = QAModelA.value.scrollHeight;
     QAModelB.value.scrollTop = QAModelB.value.scrollHeight;
   }
 
-  const confirmClick = () => {
-      round.modelA = Number(formModel.value.id);
-      round.getModelB();
-  };
-  const adviseClick = () => {
-    visible.value = true;
-    isOkButtonDisabled.value = false;
-  };
-  const selectClick = () => {
-    selectVisible.value = true;
-  };
-  const evaluateClick = () => {
-    if (!formModel.value.question || formModel.value.question.trim() === '')
-    {
-      window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
-    }
-    else {
-      round.QA.push(new QuestionAndAnswer(formModel.value.question, '', ''));
-      formModel.value.question = '';
-      round.getResponse()
-      nextTick(() => {
-        scrollToBottom();
-      });
-      evaluateButtons.value = true;
-    }
-  };
-  const handleSubmit = () => {
-    formModel.value.advise = '';
-    // formModel.value.question = adviseText.value;
-  };
-  const handleCancel = () => {
-    visible.value = false;
-    formModel.value.advise = '';
-  };
-
-  const handleSelect = () => {
-    formModel.value.question = selectedQuestions.value; // 填充问题对话框确定按钮事件的绑定
-    formModel.value.questionType = '';
-    selectedQuestions.value = '';
-  };
-
-  const handleCancelSelect = () => {
-
-  };
-  const aBetterClick = () => {
-    if (round?.modelA) {
-      round.result = 1;
-      // formModel.value.question = round.value.result.toString();
-      evaluateButtons.value = false;
-    }
+const confirmClick = () => {
+    round.modelA = Number(formModel.value.id);
+    round.getModelB();
+    // formModel.value.question = round.value.modelB.toString(); // 检验是否正确调用getModelB()
+    sendQuestionsDisabled.value = false; // 解除send按钮禁用
+    
+};
+const adviseClick = () => {
+  visible.value = true;
+  isOkButtonDisabled.value = false;
+};
+const selectClick = () => {
+  selectVisible.value = true;
+};
+const evaluateClick = () => {
+  if (!formModel.value.question || formModel.value.question.trim() === '')
+  {
+    window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
+    // return;
   }
-
-  const bBetterClick = () => {
-    if (round?.modelA) {
-      round.result = -1;
-      // formModel.value.question = round.value.result.toString();
-      evaluateButtons.value = false;
-    }
-  }
-
-  const abGoodClick = () => {
-    if (round?.modelA) {
-      round.result = 0;
-      // formModel.value.question = round.value.result.toString();
-      evaluateButtons.value = false;
-    }
-  }
-
-  const abBadClick = () => {
-    if (round?.modelA) {
-      round.result = 0;
-      // formModel.value.question = round.value.result.toString();
-      evaluateButtons.value = false;
-    }
-  }
-
-  watch(round.QA, (newValue, oldValue) => {
-    setTimeout(() => {
+  else {
+    round.QA.push(new QuestionAndAnswer(formModel.value.question, '...', '...'));
+    lastQuestion.value = formModel.value.question;
+    formModel.value.question = '';
+    round.getResponse()
+    nextTick(() => {
       scrollToBottom();
-    }, 500);
+    });
+    evaluateFourButtonsVisible.value = true;
+  }
+  // formModel.value.question = '';
+  newRoundButtonDisabled.value = false;
+  regenerateButtonDisabled.value = false;
+  adviseButtonDisabled.value = false;
+};
+const handleSubmit = () => {
+  formModel.value.advise = '';
+  adviseButtonDisabled.value = true;
+  // formModel.value.question = adviseText.value;
+};
+const handleCancel = () => {
+  visible.value = false;
+  formModel.value.advise = '';
+};
+
+const handleSelect = () => {
+  formModel.value.question = selectedQuestions.value; // 填充问题对话框确定按钮事件的绑定
+  formModel.value.questionType = '';
+  selectedQuestions.value = '';
+};
+
+const handleCancelSelect = () => {
+  formModel.value.question = '';
+  formModel.value.questionType = '';
+};
+const aBetterClick = async () => { // 前面的getmodelB调用后没有及时更新可能也是没有在调用时加await async?
+  if (round.modelA) {
+    round.result = 1;
+    // formModel.value.question = ABresult.value.result.toString();
+    evaluateFourButtonsVisible.value = false;
+    let tempName = await getLLMName(round.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.modelB.toString());
+    modelBname.value = tempName;
+    sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
+  }
+}
+
+const bBetterClick = async () => {
+  if (round.modelA) {
+    round.result = -1;
+    // formModel.value.question = ABresult.value.result.toString();
+    evaluateFourButtonsVisible.value = false;
+    let tempName = await getLLMName(round.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.modelB.toString());
+    modelBname.value = tempName;
+    sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
+  }
+}
+
+const abGoodClick = async () => {
+  if (round.modelA) {
+    round.result = 0;
+    // formModel.value.question = ABresult.value.result.toString();
+    evaluateFourButtonsVisible.value = false;
+    let tempName = await getLLMName(round.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.modelB.toString());
+    modelBname.value = tempName;
+    sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
+  }
+}
+const abBadClick = async () => {
+  if (round.modelA) {
+    round.result = 0;
+    // formModel.value.question = ABresult.value.result.toString();
+    evaluateFourButtonsVisible.value = false;
+    let tempName = await getLLMName(round.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.modelB.toString());
+    modelBname.value = tempName;
+    sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
+  }
+}
+const newRoundClick = async () => {
+  round.QA = [] as QuestionAndAnswer[];
+  round.modelA = -1;
+  round.modelB = -1;
+  modelAname.value = '';
+  modelBname.value = '';
+
+  formModel.value.id = '';
+
+  sendQuestionsDisabled.value = true;
+  adviseButtonDisabled.value = true;
+  isOkButtonDisabled.value = true;
+  newRoundButtonDisabled.value = true;
+  regenerateButtonDisabled.value = true;
+  evaluateFourButtonsVisible.value = false;
+
+}
+const regenerateClick = async () => {
+  round.QA.pop();
+  round.QA.push(new QuestionAndAnswer(lastQuestion.value, '...', '...'));
+  round.getResponse();
+  nextTick(() => {
+    scrollToBottom();
   });
+}
 </script>
 
 <style scoped lang="less">
-  .container {
-    padding: 0 20px 20px 20px;
+.container {
+  padding: 0 20px 20px 20px;
 
-    :deep(.arco-list-content) {
-      overflow-x: hidden;
-    }
-
-    :deep(.arco-card-meta-title) {
-      font-size: 14px;
-    }
+  :deep(.arco-list-content) {
+    overflow-x: hidden;
   }
 
-  :deep(.arco-list-col) {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-
-  :deep(.arco-list-item) {
-    width: 33%;
-  }
-
-  :deep(.block-title) {
-    margin: 0 0 12px 0;
+  :deep(.arco-card-meta-title) {
     font-size: 14px;
   }
+}
 
-  :deep(.list-wrap) {
+:deep(.arco-list-col) {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 
-    // min-height: 140px;
-    .list-row {
-      align-items: stretch;
+:deep(.arco-list-item) {
+  width: 33%;
+}
 
-      .list-col {
-        margin-bottom: 16px;
+:deep(.block-title) {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+}
+
+:deep(.list-wrap) {
+
+  // min-height: 140px;
+  .list-row {
+    align-items: stretch;
+
+    .list-col {
+      margin-bottom: 16px;
+    }
+  }
+
+  :deep(.arco-space) {
+    width: 100%;
+
+    .arco-space-item {
+      &:last-child {
+        flex: 1;
       }
     }
-
-    :deep(.arco-space) {
-      width: 100%;
-
-      .arco-space-item {
-        &:last-child {
-          flex: 1;
-        }
-      }
-    }
   }
-
-  .custom-title {
-    font-size: 18px;
-  }
-
-  .text-box {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    height: 500px;
-    padding-bottom: 2%;
-  }
-
-  .QAShower
+}
+.custom-title {
+  font-size: 18px;
+}
+.text-box {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  height: 500px;
+  padding-bottom: 2%;
+}
+.QAShower
   {
     width: 100%;
   }
 
-  .box-header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-bottom: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    border-radius: 10px 0 10px 0;
-    width: 100px;
-    height: 30px;
-  }
+.box-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-radius: 10px 0 10px 0;
+  width: 100px;
+  height: 30px;
+}
 
-  .QA {
-    height: 450px;
-    overflow: auto;
-  }
+.QA {
+  height: 450px;
+  overflow: auto;
+}
 
-  .added-div {
-    width: 100%;
-  }
+.added-div {
+  width: 100%;
+}
 
-  .userQuestion {
-    background-color: #fff7ed;
-    margin-left: 7%;
-    padding: 15px;
-    width: 91%;
-    border: 1px solid #fee6ca;
-    border-radius: 20px 20px 0 20px;
-    font-size: 20px;
-  }
+.userQuestion {
+  background-color: #fff7ed;
+  margin-left: 7%;
+  padding: 15px;
+  width: 91%;
+  border: 1px solid #fee6ca;
+  border-radius: 20px 20px 0 20px;
+  font-size: 20px;
+}
 
-  .modelResponse {
-    background-color: #f9fafb;
-    margin-left: 2%;
-    padding: 15px;
-    width: 91%;
-    border: 1px solid #e5e7eb;
-    border-radius: 20px 20px 20px 0;
-    font-size: 20px;
-  }
+.modelResponse {
+  background-color: #f9fafb;
+  margin-left: 2%;
+  padding: 15px;
+  width: 91%;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px 20px 20px 0;
+  font-size: 20px;
+}
+
 </style>
