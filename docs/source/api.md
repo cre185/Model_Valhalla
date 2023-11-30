@@ -159,7 +159,7 @@ status=200
 {
     "message": "ok",
     "llms": [
-        "llm信息等",
+        # 详见testing部分的llm_list接口
         ...
     ]
 },
@@ -287,7 +287,7 @@ status=400
     "username": "用户名",
     "password": "********",
     "mobile": "手机号",
-    ...(略)
+    ...
 }, 
 status=200
 ```
@@ -388,16 +388,10 @@ status=400
 **请求参数**：  
 ```python
 PUT={
-    "username": "用户名",
-    "password": "密码",
-    "mobile": "手机号",
-    #"email": "邮箱"
+    # 见retrieve接口的返回结果
 }
 PATCH={
-    #"username": "用户名",
-    #"password": "密码",
-    #"mobile": "手机号",
-    #"email": "邮箱"
+    # 同上但均为可选参数
 }
 ```
 **额外需求**：jwt  
@@ -406,10 +400,8 @@ PATCH={
 ```python
 {
     "message": "ok"
-    "username": "用户名",
-    "password": "********",
-    "mobile": "手机号",
-    # ...(略)
+    # 见retrieve接口的返回结果
+    ...
 }, 
 status=200
 ```
@@ -497,8 +489,12 @@ status=401
 ```python
 {
     "name": "数据集名称",
-    #"description": "数据集描述",
-    #"subjective": "是否为主观题"
+    # "description": "数据集描述",
+    # "subjective": "是否为主观题"
+    # "content_size": "数据集大小",
+    # "author": "作者",
+    # "data_file": "数据集文件",
+    # "add_time": "添加时间(未格式化)"
 }
 ```
 **额外需求**：jwt  
@@ -544,9 +540,7 @@ status=400
     "message": "ok",
     "data": [
         {
-            "id": "数据集id",
-            "name": "数据集名称",
-            "description": "数据集描述",
+            # 见create接口的请求参数
             ...
         },
         ...
@@ -563,9 +557,7 @@ status=200
 * 正常返回  
 ```python
 {
-    "message": "ok",
-    "name": "数据集名称",
-    "description": "数据集描述",
+    # 见create接口的请求参数  
     ...
 },
 status=200
@@ -581,14 +573,10 @@ status=404
 **请求参数**：  
 ```python
 PUT={
-    "name": "数据集名称",
-    #"description": "数据集描述",
-    #"subjective": "是否为主观题"
+    # 见create接口的请求参数
 }
 PATCH={
-    #"name": "数据集名称",
-    #"description": "数据集描述",
-    #"subjective": "是否为主观题"
+    # 同上但均为可选参数
 }
 ```
 **额外需求**：admin_required  
@@ -972,15 +960,17 @@ status=400
 ```python
 {
     "name": "模型名称",
-    #"api_url": "api地址",
-    #"api_headers": "api请求头",
-    #"api_data": "api请求体",
-    #"api_RPM": "api请求频率",
-    #"description": "模型描述",
-    #"official_website": "官方网站",
-    #"document_name": "文档名称",
-    #"document_website": "文档地址",
-    #"license": "认证"
+    # "api_url": "api调用url",
+    # "model_name": "模型名称",
+    # "api_RPM": "api请求频率",
+    # "official_website": "官方网站",
+    # "description": "模型描述",
+    # "document_name": "文档名称",
+    # "document_website": "文档地址",
+    # "license": "认证",
+    # "add_time": "添加时间(未格式化)"
+    # "elo_credit": "ELO分数",
+    # "released_time": "发布时间"
 }
 ```
 **额外需求**：jwt  
@@ -1053,9 +1043,7 @@ status=400
     "message": "ok",
     "data": [
         {
-            "id": "模型id",
-            "name": "模型名称",
-            "api_url": "api地址",
+            # 见create接口的传入参数
             ...
         },
         ...
@@ -1073,17 +1061,7 @@ status=200
 ```python
 {
     "message": "ok",
-    "name": "模型名称",
-    "api_url": "api调用url",
-    "model_name": "模型名称",
-    "api_RPM": "api请求频率",
-    "official_website": "官方网站",
-    "description": "模型描述",
-    "document_name": "文档名称",
-    "document_website": "文档地址",
-    "license": "认证",
-    "add_time": "添加时间(未格式化)"
-    "elo_credit": "ELO分数"
+    # 其余见create接口的传入参数
 },
 status=200
 ```
@@ -1099,7 +1077,7 @@ status=404
 ```python
 {
     "llmId": "模型id",
-    "prompt": "生成的prompt"
+    "prompt": "用于生成的prompt"
 }
 ```
 **额外需求**：login_required  
@@ -1139,28 +1117,10 @@ status=200
 **请求参数**：  
 ```python
 PUT={
-    "name": "模型名称",
-    #"api_url": "api地址",
-    #"api_headers": "api请求头",
-    #"api_data": "api请求体",
-    #"api_RPM": "api请求频率",
-    #"description": "模型描述",
-    #"official_website": "官方网站",
-    #"document_name": "文档名称",
-    #"document_website": "文档地址",
-    #"license": "认证"
+    # 见create接口的请求参数  
 }
 PATCH={
-    #"name": "模型名称",
-    #"api_url": "api地址",
-    #"api_headers": "api请求头",
-    #"api_data": "api请求体",
-    #"api_RPM": "api请求频率",
-    #"description": "模型描述",
-    #"official_website": "官方网站",
-    #"document_name": "文档名称",
-    #"document_website": "文档地址",
-    #"license": "认证"
+    # 同上但均为可选参数
 }
 ```
 **额外需求**：admin_required  
