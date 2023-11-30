@@ -28,7 +28,7 @@ export async function getLLMName(modelID: string)
     return modelName;
 }
 
-export class QuestionAndAnswer {
+class QuestionAndAnswer {
     question:string
     answerA:string
     answerB:string
