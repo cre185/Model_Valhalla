@@ -3,80 +3,110 @@
     <Breadcrumb :items="['menu.evaluate', 'menu.evaluate.adversarialEvaluation']" />
     <a-row :gutter="20" align="stretch">
       <a-col :span="24">
-        <a-card class="general-card">
+        <a-card class="general-card" >
           <template #title>
             <div class="custom-title"><b>{{ $t('evaluation.rules.title') }}</b></div>
           </template>
-          <a-timeline>
-            <a-timeline-item>{{ $t('evaluation.rules.one') }}</a-timeline-item>
-            <a-timeline-item>{{ $t('evaluation.rules.two') }}</a-timeline-item>
-            <a-timeline-item>{{ $t('evaluation.rules.three') }}</a-timeline-item>
-            <a-timeline-item>{{ $t('evaluation.rules.four') }}</a-timeline-item>
-          </a-timeline>
+          <a-space direction="vertical" size="large">
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.rules.one') }}
+                </h3>
+              </div>
+            </div>
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.rules.two') }}
+                </h3>
+              </div>
+            </div>
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.rules.three') }}
+                </h3>
+              </div>
+            </div>
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.rules.four') }}
+                </h3>
+              </div>
+            </div>
+          </a-space>
         </a-card>
-        <a-card :bordered=false>
-          <template #title>
-            <div class="custom-title"><b>{{ $t('evaluation.select.models') }}</b></div>
-          </template>
-          <a-row :gutter="16">
-            <a-col :span="18">
-              <a-form :model="formModel" :label-col-props="{ span: 4 }" :wrapper-col-props="{ span: 8 }"
-                      label-align="left">
-                <a-form-item
-                    field="filterType"
-                    :label="$t('evaluation.select.models.title')"
-                    :label-col-props="{ span: 4 }"
-                    :wrapper-col-props="{ span: 10 }"
-                >
-                  <a-select v-model="formModel.id" :options="ModelSelectOptions"
-                            :placeholder="$t('searchTable.form.selectDefault')" />
-                </a-form-item>
-              </a-form>
-            </a-col>
-            <a-col :span="6">
-              <a-button type="primary" style="margin-right: 20px;" @click="confirmClick">
-                <template #icon>
-                  <icon-check></icon-check>
-                </template>
-                {{ $t('evaluation.select.models.confirm') }}
-              </a-button>
-            </a-col>
-          </a-row>
-        </a-card>
+        <br>
         <a-card class="resultShow">
+          <div id="selectModel">
+            <a-select v-model="formModel.id" :options="ModelSelectOptions"
+                      :placeholder="$t('evaluation.select.models')" />
+            <a-button type="primary" style="margin-right: 20px;" @click="confirmClick" :disabled="confirmButtonDisabled">
+              <template #icon>
+                <icon-check></icon-check>
+              </template>
+              {{ $t('evaluation.select.models.confirm') }}
+            </a-button>
+          </div>
           <a-row :gutter="16">
             <a-col :span="12">
               <div class="text-box">
-                <a-space direction="vertical" :size="10">
+                <a-space direction="vertical" :size="10" class="QAShower">
                   <div class="box-header">
-                    <icon-message style="margin-right: 8px; font-size: 20px;"/>
-                    <span style="font-size: 18px;">Model A</span>
+                    <a-space>
+                      <icon-message/>
+                      <span style="font-size: 13px;">Model A</span>
+                    </a-space>
                   </div>
-                  <div class="box-textA">
-                    这是文本框A
+                  <div class="QA" ref="QAModelA">
+                    <a-space direction="vertical" :size="15" v-for="(divItem, index) in round.QA" :key="index" class="added-div">
+                      <div class="userQuestion">
+                        {{ divItem.question }}
+                      </div>
+                      <div class="modelResponse">
+                        {{ divItem.answerA }}
+                      </div>
+                    </a-space>
                   </div>
                 </a-space>
+              </div>
+              <div>
+                {{ modelAname }}
               </div>
             </a-col>
             <a-col :span="12">
               <div class="text-box">
-                <a-space direction="vertical" :size="10">
+                <a-space direction="vertical" :size="10" class="QAShower">
                   <div class="box-header">
-                    <icon-message style="margin-right: 8px; font-size: 20px;"/>
-                    <span style="font-size: 18px;">Model B</span>
+                    <a-space>
+                      <icon-message/>
+                      <span style="font-size: 13px;">Model B</span>
+                    </a-space>
                   </div>
-                  <div class="box-textB">
-                    这是文本框B
+                  <div class="QA" ref="QAModelB">
+                    <a-space direction="vertical" :size="15" v-for="(divItem, index) in round.QA" :key="index" class="added-div">
+                      <div class="userQuestion">
+                        {{ divItem.question }}
+                      </div>
+                      <div class="modelResponse">
+                        {{ divItem.answerB }}
+                      </div>
+                    </a-space>
                   </div>
                 </a-space>
+              </div>
+              <div>
+                {{ modelBname }}
               </div>
             </a-col>
           </a-row>
         </a-card>
         <a-card class="questionInput">
-          <a-row :gutter="16" v-if="evaluateButtons" style="padding-bottom: 20px;">
+          <a-row :gutter="16" v-if="evaluateFourButtonsVisible" style="padding-bottom: 20px;">
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button id="aBetter" @click="aBetterClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-hand-left1"></span>
                 </template>
@@ -84,7 +114,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button id="bBetter" @click="bBetterClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-hand-right1"></span>
                 </template>
@@ -92,7 +122,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button id="abGood" @click="abGoodClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben11"></span>
                 </template>
@@ -100,7 +130,7 @@
               </a-button>
             </a-col>
             <a-col :span="6">
-              <a-button style="margin-right: 20px; width: 100%">
+              <a-button id="abBad" @click="abBadClick" style="margin-right: 20px; width: 100%" :disabled="evaluateFourButtonsDisabled">
                 <template #icon>
                   <span class="iconfont icon-Outline_fuben24"></span>
                 </template>
@@ -109,22 +139,23 @@
             </a-col>
           </a-row>
           <a-row :gutter="16" style="padding-bottom: 20px;">
-            <a-col :span="18">
+            <a-col :span="20">
               <a-input
                 v-model="formModel.question"
                 :placeholder="$t('evaluation.question.input')"
                 allow-clear
+                @press-enter="evaluateClick"
               >
               </a-input>
             </a-col>
-            <a-col :span="6">
-              <a-button style="margin-right: 20px;" @click="selectClick">
+            <a-col :span="4">
+              <a-button style="margin-right: 24px;" @click="selectClick">
                 <template #icon>
                   <icon-plus></icon-plus>
                 </template>
                 {{ $t('evaluation.question.button.fill') }}
               </a-button>
-              <a-button type="primary" @click="evaluateClick">
+              <a-button type="primary" @click="evaluateClick" :disabled="sendQuestionsDisabled">
                 <template #icon>
                   <icon-arrow-up></icon-arrow-up>
                 </template>
@@ -134,15 +165,15 @@
           </a-row>
           <a-row :gutter="16">
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%;" :disabled=false>
+              <a-button style="margin-right: 20px; width: 100%;" :disabled="newRoundButtonDisabled" @click="newRoundClick">
                 <template #icon>
-                  <icon-delete></icon-delete>
+                  <icon-dice></icon-dice>
                 </template>
-                {{ $t('evaluation.result.button.clear') }}
+                {{ $t('evaluation.result.button.newround') }}
               </a-button>
             </a-col>
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%" :disabled=false>
+              <a-button style="margin-right: 20px; width: 100%;" :disabled="regenerateButtonDisabled" @click="regenerateClick">
                 <template #icon>
                   <icon-loop></icon-loop>
                 </template>
@@ -150,7 +181,7 @@
               </a-button>
             </a-col>
             <a-col :span="8">
-              <a-button style="margin-right: 20px; width: 100%" :disabled=false @click="adviseClick">
+              <a-button class="aaa" style="margin-right: 20px; width: 100%" :disabled="adviseButtonDisabled" @click="adviseClick">
                 <template #icon>
                   <icon-book></icon-book>
                 </template>
@@ -202,18 +233,34 @@
             @ok="handleSubmit"
             :cancel-text="$t('evaluation.advise.button.cancel')"
             @cancel="handleCancel"
+            :ok-button-props="{ disabled: isOkButtonDisabled }"
         >
           <template #title>
             <span style="color:dodgerblue">{{ $t('evaluation.advise.title') }}</span>
           </template>
           <a-row :gutter="-8">
-            <a-col :span="5">
-              <b><span>{{ $t('evaluation.advise.subtitle') }}</span></b>
-            </a-col>
-            <a-col :span="19">
-              <a-textarea class="adviseInput" display:center :placeholder="$t('evaluation.advise.default')" allow-clear :style="{height: '240px'}">
+          <a-form
+            :model="formModel"
+            label-align="right"
+          >
+            <a-form-item
+              field="advise"
+              :label="$t('evaluation.advise.subtitle')"
+              :rules="lengthRules"
+              :label-col-props="{ span: 5 }"
+              :wrapper-col-props="{ span: 19 }"
+              >
+              <a-textarea
+                class="adviseInput"
+                v-model="formModel.advise"
+                display:center
+                :placeholder="$t('evaluation.advise.default')"
+                allow-clear
+                :style="{height: '220px'}"
+              >
               </a-textarea>
-            </a-col>
+            </a-form-item>
+          </a-form>
           </a-row>
         </a-modal>
       </template>
@@ -222,27 +269,40 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, ref, reactive, watch, nextTick, onMounted} from 'vue';
+import {computed, ref, reactive, watch, nextTick, onMounted, getCurrentInstance} from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import useVisible from '@/hooks/visible';
 import '@/assets/icondataset/iconfont.css'
-import EvaluateRound, { SelectedModel, queryLLMevaluateList } from "@/api/evaluate";
+import EvaluateRound, { SelectedModel, queryLLMevaluateList, getLLMName, QuestionAndAnswer} from "@/api/evaluate";
 import * as module from "module";
+import {getToken} from "@/utils/auth";
 
 const generateFormModel = () => {
   return {
     id: '',
     questionType: '',
     question: '',
+    advise: '', // 增加建议属性，方便表单验证
   };
 }
 
 const formModel = ref(generateFormModel());
+const lastQuestion = ref(''); // 存储上一个问题，用来重新生成结果
 const { t } = useI18n();
 const visible = ref(false);
 const selectVisible = ref(false);
-const evaluateButtons = ref(false);
+const evaluateFourButtonsVisible = ref(false); // 四个评价按钮是否可见，false表示不可见
+const evaluateFourButtonsDisabled = ref(false); // 四个按钮是否可选
+const sendQuestionsDisabled = ref(true); // 发送按钮是否禁用，true表示禁用
+const adviseButtonDisabled = ref(true); // 建议按钮是否禁用，true表示禁用
+const confirmButtonDisabled = ref(false);
+const modelAname = ref('');
+const modelBname = ref('');
+const newRoundButtonDisabled = ref(true);
+const regenerateButtonDisabled = ref(true);
+const isOkButtonDisabled = ref(false); // 反馈建议的ok按钮是否禁用属性,false表示没有禁用
+const { proxy } = getCurrentInstance();
 const SelectedModelInfo = ref<SelectedModel[]>();
 SelectedModelInfo.value = (await queryLLMevaluateList()).data;
 const ModelSelectOptions = computed<SelectOptionData[]>(() => {
@@ -252,12 +312,33 @@ const ModelSelectOptions = computed<SelectOptionData[]>(() => {
   }));
 });
 const ModelAId = computed(() => formModel.value.id);
-const ABresult = ref<EvaluateRound>();
+const round = reactive(new EvaluateRound(-1));
 const selectedQuestions = ref('');
+const QAModelA = ref();
+const QAModelB = ref();
+
 watch(() => formModel.value.questionType, (newQuestionType, oldQuestionType) => {
   selectedQuestions.value = '';
 }); // 问题种类改变时，问题选项会清零，否则上次选择的内容会遗留
-
+const lengthRules = [
+  {
+    required: false,
+    validator: (value: string, callback: (error?: string) => void) => {
+      return new Promise<void>((resolve) => {
+        window.setTimeout(() => {
+          value = formModel.value.advise;
+          isOkButtonDisabled.value = false;
+          if (value.length > 100) { // 防止用户用大量字符串恶意攻击系统
+            isOkButtonDisabled.value = true;
+            callback(proxy.$t('evaluation.advice.error.default'));
+          }
+          resolve();
+        }, 1);
+      });
+    },
+    trigger: ['input'],
+  },
+];
 const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   {
     label: "机器翻译",
@@ -265,55 +346,93 @@ const QuestionTypeSelectOptions = computed<SelectOptionData[]>(() => [
   },
   {
     label: "数学运算",
-    value: '数学运算'
+    value: '数学运算',
   },
 ]);
 const QuestionSelectOptions = computed<SelectOptionData[]>(() => {
   if (formModel.value.questionType === '机器翻译') { // 之后填充的问题设定在此框架上修改具体内容即可
     return [
       {
-        label: "Question A(translate)",
-        value: 'Question A(translate)',
+        label: "汉译日：大家早上好",
+        value: '请问“大家早上好”用日语怎么说',
       },
       {
-        label: "Question D(translate)",
-        value: 'Question D(translate)',
+        label: "英译汉：I have never had such a fantastic start",
+        value: '请将下面这句话翻译成中文: I have never had such a fantastic start',
+      },
+      {
+        label: "汉译英：今天早上你吃了什么",
+        value: '请将下面这句话翻译成英文: 今天早上你吃了什么'
       },
     ];
   }
   if (formModel.value.questionType === '数学运算') {
     return [
       {
-        label: "Question B(evaluate)",
-        value: 'Question B(evaluate)',
+        label: "114+514等于多少",
+        value: '114+514等于多少',
       },
       {
-        label: "Question C(evaluate)",
-        value: 'Question C(evaluate)',
+        label: "sin(x)的导数是多少",
+        value: 'sin(x)的导数是多少',
+      },
+      {
+        label: "7整除36，余数是多少",
+        value: '7整除36，余数是多少',
       },
     ];
   }
   return [];
 });
-const confirmClick = () => {
-    ABresult.value = new EvaluateRound(-1);
-    ABresult.value.modelA = Number(formModel.value.id);
-    ABresult.value.getModelB();
-    formModel.value.question = ABresult.value.modelB.toString(); // 检验是否正确调用getModelB()
+
+const scrollToBottom = () => {
+    QAModelA.value.scrollTop = QAModelA.value.scrollHeight;
+    QAModelB.value.scrollTop = QAModelB.value.scrollHeight;
+  }
+
+const confirmClick = async () => {
+    round.modelA = Number(formModel.value.id);
+    round.QA = [] as QuestionAndAnswer[];
+    await round.getModelB();
+    sendQuestionsDisabled.value = false; // 解除send按钮禁用
 };
 const adviseClick = () => {
   visible.value = true;
+  isOkButtonDisabled.value = false;
 };
 const selectClick = () => {
   selectVisible.value = true;
 };
-const evaluateClick = () => {
-  evaluateButtons.value = true;
+const evaluateClick = async () => {
+  if (!formModel.value.question || formModel.value.question.trim() === '')
+  {
+    window.alert(proxy.$t('evaluation.question.button.emptyMsg'));
+  } else {
+    sendQuestionsDisabled.value = true;
+    round.QA.push(new QuestionAndAnswer(formModel.value.question, '...', '...'));
+    await nextTick(() => {
+      scrollToBottom();
+    });
+    await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value, sendQuestionsDisabled); // 多传入了一个对象，直接传值不能奏效
+    evaluateFourButtonsVisible.value = true;
+    // sendQuestionsDisabled.value = false;
+    lastQuestion.value = formModel.value.question;
+    formModel.value.question = '';
+
+  }
+  confirmButtonDisabled.value = true;
+  newRoundButtonDisabled.value = false;
+  regenerateButtonDisabled.value = false;
+  adviseButtonDisabled.value = false;
 };
-const handleSubmit = () => {
+const handleSubmit = async () => {
+  await round.sendAdvise(getToken()!, formModel.value.advise);
+  formModel.value.advise = '';
+  adviseButtonDisabled.value = true;
 };
 const handleCancel = () => {
   visible.value = false;
+  formModel.value.advise = '';
 };
 
 const handleSelect = () => {
@@ -323,14 +442,110 @@ const handleSelect = () => {
 };
 
 const handleCancelSelect = () => {
-
+  formModel.value.question = '';
+  formModel.value.questionType = '';
 };
-</script>
+const aBetterClick = async () => { // 前面的getmodelB调用后没有及时更新可能也是没有在调用时加await async?
+  if (round.modelA) {
+    round.result = 1;
+    let tempName = await getLLMName(round.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.modelB.toString());
+    modelBname.value = tempName;
+    sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
+    evaluateFourButtonsDisabled.value = true;
+    const element = document.getElementById('aBetter');
 
-<script lang="ts">
-export default {
-  name: 'Card',
-};
+    if (element) {
+      element.style.backgroundColor = 'dodgerblue';
+    }
+    await round.updateEloResult();
+  }
+}
+
+const bBetterClick = async () => {
+  if (round.modelA) {
+    round.result = -1;
+    let tempName = await getLLMName(round.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.modelB.toString());
+    modelBname.value = tempName;
+    sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
+    evaluateFourButtonsDisabled.value = true;
+    const element = document.getElementById('bBetter');
+
+    if (element) {
+      element.style.backgroundColor = 'dodgerblue';
+    }
+    await round.updateEloResult();
+  }
+}
+
+const abGoodClick = async () => {
+  if (round.modelA) {
+    round.result = 0;
+    let tempName = await getLLMName(round.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.modelB.toString());
+    modelBname.value = tempName;
+    sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
+    evaluateFourButtonsDisabled.value = true;
+    const element = document.getElementById('abGood');
+
+    if (element) {
+      element.style.backgroundColor = 'dodgerblue';
+    }
+    await round.updateEloResult();
+  }
+}
+const abBadClick = async () => {
+  if (round.modelA) {
+    round.result = 0;
+    let tempName = await getLLMName(round.modelA.toString());
+    modelAname.value = tempName;
+    tempName = await getLLMName(round.modelB.toString());
+    modelBname.value = tempName;
+    sendQuestionsDisabled.value = true;
+    regenerateButtonDisabled.value = true;
+    evaluateFourButtonsDisabled.value = true;
+    const element = document.getElementById('abBad');
+
+    if (element) {
+      element.style.backgroundColor = 'dodgerblue';
+    }
+    await round.updateEloResult();
+  }
+}
+const newRoundClick = async () => {
+  round.QA = [] as QuestionAndAnswer[];
+  round.modelA = -1;
+  round.modelB = -1;
+  modelAname.value = '';
+  modelBname.value = '';
+
+  formModel.value.id = '';
+
+  sendQuestionsDisabled.value = true;
+  adviseButtonDisabled.value = true;
+  isOkButtonDisabled.value = true;
+  newRoundButtonDisabled.value = true;
+  regenerateButtonDisabled.value = true;
+  confirmButtonDisabled.value = false;
+  evaluateFourButtonsVisible.value = false;
+
+}
+const regenerateClick = async () => {
+  round.QA.pop();
+  round.QA.push(new QuestionAndAnswer(lastQuestion.value, '...', '...'));
+  await nextTick(() => {
+    scrollToBottom();
+  });
+  sendQuestionsDisabled.value = true;
+  await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value, sendQuestionsDisabled);
+}
 </script>
 
 <style scoped lang="less">
@@ -383,17 +598,93 @@ export default {
     }
   }
 }
+
 .custom-title {
-  font-size: 18px;
+  font-size: 27px;
 }
+
+  .boxTest {
+    height: 30px;
+  }
+
+  .boxTest::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 30px;
+    background: rgb(45, 92, 246);
+  }
+
+  .contentTest {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-left: 20px;
+  }
+
 .text-box {
   border: 1px solid #ccc;
-  padding: 10px;
-  height: 300px;
+  border-radius: 10px;
+  height: 500px;
+  padding-bottom: 2%;
 }
+
+  #selectModel {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    width: 45%;
+    height: 50px;
+    margin-bottom: 20px;
+  }
+
+.QAShower
+  {
+    width: 100%;
+  }
+
 .box-header {
   display: flex;
+  justify-content: center;
   align-items: center;
+  border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-radius: 10px 0 10px 0;
+  width: 100px;
+  height: 30px;
+}
+
+.QA {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  height: 450px;
+  overflow: auto;
+}
+
+.added-div {
+  width: 100%;
+}
+
+.userQuestion {
+  background-color: #fff7ed;
+  margin-left: 7%;
+  padding: 15px;
+  width: 91%;
+  border: 1px solid #fee6ca;
+  border-radius: 20px 20px 0 20px;
+  font-size: 20px;
+}
+
+.modelResponse {
+  background-color: #f9fafb;
+  margin-left: 2%;
+  padding: 15px;
+  width: 91%;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px 20px 20px 0;
+  font-size: 20px;
 }
 
 </style>
