@@ -62,7 +62,7 @@ class EvaluateRound {
         this.modelB = response.data.llmId;
     }
 
-    async getStreamResponse(jwt:string, RefA:any, RefB:any) {
+    async getStreamResponse(jwt:string, RefA:any, RefB:any, sendButtonStatus: any) {
         fetch(apiCat('/testing/stream_generate'), {
             method: 'POST',
           headers: {
@@ -111,6 +111,7 @@ class EvaluateRound {
                     return reader.read().then(({ done, value }) => {
                         if (done) {
                             RefB.scrollTop = RefB.scrollHeight;
+                            sendButtonStatus.value = false;
                             return;
                         }
                         target.QA[target.QA.length-1].answerB += new TextDecoder('utf-8').decode(value);
@@ -137,21 +138,20 @@ class EvaluateRound {
     }
 
     async sendAdvise(jwt:string, userAdvise:string)
-{
-    
-    fetch(apiCat('/user/create_message_to_admin'), {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: jwt,
-        },
-        body: JSON.stringify({
-            msg: userAdvise,
-            msg_type: 'advice',
-        }),
-    })
+    {
+        fetch(apiCat('/user/create_message_to_admin'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: jwt,
+            },
+            body: JSON.stringify({
+                msg: userAdvise,
+                msg_type: 'advice',
+            }),
+        })
     // return response;
-}
+    }
 }
 
 export default EvaluateRound;

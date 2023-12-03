@@ -413,11 +413,11 @@ const evaluateClick = async () => {
     await nextTick(() => {
       scrollToBottom();
     });
+    await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value, sendQuestionsDisabled); // 多传入了一个对象，直接传值不能奏效
+    evaluateFourButtonsVisible.value = true;
+    // sendQuestionsDisabled.value = false;
     lastQuestion.value = formModel.value.question;
     formModel.value.question = '';
-    await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value);
-      evaluateFourButtonsVisible.value = true;
-      sendQuestionsDisabled.value = false;
 
   }
   confirmButtonDisabled.value = true;
@@ -543,7 +543,8 @@ const regenerateClick = async () => {
   await nextTick(() => {
     scrollToBottom();
   });
-  await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value);
+  sendQuestionsDisabled.value = true;
+  await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value, sendQuestionsDisabled);
 }
 </script>
 
