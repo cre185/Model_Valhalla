@@ -12,16 +12,41 @@
       </a-space>
     </div>
 
-    <ul class="right-side">
+    <ul :key="update" class="right-side">
       <li v-if="isLogin()">
-        <a-space size="medium">
-          <span>欢迎回来，{{ userStore.username }}</span>
-          <a-avatar :size="32">
-            <img alt="用户头像" :src="userStore.avatar" class="userInfoPanel"/>
-          </a-avatar>
+        <a-space :size="16">
+          <span>{{ $t('navbar.welcome') }}{{ userStore.username }}</span>
+          <a-popover @mouseenter="resizeBigAvatar" @mouseleave="resizeSmallAvatar">
+            <a-avatar ref="myAvatar" id="userInfoPanelAvatar">
+              <img alt="用户头像" :src="userStore.avatar"/>
+            </a-avatar>
+            <template #content>
+              <a-space direction="vertical">
+                <a-button type="primary" class="hoverButton">
+                  <template #icon>
+                    <icon-user />
+                  </template>
+                  <template #default>{{ $t('menu.user.info') }}</template>
+                </a-button>
+                <a-button type="primary" class="hoverButton">
+                  <template #icon>
+                    <icon-settings />
+                  </template>
+                  <template #default>{{ $t('menu.user.setting') }}</template>
+                </a-button>
+              </a-space>
+              <a-divider margin="5px"/>
+              <a-button type="primary" class="hoverButton" @click="myLogout">
+                <template #icon>
+                  <icon-export />
+                </template>
+                <template #default>{{ $t('navbar.quit') }}</template>
+              </a-button>
+            </template>
+          </a-popover>
         </a-space>
       </li>
-      <li v-else @click="Login" class="userInfoPanel">
+      <li v-else @click="Login" id="userInfoPanel">
         <a-space size="medium">
           <span>您好，请先登录</span>
           <a-avatar :size="32" :style="{ backgroundColor: '#FFC72E' }">
@@ -34,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, inject } from 'vue';
+  import {computed, ref, inject, onMounted} from 'vue';
   import { Message } from '@arco-design/web-vue';
   import { useDark, useToggle, useFullscreen } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
@@ -42,15 +67,18 @@
   import useLocale from '@/hooks/locale';
   import useUser from '@/hooks/user';
   import { useRouter } from 'vue-router';
-  import {getToken, isLogin} from '@/utils/auth';
+  import { getToken, isLogin } from '@/utils/auth';
+  import {useI18n} from "vue-i18n";
 
   const router = useRouter();
+  const myAvatar = ref();
   const Login = () => {
     router.push({
       name: 'Login',
     });
   };
   const jwt = getToken();
+  const update = ref(false);
 
   const appStore = useAppStore();
   const userStore = useUserStore();
@@ -110,6 +138,25 @@
     Message.success(res as string);
   };
   const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
+
+  const resizeBigAvatar = () => {
+    myAvatar.value.$el.style.width = '64px';
+    myAvatar.value.$el.style.height = '64px';
+    myAvatar.value.$el.style.marginLeft = '16px';
+    myAvatar.value.$el.style.transform = 'translate(-10px, 10px)';
+  }
+
+  const resizeSmallAvatar = () => {
+    myAvatar.value.$el.style.width = '32px';
+    myAvatar.value.$el.style.height = '32px';
+    myAvatar.value.$el.style.marginLeft = '0px';
+    myAvatar.value.$el.style.transform = 'translate(0, 0)';
+  }
+
+  const myLogout = async () => {
+    await logout();
+    update.value = !update.value;
+  }
 </script>
 
 <style scoped lang="less">
@@ -163,8 +210,26 @@
     }
   }
 
-  .userInfoPanel {
+  #userInfoPanel {
     cursor: pointer;
+  }
+
+  #userInfoPanelAvatar {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+  }
+
+  .hoverButton {
+    background: white;
+    color: #6b6f76;
+  }
+
+  .hoverButton:hover {
+    background: #e3e5e7;
+    color: #6b6f76;
   }
 </style>
 
