@@ -597,9 +597,9 @@ const regenerateClick = async () => {
   }
 }
 
-.custom-title {
-  font-size: 27px;
-}
+  .custom-title {
+    font-size: 27px;
+  }
 
   .boxTest {
     height: 30px;
@@ -621,12 +621,12 @@ const regenerateClick = async () => {
     padding-left: 20px;
   }
 
-.text-box {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  height: 500px;
-  padding-bottom: 2%;
-}
+  .text-box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    height: 500px;
+    padding-bottom: 2%;
+  }
 
   #selectModel {
     display: flex;
