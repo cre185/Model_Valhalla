@@ -3,6 +3,7 @@ export default {
   'ranking.slogan1': '在这里找到最强大的模型',
   'ranking.slogan2': '抑或是为你的模型加冕',
   'ranking.llm.upload': '上传',
+  'ranking.llm.download': '下载',
   'ranking.llm.search.placeholder': '请输入您希望查看的模型名称',
   'rankings.llm.data.ranking': '综合排名',
   'rankings.llm.data.name': '模型名称',

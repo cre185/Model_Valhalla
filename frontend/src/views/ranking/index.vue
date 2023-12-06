@@ -73,7 +73,7 @@
                 <template #icon>
                   <icon-download />
                 </template>
-                {{ $t('searchTable.operation.download') }}
+                {{ $t('ranking.llm.download') }}
               </a-button >
               <a-tooltip :content="$t('searchTable.actions.refresh')">
                 <div class="action-icon" @click="fetchData"

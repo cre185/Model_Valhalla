@@ -3,6 +3,7 @@ export default {
   'ranking.slogan1': 'Find the most powerful llm here',
   'ranking.slogan2': 'Or crown your own model',
   'ranking.llm.upload': 'Upload',
+  'ranking.llm.download': 'Download',
   'ranking.llm.search.placeholder':
     "Please input the name of the llm you're willing to view",
   'rankings.llm.data.ranking': 'Overall Ranking',

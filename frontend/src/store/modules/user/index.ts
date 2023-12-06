@@ -87,13 +87,13 @@ const useUserStore = defineStore('user', {
       const appStore = useAppStore();
       this.resetInfo();
       clearToken();
-      removeRouteListener();
+      // removeRouteListener();
       appStore.clearServerMenu();
     },
     // Logout
     async logout() {
       try {
-        await userLogout();
+        // await userLogout();
       } finally {
         this.logoutCallBack();
       }

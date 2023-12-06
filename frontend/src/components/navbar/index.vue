@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-  import {computed, ref, inject, onMounted} from 'vue';
+import {computed, ref, inject, onMounted, nextTick} from 'vue';
   import { Message } from '@arco-design/web-vue';
   import { useDark, useToggle, useFullscreen } from '@vueuse/core';
   import { useAppStore, useUserStore } from '@/store';
