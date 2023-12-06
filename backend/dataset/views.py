@@ -107,3 +107,16 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
             data[i]['add_time'] = data[i]['add_time'].split('T')[0]
         return Response({'message': 'ok', 'data': data},
                         status=status.HTTP_200_OK)
+
+class downloadView(APIView):
+    def get(self, request, *args, **kwargs):
+        target = Dataset.objects.get(id=kwargs['id'])
+        if not target:
+            return Response({"message": "Invalid dataset id"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        file = target.data_file
+        response = Response(file)
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="{}"'.format(
+            target.name)
+        return response
