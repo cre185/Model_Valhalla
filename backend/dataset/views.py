@@ -24,6 +24,9 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
         data = Dataset.objects.get(id=headers.data['id'])
         for llm in testing.LLMs.objects.all():
             ranking.Credit.objects.create(LLM=llm, dataset=data, credit=None)
+            if data.subjective:
+                ranking.SubjectiveCredit.objects.create(
+                    LLM=llm, dataset=data, credit_list=[])
         return Response({"message": "ok",
                          "datasetId": headers.data['id']},
                         status=status.HTTP_201_CREATED)
