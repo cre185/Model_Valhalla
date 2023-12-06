@@ -107,6 +107,23 @@ class CreditModelTests(TestCase):
         changed_credit = Credit.objects.get(
             dataset_id=dataset_id2, LLM_id=llm_id2).credit
         self.assertEqual(changed_credit, 40)
+        # update again to test average credit
+        response = self.client.post(
+            '/ranking/update',
+            {
+                "datasetId": dataset_id2,
+                "llmId": llm_id2,
+                "credit": 70,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        changed_credit = Credit.objects.get(
+            dataset_id=dataset_id2, LLM_id=llm_id2).credit
+        self.assertEqual(changed_credit, 55)
         # update with invalid credit
         response = self.client.post(
             '/ranking/update',

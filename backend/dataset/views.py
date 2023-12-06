@@ -24,6 +24,9 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
         data = Dataset.objects.get(id=headers.data['id'])
         for llm in testing.LLMs.objects.all():
             ranking.Credit.objects.create(LLM=llm, dataset=data, credit=None)
+            if data.subjective:
+                ranking.SubjectiveCredit.objects.create(
+                    LLM=llm, dataset=data, credit_list=[])
         return Response({"message": "ok",
                          "datasetId": headers.data['id']},
                         status=status.HTTP_201_CREATED)
@@ -104,3 +107,18 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
             data[i]['add_time'] = data[i]['add_time'].split('T')[0]
         return Response({'message': 'ok', 'data': data},
                         status=status.HTTP_200_OK)
+
+class downloadView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            target = Dataset.objects.get(id=kwargs['id'])
+            file = target.data_file
+            response = Response(file)
+            response['Content-Type'] = 'application/octet-stream'
+            response['Content-Disposition'] = 'attachment;filename="{}"'.format(
+                target.name)
+            return response
+        except BaseException:
+            return Response({"message": "Invalid dataset id"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
