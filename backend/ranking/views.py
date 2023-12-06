@@ -29,15 +29,36 @@ class updateView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
         try:
             target = Credit.objects.get(dataset_id=dataset_id, LLM_id=llm_id)
-            serializer = CreditSerializer(target, data=data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response({"message": "ok"}, status=status.HTTP_200_OK)
-            return Response({"message": "Invalid credit"},
+            d = dataset.Dataset.objects.get(id=dataset_id)
+            if not d.subjective:
+                serializer = CreditSerializer(target, data=data, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response({"message": "ok"}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"message": "Invalid credit"},
                             status=status.HTTP_400_BAD_REQUEST)
+            else:
+                sub_credit = SubjectiveCredit.objects.get(
+                    dataset_id=dataset_id, LLM_id=llm_id)
+                credit_list = sub_credit.credit_list
+                try:
+                    int(data['credit'])
+                except BaseException:
+                    return Response({"message": "Invalid credit"},
+                            status=status.HTTP_400_BAD_REQUEST)
+                credit_list.append(int(data['credit']))
+                sub_credit.credit_list = credit_list
+                sub_credit.save()
+                target.credit = sum(credit_list) / len(credit_list)
+                target.save()
+                return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except BaseException:
             return Response({"message": "Invalid datasetId or llmId"},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+#
 
 
 class listView(mixins.ListModelMixin, generics.GenericAPIView):
