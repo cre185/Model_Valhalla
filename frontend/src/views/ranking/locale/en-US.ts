@@ -77,4 +77,7 @@ export default {
   'ranking.adversarial.detail.question': 'Test Question',
   'ranking.adversarial.detail.reply.this': 'Reply from this Model',
   'ranking.adversarial.detail.reply.opposite': 'Reply from Adversarial Model',
+  'ranking.actions.density': 'Density',
+  'ranking.operation.download': 'Download',
+  'ranking.actions.refresh': 'Refresh',
 };

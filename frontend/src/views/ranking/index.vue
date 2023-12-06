@@ -73,15 +73,15 @@
                 <template #icon>
                   <icon-download />
                 </template>
-                {{ $t('ranking.llm.download') }}
+                {{ $t('ranking.operation.download') }}
               </a-button >
-              <a-tooltip :content="$t('searchTable.actions.refresh')">
+              <a-tooltip :content="$t('ranking.actions.refresh')">
                 <div class="action-icon" @click="fetchData"
                 ><icon-refresh size="18"
                 /></div>
               </a-tooltip>
               <a-dropdown @select="handleSelectDensity">
-                <a-tooltip :content="$t('searchTable.actions.density')">
+                <a-tooltip :content="$t('ranking.actions.density')">
                   <div class="action-icon"><icon-line-height size="18" /></div>
                 </a-tooltip>
                 <template #content>
