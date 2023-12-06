@@ -1,514 +1,297 @@
 <template>
   <div class="container">
-    <Breadcrumb :items="['menu.evaluate', 'menu.list.searchTable']" />
-    <a-card class="general-card" :title="$t('menu.list.searchTable')">
-      <a-row>
-        <a-col :flex="1">
-          <a-form
-            :model="formModel"
-            :label-col-props="{ span: 6 }"
-            :wrapper-col-props="{ span: 18 }"
-            label-align="left"
-          >
-            <a-row :gutter="16">
-              <a-col :span="8">
-                <a-form-item
-                  field="number"
-                  :label="$t('searchTable.form.number')"
-                >
-                  <a-input
-                    v-model="formModel.number"
-                    :placeholder="$t('searchTable.form.number.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item field="name" :label="$t('searchTable.form.name')">
-                  <a-input
-                    v-model="formModel.name"
-                    :placeholder="$t('searchTable.form.name.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="contentType"
-                  :label="$t('searchTable.form.contentType')"
-                >
-                  <a-select
-                    v-model="formModel.contentType"
-                    :options="contentTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="filterType"
-                  :label="$t('searchTable.form.filterType')"
-                >
-                  <a-select
-                    v-model="formModel.filterType"
-                    :options="filterTypeOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="createdTime"
-                  :label="$t('searchTable.form.createdTime')"
-                >
-                  <a-range-picker
-                    v-model="formModel.createdTime"
-                    style="width: 100%"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="8">
-                <a-form-item
-                  field="status"
-                  :label="$t('searchTable.form.status')"
-                >
-                  <a-select
-                    v-model="formModel.status"
-                    :options="statusOptions"
-                    :placeholder="$t('searchTable.form.selectDefault')"
-                  />
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form>
-        </a-col>
-        <a-divider style="height: 84px" direction="vertical" />
-        <a-col :flex="'86px'" style="text-align: right">
-          <a-space direction="vertical" :size="18">
-            <a-button type="primary" @click="search">
-              <template #icon>
-                <icon-search />
-              </template>
-              {{ $t('searchTable.form.search') }}
-            </a-button>
-            <a-button @click="reset">
-              <template #icon>
-                <icon-refresh />
-              </template>
-              {{ $t('searchTable.form.reset') }}
-            </a-button>
+    <Breadcrumb :items="['menu.evaluate', 'menu.evaluate.subjective']" />
+    <a-row :gutter="20" align="stretch">
+      <a-col :span="24">
+        <a-card class="general-card" >
+          <template #title>
+            <div class="custom-title"><b>{{ $t('evaluation.subjective.rules.title') }}</b></div>
+          </template>
+          <a-space direction="vertical" size="large">
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.subjective.rules.1') }}
+                </h3>
+              </div>
+            </div>
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.subjective.rules.2') }}
+                </h3>
+              </div>
+            </div>
+            <div class="boxTest">
+              <div class="contentTest">
+                <h3>
+                  {{ $t('evaluation.subjective.rules.3') }}
+                </h3>
+              </div>
+            </div>
           </a-space>
-        </a-col>
-      </a-row>
-      <a-divider style="margin-top: 0" />
-      <a-row style="margin-bottom: 16px">
-        <a-col :span="12">
-          <a-space>
-            <a-button type="primary">
+        </a-card>
+        <br>
+        <a-card class="resultShow">
+          <div id="selectModel">
+            <a-select  v-model="modelSelector" :options="ModelSelectOptions" style="width: 320px"
+                      :placeholder="$t('evaluation.select.models')" />
+            <a-select  v-model="datasetSelector" :options="DatasetSelectOptions" style="width: 320px"
+                       :placeholder="$t('evaluation.select.datasets')" />
+            <a-button type="primary" style="margin: auto 20px auto 20px;" @click="handleSelect">
               <template #icon>
-                <icon-plus />
+                <icon-check></icon-check>
               </template>
-              {{ $t('searchTable.operation.create') }}
+              {{ $t('evaluation.select.models.confirm') }}
             </a-button>
-            <a-upload action="/">
-              <template #upload-button>
-                <a-button>
-                  {{ $t('searchTable.operation.import') }}
-                </a-button>
-              </template>
-            </a-upload>
-          </a-space>
-        </a-col>
-        <a-col
-          :span="12"
-          style="display: flex; align-items: center; justify-content: end"
-        >
-          <a-button>
-            <template #icon>
-              <icon-download />
-            </template>
-            {{ $t('searchTable.operation.download') }}
-          </a-button>
-          <a-tooltip :content="$t('searchTable.actions.refresh')">
-            <div class="action-icon" @click="search"
-              ><icon-refresh size="18"
-            /></div>
-          </a-tooltip>
-          <a-dropdown @select="handleSelectDensity">
-            <a-tooltip :content="$t('searchTable.actions.density')">
-              <div class="action-icon"><icon-line-height size="18" /></div>
-            </a-tooltip>
-            <template #content>
-              <a-doption
-                v-for="item in densityList"
-                :key="item.value"
-                :value="item.value"
-                :class="{ active: item.value === size }"
-              >
-                <span>{{ item.name }}</span>
-              </a-doption>
-            </template>
-          </a-dropdown>
-          <a-tooltip :content="$t('searchTable.actions.columnSetting')">
-            <a-popover
-              trigger="click"
-              position="bl"
-              @popup-visible-change="popupVisibleChange"
-            >
-              <div class="action-icon"><icon-settings size="18" /></div>
-              <template #content>
-                <div id="tableSetting">
-                  <div
-                    v-for="(item, index) in showColumns"
-                    :key="item.dataIndex"
-                    class="setting"
-                  >
-                    <div style="margin-right: 4px; cursor: move">
-                      <icon-drag-arrow />
-                    </div>
-                    <div>
-                      <a-checkbox
-                        v-model="item.checked"
-                        @change="
-                          handleChange($event, item as TableColumnData, index)
-                        "
-                      >
-                      </a-checkbox>
-                    </div>
-                    <div class="title">
-                      {{ item.title === '#' ? '序列号' : item.title }}
-                    </div>
+          </div>
+          <a-row :gutter="16">
+            <a-col :span="12">
+              <div class="text-box">
+                <a-space direction="vertical" :size="10" class="QAShower">
+                  <div class="box-header" v-if="currentLLMID!==undefined">
+                    <a-space>
+                      <icon-message/>
+                      <span style="font-size: 13px;">{{ currentLLMName }}</span>
+                    </a-space>
                   </div>
+                  <div class="QA" v-if="currentLLMID!==undefined">
+                    <a-space direction="vertical" :size="15" class="added-div">
+                      <div class="userQuestion" v-if="subjectiveInfo!==undefined">
+                        {{subjectiveInfo[currentIndex].getPrompt()}}
+                      </div>
+                      <div v-if="subjectiveInfo!==undefined">
+                        <div v-if="subjectiveInfo[currentIndex].getAnswerGenerated()" ref="modelResponse" class="modelResponse">
+                          {{subjectiveInfo[currentIndex].getAnswer()}}
+                        </div>
+                      </div>
+                    </a-space>
+                  </div>
+                </a-space>
+              </div>
+            </a-col>
+            <a-col span="12" v-if="currentLLMID!==undefined && subjectiveInfo!==undefined">
+                <div>
+                  问题类型:
                 </div>
-              </template>
-            </a-popover>
-          </a-tooltip>
-        </a-col>
-      </a-row>
-      <a-table
-        row-key="id"
-        :loading="loading"
-        :pagination="pagination"
-        :columns="(cloneColumns as TableColumnData[])"
-        :data="renderData"
-        :bordered="false"
-        :size="size"
-        @page-change="onPageChange"
-      >
-        <template #index="{ rowIndex }">
-          {{ rowIndex + 1 + (pagination.current - 1) * pagination.pageSize }}
-        </template>
-        <template #contentType="{ record }">
-          <a-space>
-            <a-avatar
-              v-if="record.contentType === 'img'"
-              :size="16"
-              shape="square"
-            >
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/581b17753093199839f2e327e726b157.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            <a-avatar
-              v-else-if="record.contentType === 'horizontalVideo'"
-              :size="16"
-              shape="square"
-            >
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/77721e365eb2ab786c889682cbc721c1.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            <a-avatar v-else :size="16" shape="square">
-              <img
-                alt="avatar"
-                src="//p3-armor.byteimg.com/tos-cn-i-49unhts6dw/ea8b09190046da0ea7e070d83c5d1731.svg~tplv-49unhts6dw-image.image"
-              />
-            </a-avatar>
-            {{ $t(`searchTable.form.contentType.${record.contentType}`) }}
-          </a-space>
-        </template>
-        <template #filterType="{ record }">
-          {{ $t(`searchTable.form.filterType.${record.filterType}`) }}
-        </template>
-        <template #status="{ record }">
-          <span v-if="record.status === 'offline'" class="circle"></span>
-          <span v-else class="circle pass"></span>
-          {{ $t(`searchTable.form.status.${record.status}`) }}
-        </template>
-        <template #operations>
-          <a-button v-permission="['admin']" type="text" size="small">
-            {{ $t('searchTable.columns.operations.view') }}
-          </a-button>
-        </template>
-      </a-table>
-    </a-card>
+                <div style="display: flex; align-items: center; justify-content: center">
+                  <a-tag v-for="(item, index) in subjectiveInfo[currentIndex].subjects" :key="index">
+                    {{item}}
+                  </a-tag>
+                </div>
+                <div>
+                  评分:
+                </div>
+                <a-rate :count="10" style="display: flex; align-items: center; justify-content: center"
+                        :model-value="currentScore" @change="handleRate"/>
+                <div style="display: flex; align-items: center; justify-content: center" v-if="subjectiveInfo!==undefined">
+                  {{`${currentIndex + 1} / ${subjectiveInfo.length}`}}
+                </div>
+                <div style="display: flex; flex-direction: row; align-items: center; justify-content: center" v-if="subjectiveInfo!==undefined">
+                  <a-button @click="handleGenerate">
+                    <div v-if="subjectiveInfo[currentIndex].answerGenerated">
+                      已生成
+                    </div>
+                    <div v-else>
+                      生成答案
+                    </div>
+                  </a-button>
+                  <a-button @click="handlePrev">
+                    上一题
+                  </a-button>
+                  <a-button @click="handleNext">
+                    下一题
+                  </a-button>
+                  <a-button :disabled="!subjectiveInfo.every(element => element.getScored())" @click="handleSubmit">
+                    提交结果
+                  </a-button>
+                </div>
+            </a-col>
+          </a-row>
+        </a-card>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
 <script lang="ts" setup>
   import { computed, ref, reactive, watch, nextTick } from 'vue';
-  import { useI18n } from 'vue-i18n';
-  import useLoading from '@/hooks/loading';
-  import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
-  import { Pagination } from '@/types/global';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
-  import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
-  import cloneDeep from 'lodash/cloneDeep';
-  import Sortable from 'sortablejs';
+  import {queryLLMevaluateList, queryDatasetEvaluateList, SelectedModel, getStreamResponse, updateSubjetiveRecord} from "@/api/evaluate";
+  import {SubjectiveEvaluationData, generateSubEvalData} from "@/api/dataset";
+  import {getLLMName} from "@/api/evaluate";
+  import {getToken} from "@/utils/auth";
+  import element from "zrender/src/Element";
 
-  type SizeProps = 'mini' | 'small' | 'medium' | 'large';
-  type Column = TableColumnData & { checked?: true };
-
-  const generateFormModel = () => {
-    return {
-      number: '',
-      name: '',
-      contentType: '',
-      filterType: '',
-      createdTime: [],
-      status: '',
-    };
-  };
-  const { loading, setLoading } = useLoading(true);
-  const { t } = useI18n();
-  const renderData = ref<PolicyRecord[]>([]);
-  const formModel = ref(generateFormModel());
-  const cloneColumns = ref<Column[]>([]);
-  const showColumns = ref<Column[]>([]);
-
-  const size = ref<SizeProps>('medium');
-
-  const basePagination: Pagination = {
-    current: 1,
-    pageSize: 20,
-  };
-  const pagination = reactive({
-    ...basePagination,
+  const SelectedModelInfo = ref<SelectedModel[]>();
+  const SelectedDatasetInfo = ref<SelectedModel[]>();
+  const subjectiveInfo = ref<SubjectiveEvaluationData[]>();
+  const modelSelector = ref<number>();
+  const datasetSelector = ref<number>();
+  const currentLLMID = ref<number>();
+  const currentDatasetID = ref<number>();
+  const currentLLMName = ref<string>();
+  const currentIndex = ref(0);
+  const modelResponse = ref();
+  const currentScore = ref<number>(0);
+  SelectedModelInfo.value = (await queryLLMevaluateList()).data;
+  SelectedDatasetInfo.value = (await queryDatasetEvaluateList()).data;
+  const ModelSelectOptions = computed<SelectOptionData[]>(() => {
+    return (SelectedModelInfo.value || []).map((model) => ({
+      label: model.name,
+      value: model.id,
+    }));
   });
-  const densityList = computed(() => [
-    {
-      name: t('searchTable.size.mini'),
-      value: 'mini',
-    },
-    {
-      name: t('searchTable.size.small'),
-      value: 'small',
-    },
-    {
-      name: t('searchTable.size.medium'),
-      value: 'medium',
-    },
-    {
-      name: t('searchTable.size.large'),
-      value: 'large',
-    },
-  ]);
-  const columns = computed<TableColumnData[]>(() => [
-    {
-      title: t('searchTable.columns.index'),
-      dataIndex: 'index',
-      slotName: 'index',
-    },
-    {
-      title: t('searchTable.columns.number'),
-      dataIndex: 'number',
-    },
-    {
-      title: t('searchTable.columns.name'),
-      dataIndex: 'name',
-    },
-    {
-      title: t('searchTable.columns.contentType'),
-      dataIndex: 'contentType',
-      slotName: 'contentType',
-    },
-    {
-      title: t('searchTable.columns.filterType'),
-      dataIndex: 'filterType',
-    },
-    {
-      title: t('searchTable.columns.count'),
-      dataIndex: 'count',
-    },
-    {
-      title: t('searchTable.columns.createdTime'),
-      dataIndex: 'createdTime',
-    },
-    {
-      title: t('searchTable.columns.status'),
-      dataIndex: 'status',
-      slotName: 'status',
-    },
-    {
-      title: t('searchTable.columns.operations'),
-      dataIndex: 'operations',
-      slotName: 'operations',
-    },
-  ]);
-  const contentTypeOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: t('searchTable.form.contentType.img'),
-      value: 'img',
-    },
-    {
-      label: t('searchTable.form.contentType.horizontalVideo'),
-      value: 'horizontalVideo',
-    },
-    {
-      label: t('searchTable.form.contentType.verticalVideo'),
-      value: 'verticalVideo',
-    },
-  ]);
-  const filterTypeOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: t('searchTable.form.filterType.artificial'),
-      value: 'artificial',
-    },
-    {
-      label: t('searchTable.form.filterType.rules'),
-      value: 'rules',
-    },
-  ]);
-  const statusOptions = computed<SelectOptionData[]>(() => [
-    {
-      label: t('searchTable.form.status.online'),
-      value: 'online',
-    },
-    {
-      label: t('searchTable.form.status.offline'),
-      value: 'offline',
-    },
-  ]);
-  const fetchData = async (
-    params: PolicyParams = { current: 1, pageSize: 20 }
-  ) => {
-    setLoading(true);
-    try {
-      const { data } = await queryPolicyList(params);
-      renderData.value = data.list;
-      pagination.current = params.current;
-      pagination.total = data.total;
-    } catch (err) {
-      // you can report use errorHandler or other
-    } finally {
-      setLoading(false);
+  const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
+    return (SelectedDatasetInfo.value || []).map((dataset) => ({
+      label: dataset.name,
+      value: dataset.id,
+    }));
+  });
+
+  const handleSelect = () => {
+    currentLLMID.value = modelSelector.value;
+    currentDatasetID.value = datasetSelector.value;
+    generateSubEvalData(currentDatasetID.value!).then(returnValue => {
+      subjectiveInfo.value = returnValue;
+    });
+    getLLMName(currentLLMID.value!.toString()).then(returnValue => {
+      currentLLMName.value = returnValue;
+    });
+  };
+
+  const handlePrev = () => {
+    currentIndex.value = currentIndex.value ? currentIndex.value - 1 : currentIndex.value;
+    currentScore.value = subjectiveInfo.value![currentIndex.value].getScore()!;
+  }
+
+  const handleNext = () => {
+    currentIndex.value = currentIndex.value < subjectiveInfo.value!.length ? currentIndex.value + 1 : currentIndex.value;
+    currentScore.value = subjectiveInfo.value![currentIndex.value].getScore()!;
+  }
+
+  const handleGenerate = async () => {
+    subjectiveInfo.value![currentIndex.value].setAnswerGenerated();
+    subjectiveInfo.value![currentIndex.value].setAnswer('...');
+    await getStreamResponse(getToken()!, subjectiveInfo.value![currentIndex.value].getPrompt(), subjectiveInfo.value![currentIndex.value],
+    currentLLMID.value!, modelResponse);
+  }
+
+  const handleRate = (score: number)=>{
+    if(subjectiveInfo.value![currentIndex.value].getAnswerGenerated()){
+      subjectiveInfo.value![currentIndex.value].setScore(score);
+      currentScore.value = score;
+      subjectiveInfo.value![currentIndex.value].setScored();
     }
-  };
+  }
 
-  const search = () => {
-    fetchData({
-      ...basePagination,
-      ...formModel.value,
-    } as unknown as PolicyParams);
-  };
-  const onPageChange = (current: number) => {
-    fetchData({ ...basePagination, current });
-  };
-
-  fetchData();
-  const reset = () => {
-    formModel.value = generateFormModel();
-  };
-
-  const handleSelectDensity = (
-    val: string | number | Record<string, any> | undefined,
-    e: Event
-  ) => {
-    size.value = val as SizeProps;
-  };
-
-  const handleChange = (
-    checked: boolean | (string | boolean | number)[],
-    column: Column,
-    index: number
-  ) => {
-    if (!checked) {
-      cloneColumns.value = showColumns.value.filter(
-        (item) => item.dataIndex !== column.dataIndex
-      );
-    } else {
-      cloneColumns.value.splice(index, 0, column);
+  const handleSubmit = ()=>{
+    let score = 0;
+    for(let i = 0; i < subjectiveInfo.value!.length; i += 1){
+      score += subjectiveInfo.value![i].getScore()!;
     }
-  };
-
-  const exchangeArray = <T extends Array<any>>(
-    array: T,
-    beforeIdx: number,
-    newIdx: number,
-    isDeep = false
-  ): T => {
-    const newArray = isDeep ? cloneDeep(array) : array;
-    if (beforeIdx > -1 && newIdx > -1) {
-      // 先替换后面的，然后拿到替换的结果替换前面的
-      newArray.splice(
-        beforeIdx,
-        1,
-        newArray.splice(newIdx, 1, newArray[beforeIdx]).pop()
-      );
-    }
-    return newArray;
-  };
-
-  const popupVisibleChange = (val: boolean) => {
-    if (val) {
-      nextTick(() => {
-        const el = document.getElementById('tableSetting') as HTMLElement;
-        const sortable = new Sortable(el, {
-          onEnd(e: any) {
-            const { oldIndex, newIndex } = e;
-            exchangeArray(cloneColumns.value, oldIndex, newIndex);
-            exchangeArray(showColumns.value, oldIndex, newIndex);
-          },
-        });
-      });
-    }
-  };
-
-  watch(
-    () => columns.value,
-    (val) => {
-      cloneColumns.value = cloneDeep(val);
-      cloneColumns.value.forEach((item, index) => {
-        item.checked = true;
-      });
-      showColumns.value = cloneDeep(cloneColumns.value);
-    },
-    { deep: true, immediate: true }
-  );
-</script>
-
-<script lang="ts">
-  export default {
-    name: 'SearchTable',
-  };
+    score /= subjectiveInfo.value!.length;
+    updateSubjetiveRecord({llmId: currentLLMID.value, datasetId: currentDatasetID.value, credit: score});
+  }
 </script>
 
 <style scoped lang="less">
   .container {
     padding: 0 20px 20px 20px;
   }
-  :deep(.arco-table-th) {
-    &:last-child {
-      .arco-table-th-item-title {
-        margin-left: 16px;
-      }
-    }
+
+  .custom-title {
+    font-size: 27px;
   }
-  .action-icon {
-    margin-left: 12px;
-    cursor: pointer;
+
+  .boxTest {
+    height: 30px;
   }
-  .active {
-    color: #0960bd;
-    background-color: #e3f4fc;
+
+  .boxTest::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 30px;
+    background: rgb(45, 92, 246);
   }
-  .setting {
+
+  .contentTest {
+    position: relative;
     display: flex;
     align-items: center;
-    width: 200px;
-    .title {
-      margin-left: 12px;
-      cursor: pointer;
-    }
+    height: 100%;
+    padding-left: 20px;
+  }
+
+  .text-box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    height: 500px;
+    padding-bottom: 2%;
+  }
+
+  .text-box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    height: 500px;
+    padding-bottom: 2%;
+  }
+
+  #selectModel {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    width: 45%;
+    height: 50px;
+    margin-bottom: 20px;
+  }
+
+  .QAShower
+  {
+    width: 100%;
+  }
+
+  .box-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-radius: 10px 0 10px 0;
+    width: 100px;
+    height: 30px;
+  }
+
+  .QA {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 450px;
+    overflow: auto;
+  }
+
+  .added-div {
+    width: 100%;
+  }
+
+  .userQuestion {
+    background-color: #fff7ed;
+    margin: 10% auto 5% 7%;
+    padding: 15px;
+    width: 91%;
+    border: 1px solid #fee6ca;
+    border-radius: 20px 20px 0 20px;
+    font-size: 20px;
+  }
+
+  .modelResponse {
+    background-color: #f9fafb;
+    margin: 5% auto 10% 2%;
+    padding: 15px;
+    width: 91%;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px 20px 20px 0;
+    font-size: 20px;
   }
 </style>

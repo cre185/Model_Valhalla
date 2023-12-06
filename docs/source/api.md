@@ -29,6 +29,7 @@
   - [数据集部分](#数据集部分)
     - [create](#create)
     - [delete](#delete-1)
+    - [download](#download)
     - [list](#list)
     - [retrieve](#retrieve-1)
     - [update](#update-1)
@@ -554,6 +555,17 @@ status=200
 ```python
 status=400
 ```
+#### download  
+**功能描述**：下载指定数据集的文件。  
+**请求方式**：GET  
+**请求URL**：`/dataset/download/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回为对应的数据集文件  
+* ID异常  
+```python
+status=400
+```
 #### list  
 **请求方式**：GET  
 **请求URL**：`/dataset/list`  
@@ -863,7 +875,7 @@ status=400
 status=200
 ```
 #### update  
-**功能描述**：更新某一模型在某一数据集下的分数。  
+**功能描述**：更新某一模型在某一数据集下的分数.如果数据集为主观数据集，则会将分数记录。  
 **请求方式**：POST  
 **请求URL**：`/ranking/update`  
 **请求参数**：  
@@ -887,7 +899,7 @@ status=200
 ```python
 status=400
 ```
-**特殊说明**：接口会检查数据集是否为主观题，正常用户仅能对主观题进行评分，管理员则不受限制。  
+**特殊说明**：接口会检查数据集是否为主观题，正常用户仅能对主观题进行评分，管理员则可以直接修改客观评测结果。  
 ***
 ### 模型测试部分  
 #### battle_history  
