@@ -72,7 +72,7 @@
                   </div>
                 </a-space>
               </div>
-              <div style="font-weight: bold; padding-top: 5px;">
+              <div style="font-weight: bold; padding-top: 7px;">
                 {{ modelAname }}
               </div>
             </a-col>
@@ -97,7 +97,7 @@
                   </div>
                 </a-space>
               </div>
-              <div style="font-weight: bold; padding-top: 5px;">
+              <div style="font-weight: bold; padding-top: 7px;">
                 {{ modelBname }}
               </div>
             </a-col>
