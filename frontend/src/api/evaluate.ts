@@ -4,6 +4,7 @@ import apiCat from '@/api/main';
 import { LLMListRes } from './model-list';
 import { updateComment } from "@/api/comment";
 import { Button } from '@arco-design/web-vue';
+import dashboard from "@/router/routes/modules/dashboard";
 
 export interface SelectedModel {
     id: string;
@@ -20,6 +21,20 @@ export async function queryLLMevaluateList()
         LLMList.data.push({id: model.id.toString(), name: model.name});
     }
     return LLMList;
+}
+
+export async function queryDatasetEvaluateList()
+{
+    const DatasetList: {data: any, total: number} = { data:[], total: 0};
+    const response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
+    for(let i = 0; i < response.data.data.length; i += 1)
+    {
+        const dataset = response.data.data[i] as {id: string, name: string, subjective: boolean};
+        if(dataset.subjective){
+            DatasetList.data.push({id: dataset.id, name: dataset.name});
+        }
+    }
+    return DatasetList;
 }
 
 export async function getLLMName(modelID: string)
@@ -128,6 +143,7 @@ class EvaluateRound {
     }
 
     async updateEloResult() {
+        console.log(this.modelA)
         await axios.post(apiCat('/testing/battle_result'), {
             llm1: this.modelA,
             llm2: this.modelB,

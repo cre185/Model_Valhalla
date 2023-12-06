@@ -1,6 +1,6 @@
 export type RoleType = '' | '*' | 'admin' | 'user';
 export interface UserState {
-  accountId?: string,
+  accountId?: string;
   username?: string;
   avatar?: string;
   phone?: string;

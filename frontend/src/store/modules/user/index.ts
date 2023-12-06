@@ -11,7 +11,8 @@ import {
   LoginData,
   phoneVerifyData,
   registerData,
-  register, emailVerifyData,
+  register,
+  emailVerifyData,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
