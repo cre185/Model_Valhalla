@@ -17,11 +17,11 @@
         <a-space size="medium">
           <span>欢迎回来，{{ userStore.username }}</span>
           <a-avatar :size="32">
-            <img alt="用户头像" :src="userStore.avatar" />
+            <img alt="用户头像" :src="userStore.avatar" class="userInfoPanel"/>
           </a-avatar>
         </a-space>
       </li>
-      <li v-else @click="Login">
+      <li v-else @click="Login" class="userInfoPanel">
         <a-space size="medium">
           <span>您好，请先登录</span>
           <a-avatar :size="32" :style="{ backgroundColor: '#FFC72E' }">
@@ -161,6 +161,10 @@
     .trigger-btn {
       margin-left: 14px;
     }
+  }
+
+  .userInfoPanel {
+    cursor: pointer;
   }
 </style>
 

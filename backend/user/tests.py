@@ -702,18 +702,26 @@ class JwtTests(TestCase):
 
 class MsgModelTests(TestCase):
     def setUp(self):
-        user = User(
+        user1 = User(
             username="testuser",
             password="testuser",
             mobile="12345678901"
         )
-        user.save()
+        user1.save()
         user2 = User(
             username="testtest",
             password="testtest",
-            mobile="11122233344"
+            mobile="11122233344",
+            is_admin=True
         )
         user2.save()
+        user3 = User(
+            username="testtest2",
+            password="testtest2",
+            mobile="11122233345",
+            is_admin=True
+        )
+        user3.save()
         self.client = APIClient()
 
     def test_create_message(self):
@@ -874,3 +882,46 @@ class MsgModelTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(json_data['msgs'][1]['read'], False)
+
+    def test_to_admin(self):
+        # login as user
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testuser"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        # send a message to all admin
+        response = self.client.post(
+            '/user/create_message_to_admin',
+            {
+                "msg": "test message",
+                "msg_type": "test type"
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json_data['message'], "ok")
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testtest",
+                "password": "testtest"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        response = self.client.get(
+            '/user/list_message',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(len(json_data['msgs']), 1)

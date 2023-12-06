@@ -72,6 +72,10 @@ urlpatterns = [
         views.create_messageView.as_view(),
         name="create_message"),
     path(
+        "create_message_to_admin",
+        views.create_message_to_adminView.as_view(),
+        name="create_message_to_admin"),
+    path(
         "check_message",
         views.check_messageView.as_view(),
         name="check_message"),

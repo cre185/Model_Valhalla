@@ -3,6 +3,7 @@ import axios from 'axios';
 import apiCat from '@/api/main';
 import { LLMListRes } from './model-list';
 import { updateComment } from "@/api/comment";
+import { Button } from '@arco-design/web-vue';
 
 export interface SelectedModel {
     id: string;
@@ -27,6 +28,7 @@ export async function getLLMName(modelID: string)
     const modelName = response.data.name;
     return modelName;
 }
+
 
 class QuestionAndAnswer {
     question:string
@@ -60,10 +62,10 @@ class EvaluateRound {
         this.modelB = response.data.llmId;
     }
 
-    async getStreamResponse(jwt:string, RefA:any, RefB:any) {
+    async getStreamResponse(jwt:string, RefA:any, RefB:any, sendButtonStatus: any) {
         fetch(apiCat('/testing/stream_generate'), {
             method: 'POST',
-            headers: {
+          headers: {
                 'Content-Type': 'application/json',
                 Authorization: jwt
             },
@@ -109,6 +111,7 @@ class EvaluateRound {
                     return reader.read().then(({ done, value }) => {
                         if (done) {
                             RefB.scrollTop = RefB.scrollHeight;
+                            sendButtonStatus.value = false;
                             return;
                         }
                         target.QA[target.QA.length-1].answerB += new TextDecoder('utf-8').decode(value);
@@ -132,6 +135,22 @@ class EvaluateRound {
             winner: this.result,
             round: this.QA.length
         });
+    }
+
+    async sendAdvise(jwt:string, userAdvise:string)
+    {
+        fetch(apiCat('/user/create_message_to_admin'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: jwt,
+            },
+            body: JSON.stringify({
+                msg: userAdvise,
+                msg_type: 'advice',
+            }),
+        })
+    // return response;
     }
 }
 
