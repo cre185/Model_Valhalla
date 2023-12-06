@@ -75,4 +75,7 @@ export default {
   'ranking.adversarial.detail.question': '测试问题',
   'ranking.adversarial.detail.reply.this': '本模型回复',
   'ranking.adversarial.detail.reply.opposite': '对抗模型回复',
+  'ranking.actions.density': '大小',
+  'ranking.operation.download': '下载',
+  'ranking.actions.refresh': '刷新',
 };

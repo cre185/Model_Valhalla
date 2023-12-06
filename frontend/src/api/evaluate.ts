@@ -5,10 +5,45 @@ import { LLMListRes } from './model-list';
 import { updateComment } from "@/api/comment";
 import { Button } from '@arco-design/web-vue';
 import dashboard from "@/router/routes/modules/dashboard";
+import { SubjectiveEvaluationData } from "@/api/dataset";
 
 export interface SelectedModel {
     id: string;
     name: string;
+}
+
+export async function getStreamResponse(jwt: string, prompt: string, data: SubjectiveEvaluationData, llmId: number, Ref: any){
+    fetch(apiCat('/testing/stream_generate'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: jwt
+        },
+        body: JSON.stringify({
+            llmId: llmId,
+            prompt: prompt
+        }),
+    })
+        .then(response => {
+            const reader = response.body!.getReader();
+            let answer = '';
+            function read() {
+                return reader.read().then(({ done, value }) => {
+                    if (done) {
+                        Ref.scrollTop = Ref.scrollHeight;
+                        return;
+                    }
+                    answer += new TextDecoder('utf-8').decode(value);
+                    data.setAnswer(answer);
+                    Ref.scrollTop = Ref.scrollHeight;
+                    read();
+                });
+            }
+            read();
+        })
+        .catch(error => {
+            console.error('Error fetching stream:', error);
+        });
 }
 
 export async function queryLLMevaluateList()
@@ -21,6 +56,10 @@ export async function queryLLMevaluateList()
         LLMList.data.push({id: model.id.toString(), name: model.name});
     }
     return LLMList;
+}
+
+export async function updateSubjetiveRecord(data: any){
+    return axios.post(apiCat('/ranking/update'), data);
 }
 
 export async function queryDatasetEvaluateList()
