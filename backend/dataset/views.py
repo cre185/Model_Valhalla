@@ -110,13 +110,15 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
 
 class downloadView(APIView):
     def get(self, request, *args, **kwargs):
-        target = Dataset.objects.get(id=kwargs['id'])
-        if not target:
+        try:
+            target = Dataset.objects.get(id=kwargs['id'])
+            file = target.data_file
+            response = Response(file)
+            response['Content-Type'] = 'application/octet-stream'
+            response['Content-Disposition'] = 'attachment;filename="{}"'.format(
+                target.name)
+            return response
+        except BaseException:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
-        file = target.data_file
-        response = Response(file)
-        response['Content-Type'] = 'application/octet-stream'
-        response['Content-Disposition'] = 'attachment;filename="{}"'.format(
-            target.name)
-        return response
+        

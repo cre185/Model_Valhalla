@@ -29,6 +29,7 @@
   - [数据集部分](#数据集部分)
     - [create](#create)
     - [delete](#delete-1)
+    - [download](#download)
     - [list](#list)
     - [retrieve](#retrieve-1)
     - [update](#update-1)
@@ -550,6 +551,17 @@ status=400
 },
 status=200
 ```
+* ID异常  
+```python
+status=400
+```
+#### download  
+**功能描述**：下载指定数据集的文件。  
+**请求方式**：GET  
+**请求URL**：`/dataset/download/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回为对应的数据集文件  
 * ID异常  
 ```python
 status=400

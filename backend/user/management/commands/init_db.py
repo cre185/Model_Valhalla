@@ -82,4 +82,7 @@ class Command(BaseCommand):
                         id=j))
                 if i * 4 + j - 5 < len(credit_list):
                     credit.credit = credit_list[i * 4 + j - 5]
+                else:
+                    subjective_credit = SubjectiveCredit(dataset=Dataset.objects.get(id=i), LLM=LLMs.objects.get(id=j))
+                    subjective_credit.save()
                 credit.save()
