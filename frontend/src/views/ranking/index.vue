@@ -47,7 +47,7 @@
         </a>
         <icon-double-down id="doubleDown" style="display: flex; margin: 50px auto auto auto; animation: upAndDown 3s cubic-bezier(.7,.3,.3,.7) infinite"/>
         <a-card class="general-card"
-                style="height: 80vh; z-index: 0; margin-top: 20px; animation: upAndDown 3s cubic-bezier(.7,.3,.3,.7) infinite;"
+                style="height: 80vh; z-index: 0; margin-top: 10px;"
                 id="rankings"
         >
           <a-row style="margin-bottom: 16px">
@@ -625,6 +625,8 @@
   onMounted(() => {
     handleRotatingGallery();
     const startBtn = document.getElementById('startBtn');
+    document.getElementById('rankings')!.style.animation="upAndDown 3s cubic-bezier(.7,.3,.3,.7) infinite";
+    document.getElementById('rankings')!.style.marginTop="20px";
     startBtn!.addEventListener('click', function(event: Event) {
       scrollAnimation(null, true);
       event.preventDefault();
