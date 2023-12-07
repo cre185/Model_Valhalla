@@ -11,8 +11,8 @@ import localeMonitor from '@/views/dashboard/monitor/locale/zh-CN';
 
 import localeKaka from '@/views/dashboard/kaka/locale/zh-CN';
 
-import localeSearchTable from '@/views/list/search-table/locale/zh-CN';
-import localeCardList from '@/views/list/card/locale/zh-CN';
+import localeSubjectiveEvaluation from '@/views/evaluate/subjective-evaluation/locale/zh-CN';
+import localeAdversarialEvaluation from '@/views/evaluate/adversarial-evaluation/locale/zh-CN';
 
 import localeStepForm from '@/views/form/step/locale/zh-CN';
 import localeGroupForm from '@/views/form/group/locale/zh-CN';
@@ -43,7 +43,9 @@ export default {
   'menu.server.dashboard': '仪表盘-服务端',
   'menu.server.workplace': '工作台-服务端',
   'menu.server.monitor': '实时监控-服务端',
-  'menu.list': '评测',
+  'menu.evaluate': '评测',
+  'menu.evaluate.adversarialEvaluation': '对抗评测',
+  'menu.evaluate.subjectiveEvaluation': '主观评测',
   'menu.result': '结果页',
   'menu.exception': '异常页',
   'menu.form': '表单页',
@@ -54,6 +56,9 @@ export default {
   'menu.faq': '常见问题',
   'navbar.docs': '文档中心',
   'navbar.action.locale': '切换为中文',
+  'navbar.welcome': '欢迎回来，',
+  'navbar.quit': '退出登录',
+  'logout.success': '登出成功',
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
@@ -64,8 +69,8 @@ export default {
 
   ...localeMonitor,
   ...localeKaka,
-  ...localeSearchTable,
-  ...localeCardList,
+  ...localeSubjectiveEvaluation,
+  ...localeAdversarialEvaluation,
   ...localeStepForm,
   ...localeGroupForm,
   ...localeBasicProfile,

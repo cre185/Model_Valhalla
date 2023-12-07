@@ -9,8 +9,8 @@ import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
 import localeMonitor from '@/views/dashboard/monitor/locale/en-US';
 
-import localeSearchTable from '@/views/list/search-table/locale/en-US';
-import localeCardList from '@/views/list/card/locale/en-US';
+import localeSubjectiveEvaluation from '@/views/evaluate/subjective-evaluation/locale/en-US';
+import localeAdversarialEvaluation from '@/views/evaluate/adversarial-evaluation/locale/en-US';
 
 import localeStepForm from '@/views/form/step/locale/en-US';
 import localeGroupForm from '@/views/form/group/locale/en-US';
@@ -41,7 +41,9 @@ export default {
   'menu.server.dashboard': 'Dashboard-Server',
   'menu.server.workplace': 'Workplace-Server',
   'menu.server.monitor': 'Monitor-Server',
-  'menu.list': 'Evaluate',
+  'menu.evaluate': 'Evaluate',
+  'menu.evaluate.adversarialEvaluation': 'Adversarial Evaluation',
+  'menu.evaluate.subjectiveEvaluation': 'Subjective Evaluation',
   'menu.result': 'Result',
   'menu.exception': 'Exception',
   'menu.form': 'Form',
@@ -52,6 +54,9 @@ export default {
   'menu.faq': 'FAQ',
   'navbar.docs': 'Docs',
   'navbar.action.locale': 'Switch to English',
+  'navbar.welcome': 'Welcome back, ',
+  'navbar.quit': 'Log Out',
+  'logout.success': 'Logout successfully',
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
@@ -61,8 +66,8 @@ export default {
   ...localeWorkplace,
 
   ...localeMonitor,
-  ...localeSearchTable,
-  ...localeCardList,
+  ...localeSubjectiveEvaluation,
+  ...localeAdversarialEvaluation,
   ...localeStepForm,
   ...localeGroupForm,
   ...localeBasicProfile,

@@ -1,6 +1,32 @@
 <script setup lang="ts">
-  const props = defineProps(['modelDescription', 'website', 'paper', 'license',
-    'date', 'img', 'maxHeight']);
+  import axios from "axios";
+  import apiCat from "@/api/main";
+  import { onMounted, ref } from "vue";
+
+  const props = defineProps(['modelID']);
+  const logo = ref('');
+  const releasedTime = ref('');
+  const description = ref('');
+  const website = ref('');
+  const license = ref('');
+  const paper = ref('');
+  const paperLink = ref('');
+
+  onMounted(async () => {
+    try {
+      const response = await axios.get(apiCat(`/testing/retrieve/${props.modelID}`));
+      const responseJson = response.data;
+      logo.value = responseJson.logo;
+      releasedTime.value = responseJson.released_time;
+      description.value = responseJson.description;
+      website.value = responseJson.official_website;
+      license.value = responseJson.license;
+      paper.value = responseJson.document_name;
+      paperLink.value = responseJson.document_website;
+    } catch (error) {
+      console.error(error);
+    }
+  });
 </script>
 
 <template>
@@ -9,15 +35,16 @@
         <a-row id="row1">
           <img
               alt="模型logo"
-              :src="props.img"
+              :src="logo"
+              :style="{ maxWidth:'100%', maxHeight: '200px' }"
           />
         </a-row>
         <a-row  id="row2">
-          <span>Released {{props.date}}</span>
+          <span id="modelTime">Released {{ releasedTime }}</span>
         </a-row>
         <a-row  id="row3">
-          <a-card :title="$t('ranking.profile.info.description')" :bordered="false">
-            {{ props.modelDescription }}
+          <a-card :title="$t('ranking.profile.info.description')" :bordered="false" id="modelDescription">
+            {{ description }}
           </a-card>
         </a-row>
       </a-col>
@@ -25,21 +52,17 @@
       <a-col :span="9" id="lastCol">
         <a-row  id="row4">
           <a-card :title="$t('ranking.profile.info.index')" :bordered="false">
-            <a-link :href="props.website">{{ props.website }}</a-link>
+            <a-link :href="website">{{ website }}</a-link>
           </a-card>
         </a-row>
         <a-row  id="row5">
           <a-card :title="$t('ranking.profile.info.paper')" :bordered="false">
-            <a-list :bordered="false">
-              <a-list-item v-for="(value, key) in props.paper" :key="key">
-                <a-link :href="key as string">{{ value }}</a-link>
-              </a-list-item>
-            </a-list>
+            <a-link :href="paperLink">{{ paper }}</a-link>
           </a-card>
         </a-row>
         <a-row  id="row6">
           <a-card :title="$t('ranking.profile.info.license')" :bordered="false">
-            {{ props.license }}
+            {{ license }}
           </a-card>
         </a-row>
       </a-col>
@@ -49,7 +72,7 @@
 <style scoped lang="less">
 .container {
   display: flex;
-  height: 100%;
+  height: 515px;
 }
 
 #firstCol {
@@ -61,6 +84,8 @@
   flex: 3;
   display: flex;
   border: 1px solid #ccc;
+  align-items: center;
+  justify-content: center;x
 }
 
 #row2 {
@@ -69,10 +94,21 @@
   border: 1px solid #ccc;
 }
 
+#modelTime{
+  display: block;
+  line-height: 50px;
+  height: 50px;
+  padding-left: 10px;
+}
+
 #row3 {
   flex: 10;
   display: flex;
   border: 1px solid #ccc;
+}
+
+#modelDescription {
+  overflow: auto;
 }
 
 #middleCol {
