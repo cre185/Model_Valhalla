@@ -36,6 +36,7 @@
           <img
               alt="模型logo"
               :src="logo"
+              :style="{ maxWidth:'100%', maxHeight: '200px' }"
           />
         </a-row>
         <a-row  id="row2">
@@ -83,6 +84,8 @@
   flex: 3;
   display: flex;
   border: 1px solid #ccc;
+  align-items: center;
+  justify-content: center;x
 }
 
 #row2 {
