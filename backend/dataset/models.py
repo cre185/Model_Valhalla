@@ -15,6 +15,8 @@ class Dataset(models.Model):
     description = models.TextField(default='')
     subjective = models.BooleanField(default=False)
     author = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
+    domain = models.CharField(max_length=127, default='')
+    tag = models.JSONField(default=list)
 
     def __str__(self):
         return self.name

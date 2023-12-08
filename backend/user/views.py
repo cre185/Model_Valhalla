@@ -295,6 +295,13 @@ class create_messageView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             msg_id = serializer.data['id']
+            try:
+                upload_file = request.FILES['file']
+                msg = Msg.objects.get(id=msg_id)
+                msg.msg_file = upload_file
+                msg.save()
+            except BaseException:
+                pass
             for target in data['target']:
                 msg_target = MsgTarget.objects.create(
                     msg_id=msg_id, target_id=target)
@@ -317,6 +324,13 @@ class create_message_to_adminView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             msg_id = serializer.data['id']
+            try:
+                upload_file = request.FILES['file']
+                msg = Msg.objects.get(id=msg_id)
+                msg.msg_file = upload_file
+                msg.save()
+            except BaseException:
+                pass
             admin = User.objects.filter(is_admin=True)
             for target in admin:
                 msg_target = MsgTarget.objects.create(

@@ -55,6 +55,8 @@ class Msg(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='author')
+    msg_content = models.JSONField(default=dict)
+    msg_file = models.FileField(upload_to='static/msg', null=True)
     target = models.ManyToManyField(
         User, related_name='target', through='MsgTarget')
 
