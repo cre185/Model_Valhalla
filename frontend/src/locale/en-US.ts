@@ -5,9 +5,7 @@ import localeChange from '@/views/changeInfo/locale/en-US';
 
 import localeRanking from '@/views/ranking/locale/en-US';
 
-import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
-
-import localeMonitor from '@/views/dashboard/monitor/locale/en-US';
+import localeDataset from '@/views/dataset/locale/en-US';
 
 import localeSubjectiveEvaluation from '@/views/evaluate/subjective-evaluation/locale/en-US';
 import localeAdversarialEvaluation from '@/views/evaluate/adversarial-evaluation/locale/en-US';
@@ -63,9 +61,8 @@ export default {
   ...localeRegister,
   ...localeChange,
   ...localeRanking,
-  ...localeWorkplace,
+  ...localeDataset,
 
-  ...localeMonitor,
   ...localeSubjectiveEvaluation,
   ...localeAdversarialEvaluation,
   ...localeStepForm,

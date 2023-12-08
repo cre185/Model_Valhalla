@@ -5,11 +5,7 @@ import localeChange from '@/views/changeInfo/locale/zh-CN';
 
 import localeRanking from '@/views/ranking/locale/zh-CN';
 
-import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
-
-import localeMonitor from '@/views/dashboard/monitor/locale/zh-CN';
-
-import localeKaka from '@/views/dashboard/kaka/locale/zh-CN';
+import localeDataset from '@/views/dataset/locale/zh-CN';
 
 import localeSubjectiveEvaluation from '@/views/evaluate/subjective-evaluation/locale/zh-CN';
 import localeAdversarialEvaluation from '@/views/evaluate/adversarial-evaluation/locale/zh-CN';
@@ -65,10 +61,8 @@ export default {
   ...localeRegister,
   ...localeChange,
   ...localeRanking,
-  ...localeWorkplace,
+  ...localeDataset,
 
-  ...localeMonitor,
-  ...localeKaka,
   ...localeSubjectiveEvaluation,
   ...localeAdversarialEvaluation,
   ...localeStepForm,

@@ -4,7 +4,7 @@ import apiCat from '@/api/main';
 import { LLMListRes } from './model-list';
 import { updateComment } from "@/api/comment";
 import { Button } from '@arco-design/web-vue';
-import dashboard from "@/router/routes/modules/dashboard";
+import dashboard from "@/router/routes/modules/dataset";
 import { SubjectiveEvaluationData } from "@/api/dataset";
 
 export interface SelectedModel {

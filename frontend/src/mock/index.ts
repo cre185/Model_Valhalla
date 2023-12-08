@@ -3,10 +3,6 @@ import Mock from 'mockjs';
 import './user';
 import './message-box';
 
-import '@/views/dashboard/workplace/mock';
-
-import '@/views/dashboard/monitor/mock';
-
 import '@/views/evaluate/adversarial-evaluation/mock';
 import '@/views/evaluate/subjective-evaluation/mock';
 
