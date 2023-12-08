@@ -108,6 +108,7 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
         return Response({'message': 'ok', 'data': data},
                         status=status.HTTP_200_OK)
 
+
 class downloadView(APIView):
     def get(self, request, *args, **kwargs):
         try:
@@ -121,4 +122,3 @@ class downloadView(APIView):
         except BaseException:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
-        
