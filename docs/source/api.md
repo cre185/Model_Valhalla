@@ -96,7 +96,9 @@ status=400
 {
     "target": "接收者id数组",
     "msg": "消息内容",
-    "msg_type": "消息类型"
+    "msg_type": "消息类型",
+    "msg_content": "消息内容",
+    "msg_file": "消息文件"
 }
 ```
 **额外需求**：jwt  
@@ -119,8 +121,7 @@ status=400
 **请求参数**：   
 ```python
 {
-    "msg": "消息内容",
-    "msg_type": "消息类型"
+    # 见上方create_message接口的请求参数，但不包含target字段  
 }
 ```
 **额外需求**：jwt  
