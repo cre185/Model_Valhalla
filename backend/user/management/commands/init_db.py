@@ -11,49 +11,63 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Initalize the database
-        # Create the admin user
+        # Create user
         admin = User(
             username="realadmin",
             password="realadmin",
             mobile=11111111111,
+            email="realadmin@163.com",
+            avatar="static/avatar/trophy.png",
             is_admin=True)
         admin.save()
         user = User(
             username="testuser",
             password="testuser",
-            mobile=12345678901)
+            mobile=12345678901,
+            email="testuser@163.com",
+            avatar="static/avatar/default.jpg")
         user.save()
         # Create the five standard datasets
         dataset1 = Dataset(
-            name="dataset1",
-            description="dataset1",
+            name="ceval_select",
+            description="ceval_select",
+            author = admin,
+            domain = "versatile",
             data_file="static/data/ceval_select.csv")
         dataset1.save()
         dataset2 = Dataset(
-            name="dataset2",
-            description="dataset2",
+            name="cmmlu_select",
+            description="cmmlu_select",
+            author = admin,
+            domain = "versatile",
             data_file="static/data/cmmlu_select.csv")
         dataset2.save()
         dataset3 = Dataset(
-            name="dataset3",
-            description="dataset3",
+            name="mmlu_select",
+            description="mmlu_select",
+            author = admin,
+            domain = "high_school_subjects",
             data_file="static/data/mmlu_select.csv")
         dataset3.save()
         dataset4 = Dataset(
-            name="dataset4",
-            description="dataset4",
+            name="zbench_common",
+            description="zbench_common",
+            author = admin,
+            domain = "versatile",
             data_file="static/data/zbench_common.csv",
             subjective=True)
         dataset4.save()
         dataset5 = Dataset(
-            name="dataset5",
-            description="dataset5",
+            name="zbench_emergent",
+            description="zbench_emergent",
+            author = admin,
+            domain = "versatile",
             data_file="static/data/zbench_emergent.csv",
             subjective=True)
         dataset5.save()
         # Create the four standard llms
         llm1 = LLMs(
-            name="llm1",
+            name="mistral_7b",
             model_name="mistral_7b",
             logo="static/logo/mistral_7b.png",
             official_website="https://mistral.ai/news/announcing-mistral-7b/",
@@ -65,7 +79,7 @@ class Command(BaseCommand):
             released_time="2023-10-16")
         llm1.save()
         llm2 = LLMs(
-            name="llm2",
+            name="qwen_7b_chat",
             model_name="qwen_7b_chat",
             logo="static/logo/qwen_7b_chat.jpg",
             official_website="https://github.com/QwenLM/Qwen",
@@ -77,7 +91,7 @@ class Command(BaseCommand):
             released_time="2023-9-24")
         llm2.save()
         llm3 = LLMs(
-            name="llm3",
+            name="vicuna_7b",
             model_name="vicuna_7b",
             logo="static/logo/vicuna_7b.jpg",
             official_website="https://lmsys.org/blog/2023-03-30-vicuna/",
@@ -89,7 +103,7 @@ class Command(BaseCommand):
             released_time="2023-6-18")
         llm3.save()
         llm4 = LLMs(
-            name="llm4",
+            name="zephyr_7b",
             model_name="zephyr_7b",
             logo="static/logo/zephyr_7b.png",
             official_website="https://github.com/huggingface/alignment-handbook",
