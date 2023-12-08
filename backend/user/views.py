@@ -119,7 +119,6 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
                             status=status.HTTP_401_UNAUTHORIZED)
         data = result.data
         data['message'] = 'ok'
-        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
 
     @login_required
@@ -130,7 +129,6 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
                             status=status.HTTP_401_UNAUTHORIZED)
         data = result.data
         data['message'] = 'ok'
-        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -147,7 +145,6 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data = result.data
         data['message'] = 'ok'
         data['password'] = '**********'
-        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
 
 

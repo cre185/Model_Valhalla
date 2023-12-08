@@ -283,7 +283,7 @@ class CreditModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json_data['average'], 50)
+        self.assertEqual(json_data['average'], 50.00)
         # test average for all llms
         response = self.client.get(
             '/ranking/average_list',
@@ -293,7 +293,7 @@ class CreditModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json_data['data']), 2)
-        self.assertEqual(json_data['data'][1], 80)
+        self.assertEqual(json_data['data'][1], 80.00)
         # test average for invalid llm
         response = self.client.get(
             '/ranking/average/114514',

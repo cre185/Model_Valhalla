@@ -167,7 +167,7 @@ status=200
             "target": "接收者id数组",
             "msg": "消息内容",
             "msg_type": "消息类型",
-            "add_time": "添加时间(未格式化)",
+            "add_time": "添加时间",
             "read": "是否已读"
         },
         ...
@@ -520,7 +520,7 @@ status=401
     # "content_size": "数据集大小",
     # "author": "作者",
     # "data_file": "数据集文件",
-    # "add_time": "添加时间(未格式化)"
+    # "add_time": "添加时间"
 }
 ```
 **额外需求**：jwt  
@@ -750,7 +750,7 @@ status=400
     "comments": [
         {
             "comment": "评论内容",
-            "add_time": "添加时间(未格式化)"
+            "add_time": "添加时间"
         },
         ...
     ]
@@ -821,7 +821,7 @@ status=400
         {
             "LLM": "模型id",
             "dataset": "数据集id",
-            "add_time": "添加时间(未格式化)",
+            "add_time": "添加时间",
             "credit": "分数",
         },
         ...
@@ -843,7 +843,7 @@ status=200
     "comments": [
         {
             "comment": "评论内容",
-            "add_time": "添加时间(未格式化)"
+            "add_time": "添加时间"
         },
         ...
     ]
@@ -926,7 +926,7 @@ status=400
             "llm2": "2号模型id",
             "winner": "结果，0为平局，1为1号胜利，-1为1号失败",
             "user_id": "用户id",
-            "add_time": "添加时间(未格式化)"
+            "add_time": "添加时间"
         },
         ...
     ]
@@ -1005,7 +1005,7 @@ status=400
     # "document_name": "文档名称",
     # "document_website": "文档地址",
     # "license": "认证",
-    # "add_time": "添加时间(未格式化)"
+    # "add_time": "添加时间"
     # "elo_credit": "ELO分数",
     # "released_time": "发布时间"
 }
