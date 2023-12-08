@@ -1,6 +1,7 @@
 import axios from 'axios';
 import apiCat from '@/api/main';
 import * as Papa from 'papaparse';
+import { LLMListRes } from './model-list';
 
 export class SubjectiveEvaluationData{
     private prompt: string;
@@ -94,4 +95,63 @@ export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvalua
             resolve(dataList);
         })
     })
+}
+
+export interface SelectedDataset {
+    id: string;
+    name: string;
+}
+
+export async function queryDatasetList()
+{
+    const LLMList: {data: any, total: number} = { data:[], total: 0};
+    const response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
+    for(let i = 0; i < response.data.data.length; i += 1)
+    {
+        const dataset = response.data.data[i] as {id: string, name: string};
+        LLMList.data.push({id: dataset.id.toString(), name: dataset.name});
+    }
+    return LLMList;
+}
+
+interface FormData {
+    datasetName: string;
+    feedbackType: string;
+    feedbackContent: string;
+    reportReason: string;
+    reportContent: string;
+    annex: File[];
+  }
+
+export async function sendFeedback(jwt: string, formData: FormData) {
+      const response = await fetch(apiCat('/user/create_message_to_admin'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: jwt,
+        },
+        body: JSON.stringify({
+          msg: formData.feedbackContent,
+          msg_type: 'feedback',
+          dataset_name: formData.datasetName,
+          feedback_type: formData.feedbackType,
+          annex: formData.annex || [],
+        }),
+      });
+}
+
+export async function sendReport(jwt: string, formData: FormData) {
+    const response = await fetch(apiCat('/user/create_message_to_admin'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: jwt,
+      },
+      body: JSON.stringify({
+        msg: formData.feedbackContent || formData.reportContent,
+        msg_type: 'report',
+        dataset_name: formData.datasetName,
+        report_reason: formData.reportReason,
+      }),
+    });
 }
