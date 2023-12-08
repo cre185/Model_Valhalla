@@ -8,8 +8,8 @@ const DATASET: AppRouteRecordRaw = {
   meta: {
     locale: 'menu.dataset',
     requiresAuth: true,
-    icon: 'icon-dashboard',
-    order: 5,
+    icon: 'icon-layers',
+    order: 2,
   },
   children: [
     {

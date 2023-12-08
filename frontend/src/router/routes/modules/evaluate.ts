@@ -9,7 +9,7 @@ const Evaluate: AppRouteRecordRaw = {
     locale: 'menu.evaluate',
     requiresAuth: true,
     icon: 'icon-fire',
-    order: 2,
+    order: 3,
   },
   children: [
     {
