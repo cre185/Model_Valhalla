@@ -42,13 +42,16 @@ export default {
     'Help up improve and perfect the website by subjective assigment',
   'change.email.form.title': 'Change your security email',
   'change.email.form.subtitle1': 'Please verify your security phone',
-  'change.email.form.subtitle2': 'Please input your new security email and receive the verify code',
+  'change.email.form.subtitle2':
+    'Please input your new security email and receive the verify code',
   'change.email.form.verify': 'Verify',
   'change.email.form.back': 'Back',
-  'change.email.form.errMsg': 'The email to be changed is the same as the bounded one',
+  'change.email.form.errMsg':
+    'The email to be changed is the same as the bounded one',
   'change.phone.form.title': 'Change your security phone',
   'change.phone.form.subtitle1': 'Please verify your security phone',
-  'change.phone.form.subtitle2': 'Please input your new security phone and receiver the verify code',
+  'change.phone.form.subtitle2':
+    'Please input your new security phone and receiver the verify code',
   'change.phone.form.verify': 'Verify',
   'change.phone.form.back': 'Back',
   'change.phone.form.change': 'Change',

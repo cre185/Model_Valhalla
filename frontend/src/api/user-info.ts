@@ -1,9 +1,7 @@
 import axios from 'axios';
 import apiCat from '@/api/main';
 
-export async function getUsername(
-  userId: string,
-): Promise<string> {
+export async function getUsername(userId: string): Promise<string> {
   try {
     const response = await axios.get(apiCat(`/user/retrieve/${userId}`));
     const responseJson = response.data;
@@ -14,9 +12,7 @@ export async function getUsername(
   }
 }
 
-export async function getRegisterTime(
-  userId: string,
-): Promise<string> {
+export async function getRegisterTime(userId: string): Promise<string> {
   try {
     const response = await axios.get(apiCat(`/user/retrieve/${userId}`));
     const responseJson = response.data;

@@ -9,7 +9,7 @@ const HOME: AppRouteRecordRaw = {
     locale: 'menu.ranking',
     requiresAuth: true,
     icon: 'icon-bar-chart',
-    order: 0,
+    order: 1,
   },
   children: [
     {

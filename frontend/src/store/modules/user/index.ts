@@ -11,7 +11,8 @@ import {
   LoginData,
   phoneVerifyData,
   registerData,
-  register, emailVerifyData,
+  register,
+  emailVerifyData,
 } from '@/api/user';
 import { setToken, clearToken } from '@/utils/auth';
 import { removeRouteListener } from '@/utils/route-listener';
@@ -86,13 +87,13 @@ const useUserStore = defineStore('user', {
       const appStore = useAppStore();
       this.resetInfo();
       clearToken();
-      removeRouteListener();
+      // removeRouteListener();
       appStore.clearServerMenu();
     },
     // Logout
     async logout() {
       try {
-        await userLogout();
+        // await userLogout();
       } finally {
         this.logoutCallBack();
       }

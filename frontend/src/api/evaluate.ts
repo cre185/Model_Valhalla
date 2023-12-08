@@ -4,10 +4,46 @@ import apiCat from '@/api/main';
 import { LLMListRes } from './model-list';
 import { updateComment } from "@/api/comment";
 import { Button } from '@arco-design/web-vue';
+import dashboard from "@/router/routes/modules/dashboard";
+import { SubjectiveEvaluationData } from "@/api/dataset";
 
 export interface SelectedModel {
     id: string;
     name: string;
+}
+
+export async function getStreamResponse(jwt: string, prompt: string, data: SubjectiveEvaluationData, llmId: number, Ref: any){
+    fetch(apiCat('/testing/stream_generate'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: jwt
+        },
+        body: JSON.stringify({
+            llmId: llmId,
+            prompt: prompt
+        }),
+    })
+        .then(response => {
+            const reader = response.body!.getReader();
+            let answer = '';
+            function read() {
+                return reader.read().then(({ done, value }) => {
+                    if (done) {
+                        Ref.scrollTop = Ref.scrollHeight;
+                        return;
+                    }
+                    answer += new TextDecoder('utf-8').decode(value);
+                    data.setAnswer(answer);
+                    Ref.scrollTop = Ref.scrollHeight;
+                    read();
+                });
+            }
+            read();
+        })
+        .catch(error => {
+            console.error('Error fetching stream:', error);
+        });
 }
 
 export async function queryLLMevaluateList()
@@ -20,6 +56,24 @@ export async function queryLLMevaluateList()
         LLMList.data.push({id: model.id.toString(), name: model.name});
     }
     return LLMList;
+}
+
+export async function updateSubjetiveRecord(data: any){
+    return axios.post(apiCat('/ranking/update'), data);
+}
+
+export async function queryDatasetEvaluateList()
+{
+    const DatasetList: {data: any, total: number} = { data:[], total: 0};
+    const response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
+    for(let i = 0; i < response.data.data.length; i += 1)
+    {
+        const dataset = response.data.data[i] as {id: string, name: string, subjective: boolean};
+        if(dataset.subjective){
+            DatasetList.data.push({id: dataset.id, name: dataset.name});
+        }
+    }
+    return DatasetList;
 }
 
 export async function getLLMName(modelID: string)
@@ -128,6 +182,7 @@ class EvaluateRound {
     }
 
     async updateEloResult() {
+        console.log(this.modelA)
         await axios.post(apiCat('/testing/battle_result'), {
             llm1: this.modelA,
             llm2: this.modelB,

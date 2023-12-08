@@ -9,7 +9,6 @@ import localeWorkplace from '@/views/dashboard/workplace/locale/en-US';
 
 import localeMonitor from '@/views/dashboard/monitor/locale/en-US';
 
-
 import localeSubjectiveEvaluation from '@/views/evaluate/subjective-evaluation/locale/en-US';
 import localeAdversarialEvaluation from '@/views/evaluate/adversarial-evaluation/locale/en-US';
 
@@ -55,6 +54,9 @@ export default {
   'menu.faq': 'FAQ',
   'navbar.docs': 'Docs',
   'navbar.action.locale': 'Switch to English',
+  'navbar.welcome': 'Welcome back, ',
+  'navbar.quit': 'Log Out',
+  'logout.success': 'Logout successfully',
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
