@@ -33,18 +33,24 @@
         </a-card>
         <br>
         <a-card class="resultShow">
-          <div id="selectModel">
-            <a-select  v-model="modelSelector" :options="ModelSelectOptions" style="width: 320px"
-                      :placeholder="$t('evaluation.select.models')" />
-            <a-select  v-model="datasetSelector" :options="DatasetSelectOptions" style="width: 320px"
-                       :placeholder="$t('evaluation.select.datasets')" />
-            <a-button type="primary" style="margin: auto 20px auto 20px;" @click="handleSelect">
-              <template #icon>
-                <icon-check></icon-check>
-              </template>
-              {{ $t('evaluation.select.models.confirm') }}
-            </a-button>
-          </div>
+          <a-form id="selectModel" layout="inline" style="margin-bottom: 20px">
+            <a-form-item>
+              <a-select  v-model="modelSelector" :options="ModelSelectOptions" style="width: 260px; margin-right: 10px"
+                         :placeholder="$t('evaluation.select.models')" />
+            </a-form-item>
+            <a-form-item>
+              <a-select  v-model="datasetSelector" :options="DatasetSelectOptions" style="width: 260px"
+                         :placeholder="$t('evaluation.select.datasets')" />
+            </a-form-item>
+            <a-form-item>
+              <a-button html-type="submit" type="primary" style="margin-left: 10px;" @click="handleSelect">
+                <template #icon>
+                  <icon-check/>
+                </template>
+                {{ $t('evaluation.select.models.confirm') }}
+              </a-button>
+            </a-form-item>
+          </a-form>
           <a-row :gutter="16">
             <a-col :span="12">
               <div class="text-box">

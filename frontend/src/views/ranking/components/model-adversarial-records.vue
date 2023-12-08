@@ -67,10 +67,17 @@
 </template>
 
 <script lang="tsx" setup>
-  import {computed, ref, reactive, h, defineSlots, watch, nextTick, onMounted, VNode} from 'vue';
+import {computed, ref, reactive, h, defineSlots, watch, nextTick, onMounted, VNode, defineProps} from 'vue';
   import {useI18n} from "vue-i18n";
   import {TableColumnData, TableData, TableExpandable} from "@arco-design/web-vue/es/table/interface";
-  import {BattleRecordsData, BattleRecords, GetModelInfo, QuestionAndAnswer, queryLLMBattleRecords} from "@/api/model-list";
+import {
+  BattleRecordsData,
+  BattleRecords,
+  GetModelInfo,
+  QuestionAndAnswer,
+  queryLLMBattleRecords,
+  queryDatasetbehaviorList
+} from "@/api/model-list";
   import {Select, Option, Empty} from "@arco-design/web-vue";
   import {getAvatar, getUsername} from "@/api/user-info";
   import cloneDeep from "lodash/cloneDeep";
@@ -79,7 +86,11 @@
   type Column = TableColumnData & { checked?: true };
 
   const { t } = useI18n();
-  const props = defineProps(['modelID']);
+  const props = defineProps({
+    modelID: {
+      type: String,
+    }
+  })
   const columns = computed<TableColumnData[]>( ()=> [
     {
       title: t('ranking.adversarial.selector.title.user'),
@@ -201,8 +212,11 @@
     }
   });
 
-  const fetchData = async () => {
-    battleHistory.value = await queryLLMBattleRecords(props.modelID!);
+  const fetchData = async (id: any) => {
+    if(id === ''){
+      return
+    }
+    battleHistory.value = await queryLLMBattleRecords(id);
     originalData.value = [];
     /* for(const data of battleHistory.value.data){
       console.log(data);
@@ -214,7 +228,6 @@
     } */
 
     originalData.value = battleHistory.value.data.map(async (data) => {
-      console.log(props.modelID);
       const adversarialModel =
           (data.llm1 === props.modelID)
               ? (await GetModelInfo(data.llm2)).name
@@ -251,7 +264,6 @@
     renderData.value = cloneDeep(originalData.value);
   }
 
-  fetchData();
   const handleClick = (index: number) => {
     renderData.value = [];
     if(buttonStatus.value[index] === false){
@@ -321,6 +333,21 @@
     tHead[0].style.fontSize = "16px";
     tHead[0].style.fontWeight = "550";
   })
+
+  watch(
+      () => props.modelID,
+
+      async (newModelid, oldModelid) => {
+        try {
+          await fetchData(newModelid);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      },
+      {
+        immediate: true
+      }
+  );
 </script>
 
 <style lang="less" scoped>
