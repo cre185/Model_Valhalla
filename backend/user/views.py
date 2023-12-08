@@ -306,7 +306,7 @@ class create_messageView(APIView):
         except BaseException:
             return Response({"message": "Invalid data"},
                             status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class create_message_to_adminView(APIView):
     @login_required

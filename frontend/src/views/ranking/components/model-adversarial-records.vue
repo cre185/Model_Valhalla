@@ -248,10 +248,10 @@ import {
       const newItem = {
         id: data.id,
         testUser: data.user_id,
-        testUsername: '1',
-        testUserAvatar: '1',
+        testUsername: await getUsername(data.user_id),
+        testUserAvatar: await getAvatar(data.user_id),
         adversarialModel,
-        battleTime: new Intl.DateTimeFormat('en-US', options).format(data.add_time),
+        battleTime: data.add_time,
         result: data.winner,
         QA: data.result,
         displayRound: data.result.length > 0 ? 0 : -1,
@@ -259,7 +259,6 @@ import {
 
       return newItem;
     });
-
     originalData.value = await Promise.all(originalData.value);
     renderData.value = cloneDeep(originalData.value);
   }

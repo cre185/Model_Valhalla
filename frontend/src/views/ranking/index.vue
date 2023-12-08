@@ -360,6 +360,7 @@
       column: Column,
       index: number
   ) => {
+    console.log(column);
     if (!checked) {
       cloneColumns.value = cloneColumns.value.filter(
           (item) => item.dataIndex !== column.dataIndex
@@ -409,7 +410,9 @@
         const sortable = new Sortable(el, {
           onEnd(e: any) {
             const { oldIndex, newIndex } = e;
-            exchangeArray(cloneColumns.value, oldIndex, newIndex);
+            if(oldIndex < cloneColumns.value.length && oldIndex < cloneColumns.value.length){
+              exchangeArray(cloneColumns.value, oldIndex, newIndex);
+            }
             exchangeArray(showColumns.value, oldIndex, newIndex);
           },
         });

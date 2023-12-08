@@ -83,15 +83,13 @@
 #row1 {
   flex: 3;
   display: flex;
-  border: 1px solid #ccc;
   align-items: center;
-  justify-content: center;x
+  justify-content: center;
 }
 
 #row2 {
   flex: 1;
   display: flex;
-  border: 1px solid #ccc;
 }
 
 #modelTime{
