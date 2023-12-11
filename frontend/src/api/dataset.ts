@@ -95,3 +95,17 @@ export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvalua
         })
     })
 }
+
+
+interface FormDataset {
+    datasetName: string,
+    datasetMain: string,
+    datasetIntroduction: string,
+    datasetApplication: string,
+    datasetPublisher: string,
+    annex: File[],
+}
+export async function sendDataset(jwt: string, formData: FormDataset) {
+    
+
+}

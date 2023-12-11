@@ -1,9 +1,15 @@
 export default {
   'dataset.upload.title': '上传数据集',
+  'dataset.upload.name.title': '数据集名称',
+  'dataset.upload.name.title.default': '请输入内容',
+  'dataset.upload.main.title': '主要内容',
+  'dataset.upload.main.title.default': '请输入内容',
   'dataset.upload.introduction.title': '简介',
   'dataset.upload.introduction.title.default': '请输入内容',
   'dataset.upload.publisher.title': '发布方',
   'dataset.upload.publisher.title.default': '请输入内容',
   'dataset.upload.application.title': '应用领域',
   'dataset.upload.application.title.default': '请输入内容，以，隔开',
+  'dataset.upload.file.title': '上传文件',
+  'dataset.upload.button.title': '上传',
 };
