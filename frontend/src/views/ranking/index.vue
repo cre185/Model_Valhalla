@@ -409,8 +409,10 @@
         const sortable = new Sortable(el, {
           onEnd(e: any) {
             const { oldIndex, newIndex } = e;
-            exchangeArray(cloneColumns.value, oldIndex, newIndex);
-            exchangeArray(showColumns.value, oldIndex, newIndex);
+            if(oldIndex < cloneColumns.value.length && oldIndex < cloneColumns.value.length){
+              exchangeArray(cloneColumns.value, oldIndex, newIndex);
+              exchangeArray(showColumns.value, oldIndex, newIndex);
+            }
           },
         });
       });
