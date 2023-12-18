@@ -96,7 +96,9 @@ status=400
 {
     "target": "接收者id数组",
     "msg": "消息内容",
-    "msg_type": "消息类型"
+    "msg_type": "消息类型",
+    "msg_content": "消息内容",
+    "msg_file": "消息文件"
 }
 ```
 **额外需求**：jwt  
@@ -119,8 +121,7 @@ status=400
 **请求参数**：   
 ```python
 {
-    "msg": "消息内容",
-    "msg_type": "消息类型"
+    # 见上方create_message接口的请求参数，但不包含target字段  
 }
 ```
 **额外需求**：jwt  
@@ -167,7 +168,7 @@ status=200
             "target": "接收者id数组",
             "msg": "消息内容",
             "msg_type": "消息类型",
-            "add_time": "添加时间(未格式化)",
+            "add_time": "添加时间",
             "read": "是否已读"
         },
         ...
@@ -284,8 +285,8 @@ status=200
     "username": "用户名",
     "password": "密码",
     "mobile": "手机号",
-    #"email": "邮箱",
-    #"secret": "邀请码"
+    # "email": "邮箱",
+    # "secret": "邀请码"
 }
 ```
 **返回情况**：  
@@ -520,7 +521,8 @@ status=401
     # "content_size": "数据集大小",
     # "author": "作者",
     # "data_file": "数据集文件",
-    # "add_time": "添加时间(未格式化)"
+    # "domain": "数据集领域",
+    # "tags": "数据集标签"
 }
 ```
 **额外需求**：jwt  
@@ -578,6 +580,7 @@ status=400
     "data": [
         {
             # 见create接口的请求参数
+            # 注意，所有类似的与模型绑定的接口在获取信息时会包含"add_time": "添加时间"字段，但在更新/上传信息时则不能携带该字段  
             ...
         },
         ...
@@ -750,7 +753,7 @@ status=400
     "comments": [
         {
             "comment": "评论内容",
-            "add_time": "添加时间(未格式化)"
+            "add_time": "添加时间"
         },
         ...
     ]
@@ -821,7 +824,7 @@ status=400
         {
             "LLM": "模型id",
             "dataset": "数据集id",
-            "add_time": "添加时间(未格式化)",
+            "add_time": "添加时间",
             "credit": "分数",
         },
         ...
@@ -843,7 +846,7 @@ status=200
     "comments": [
         {
             "comment": "评论内容",
-            "add_time": "添加时间(未格式化)"
+            "add_time": "添加时间"
         },
         ...
     ]
@@ -926,7 +929,7 @@ status=400
             "llm2": "2号模型id",
             "winner": "结果，0为平局，1为1号胜利，-1为1号失败",
             "user_id": "用户id",
-            "add_time": "添加时间(未格式化)"
+            "add_time": "添加时间"
         },
         ...
     ]
@@ -1005,7 +1008,7 @@ status=400
     # "document_name": "文档名称",
     # "document_website": "文档地址",
     # "license": "认证",
-    # "add_time": "添加时间(未格式化)"
+    # "add_time": "添加时间"
     # "elo_credit": "ELO分数",
     # "released_time": "发布时间"
 }
