@@ -85,7 +85,7 @@
   display: flex;
   border: 1px solid #ccc;
   align-items: center;
-  justify-content: center;x
+  justify-content: center;
 }
 
 #row2 {
