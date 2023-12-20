@@ -162,4 +162,4 @@ cython_debug/
 # migrations
 **/migrations/*.py
 # static
-static/
+.static/
