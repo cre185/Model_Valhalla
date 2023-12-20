@@ -122,7 +122,7 @@
       <a-row style="margin-bottom: 16px">
         <a-col :span="12">
           <a-space>
-            <a-button type="primary">
+            <a-button type="primary" @click="UploadClick">
               <template #icon>
                 <icon-plus />
               </template>
@@ -281,6 +281,8 @@
     </a-drawer>
     <DatasetFeedback
     v-model:visible="showDatasetFeedback"/>
+    <DatasetUpload
+    v-model:visible="showDatasetUpload"/>
   </div>
 </template>
 
@@ -299,6 +301,7 @@
   import DatasetDiscussionArea from "@/views/dataset/components/dataset-discussion-area.vue";
   import {getToken} from "@/utils/auth";
   import DatasetFeedback from "./components/datasetfeedback.vue";
+  import DatasetUpload from "./components/datasetupload.vue";
 
   const generateFormModel = () => {
     return {
@@ -399,6 +402,10 @@
   const commentDetails = ref([] as MyComment[]);
   const jwt = getToken();
   const showDatasetFeedback = ref(false);
+  const showDatasetUpload = ref(false);
+  const UploadClick = () => {
+    showDatasetUpload.value = true;
+  }
 
   const feedbackClick = () => {
     showDatasetFeedback.value = true;
@@ -608,7 +615,6 @@
   };
 
   fetchData();
-
 </script>
 
 <style scoped lang="less">
