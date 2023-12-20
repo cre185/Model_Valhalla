@@ -278,5 +278,12 @@ class listSelectedCreditView(APIView):
             data.append(serializer.data)
             data[-1]['LLM_name']=testing.LLMs.objects.get(id=i.LLM_id).name
             data[-1]['dataset_name']=dataset.Dataset.objects.get(id=i.dataset_id).name
+            if i.credit is not None:
+                data[-1]['max_credit'] = max(i.credit_list)
+                data[-1]['min_credit'] = min(i.credit_list)
+            else:
+                data[-1]['max_credit'] = 0
+                data[-1]['min_credit'] = 0
+            del data[-1]['credit_list']
         return Response({'message': 'ok', 'data': data},
                         status=status.HTTP_200_OK)
