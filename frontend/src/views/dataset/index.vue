@@ -279,6 +279,12 @@
         </a-tabs>
       </div>
     </a-drawer>
+    <a-button
+    type="primary"
+    @click="feedbackClick"
+    >Show Dataset Feedback</a-button>
+    <DatasetFeedback
+    v-model:visible="showDatasetFeedback"/>
   </div>
 </template>
 
@@ -296,6 +302,7 @@
   import DatasetPerformance from "@/views/dataset/components/dataset-performance.vue";
   import DatasetDiscussionArea from "@/views/dataset/components/dataset-discussion-area.vue";
   import {getToken} from "@/utils/auth";
+  import DatasetFeedback from "./components/datasetfeedback.vue";
 
   const generateFormModel = () => {
     return {
@@ -395,6 +402,11 @@
   const currentDataset = ref<DatasetData>();
   const commentDetails = ref([] as MyComment[]);
   const jwt = getToken();
+  const showDatasetFeedback = ref(false);
+  
+  const feedbackClick = () => {
+    showDatasetFeedback.value = true;
+  }
 
   const getTagOptions = () => {
     const currentTags = new Set();
@@ -600,6 +612,7 @@
   };
 
   fetchData();
+
 </script>
 
 <style scoped lang="less">

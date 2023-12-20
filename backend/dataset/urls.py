@@ -11,4 +11,5 @@ urlpatterns = [
     path("list", views.listView.as_view(), name="list"),
     path("download/<int:id>", views.downloadView.as_view(), name="download"),
     path("update_tag", views.updateTagView.as_view(), name="update_tag"),
+    path("test_upload", views.testUploadView.as_view(), name="test_upload"),
 ]

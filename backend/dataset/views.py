@@ -152,7 +152,6 @@ class downloadView(APIView):
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
 
-
 class updateTagView(APIView):
     @login_required
     def post(self, request):
@@ -164,3 +163,10 @@ class updateTagView(APIView):
         except BaseException:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
+
+class testUploadView(APIView):
+    def post(self, request):
+        dict = request.FILES
+        dataset = dict['file']
+        # print(dataset.read())
+        return Response({"message": "ok"}, status=status.HTTP_200_OK)

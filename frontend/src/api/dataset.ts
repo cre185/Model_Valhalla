@@ -4,6 +4,7 @@ import * as Papa from 'papaparse';
 import {ref} from "vue";
 import {LLMListRes} from "@/api/model-list";
 import {getAvatar, getUsername} from "@/api/user-info";
+import { FileItem } from '@arco-design/web-vue';
 
 export class SubjectiveEvaluationData{
     readonly prompt: string;
@@ -177,7 +178,105 @@ export async function getModelDetails(){
     return response.data.data;
 }
 
-export async function getModelScore(datasetID: number){
-    const response = await axios.post(apiCat(`ranking/list_selected_credit`), { datasetId: datasetID });
+export async function getModelScore(datasetID: number) {
+    const response = await axios.post(apiCat(`ranking/list_selected_credit`), {datasetId: datasetID});
     return response.data;
 }
+export interface SelectedDataset {
+    id: string;
+    name: string;
+}
+
+export async function simplifiedQueryDatasetList()
+{
+    const LLMList: {data: any, total: number} = { data:[], total: 0};
+    const response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
+    for(let i = 0; i < response.data.data.length; i += 1)
+    {
+        const dataset = response.data.data[i] as {id: string, name: string};
+        LLMList.data.push({id: dataset.id.toString(), name: dataset.name});
+    }
+    return LLMList;
+}
+
+interface FormDatasetData {
+    datasetName: string;
+    feedbackType: string;
+    feedbackContent: string;
+    reportReason: string;
+    reportContent: string;
+    annex: FileItem[];
+    file: File[];
+  }
+
+  export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+    const response = await fetch(apiCat('/user/create_message_to_admin'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: jwt,
+      },
+      body: JSON.stringify({
+        msg: formData.feedbackType,
+        msg_type: 'feedback',
+        msg_content : {
+          'datasetID': formData.datasetName,
+          'feedbackType': formData.feedbackType,
+          'feedbackContent': formData.feedbackContent,
+        },
+        // msg_file: formData.file,
+        // msg_file: formData.annex || [],
+      }),
+    });
+}
+
+  /* export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+
+    const formDataObject = new FormData();
+
+    formDataObject.append('msg', formData.feedbackType);
+    formDataObject.append('msg_type', 'feedback');
+    formDataObject.append('msg_content', JSON.stringify({
+        'datasetID': formData.datasetName,
+        'feedbackType': formData.feedbackType,
+        'feedbackContent': formData.feedbackContent,
+    }));
+
+    if (formData.file) {
+        console.log(formData.file[0]);
+        formDataObject.append('msg_file', formData.file[0]);
+    }
+    // const request = new XMLHttpRequest();
+    // request.open("POST", "http://localhost:8000/user/create_message_to_admin");
+    // request.setRequestHeader('Authorization', jwt);
+    // request.send(formDataObject);
+
+    const response = await fetch('http://localhost:8000/user/create_message_to_admin',{
+    method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': jwt,
+        },
+        body: formDataObject,
+     });
+} */
+
+export async function sendReport(jwt: string, formData: FormDatasetData) {
+    const response = await fetch(apiCat('/user/create_message_to_admin'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: jwt,
+      },
+      body: JSON.stringify({
+        msg: formData.reportReason,
+        msg_type: 'report',
+        msg_content: {
+            'datasetID': formData.datasetName,
+            'reportReason': formData.reportReason,
+            'reportContent': formData.reportContent,
+          }
+      }),
+    });
+}
+
