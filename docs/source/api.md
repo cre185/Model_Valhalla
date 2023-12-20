@@ -865,7 +865,8 @@ status=200
 **请求参数**：  
 ```python
 {
-    "datasetId": "数据集id"
+    # "datasetId": "数据集id",
+    # "llmId": "模型id",
 }
 ```
 **返回情况**：  
@@ -875,10 +876,12 @@ status=200
     "message": "ok",
     "data": [
         {
-            "LLM": "模型id",
+            "id": "分数记录id",
             "dataset": "数据集id",
-            "add_time": "添加时间",
-            "credit": "分数",
+            "LLM": "模型id",
+            "credit": "最终分数",
+            "credit_list": "分数列表",
+            "add_time": "添加时间"
         },
         ...
     ]
