@@ -274,6 +274,9 @@ class listSelectedCreditView(APIView):
             credits = credits.filter(LLM_id=data['llmId'])
         data = []
         for i in credits:
-            data.append(i.credit)
+            serializer = CreditSerializer(i)
+            data.append(serializer.data)
+            data[-1]['LLM_name']=testing.LLMs.objects.get(id=i.LLM_id).name
+            data[-1]['dataset_name']=dataset.Dataset.objects.get(id=i.dataset_id).name
         return Response({'message': 'ok', 'data': data},
                         status=status.HTTP_200_OK)

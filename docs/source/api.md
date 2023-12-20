@@ -878,7 +878,9 @@ status=200
         {
             "id": "分数记录id",
             "dataset": "数据集id",
+            "dataset_name": "数据集名称",
             "LLM": "模型id",
+            "LLM_name": "模型名称",
             "credit": "最终分数",
             "credit_list": "分数列表",
             "add_time": "添加时间"
