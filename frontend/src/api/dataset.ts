@@ -1,6 +1,7 @@
 import axios from 'axios';
 import apiCat from '@/api/main';
 import * as Papa from 'papaparse';
+import { FileItem } from '@arco-design/web-vue';
 import { LLMListRes } from './model-list';
 
 export class SubjectiveEvaluationData{
@@ -120,7 +121,8 @@ interface FormData {
     feedbackContent: string;
     reportReason: string;
     reportContent: string;
-    annex: File[];
+    annex: FileItem[];
+    file: File | null;
   }
 
 export async function sendFeedback(jwt: string, formData: FormData) {
@@ -131,11 +133,15 @@ export async function sendFeedback(jwt: string, formData: FormData) {
           Authorization: jwt,
         },
         body: JSON.stringify({
-          msg: formData.feedbackContent,
+          msg: formData.feedbackType,
           msg_type: 'feedback',
-          dataset_name: formData.datasetName,
-          feedback_type: formData.feedbackType,
-          annex: formData.annex || [],
+          msg_content : {
+            'datasetID': formData.datasetName,
+            'feedbackType': formData.feedbackType,
+            'feedbackContent': formData.feedbackContent,
+          },
+          msg_file: formData.file,
+          // msg_file: formData.annex || [],
         }),
       });
 }
@@ -148,10 +154,13 @@ export async function sendReport(jwt: string, formData: FormData) {
         Authorization: jwt,
       },
       body: JSON.stringify({
-        msg: formData.feedbackContent || formData.reportContent,
+        msg: formData.reportReason,
         msg_type: 'report',
-        dataset_name: formData.datasetName,
-        report_reason: formData.reportReason,
+        msg_content: {
+            'datasetID': formData.datasetName,
+            'reportReason': formData.reportReason,
+            'reportContent': formData.reportContent,
+          }
       }),
     });
 }

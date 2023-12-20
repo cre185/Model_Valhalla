@@ -49,13 +49,19 @@
                 <a-form-item :label="$t('dataset.feedback.dataset.description')">
                     <a-textarea v-model="formModel.feedbackContent"
                         :placeholder="$t('dataset.feedback.dataset.description.default')"
+                        :max-length="{length:100,errorOnly:false}"
+                        allow-clear
+                        show-word-limit
                         style="margin-top: 5px; height: 150px;">
 
                     </a-textarea>
                 </a-form-item>
                 <a-form-item :label="$t('dataset.feedback.dataset.upload')">
-                    <a-upload v-model="formModel.annex">
-
+                    <a-upload  action="http://localhost:8000//user/create_message_to_admin"
+                                :file-list="annex"
+                                @success="uploadChange"
+                                :auto-upload="false">
+                        
                     </a-upload>
                 </a-form-item>
             </a-form>
@@ -85,6 +91,9 @@
                 <a-form-item :label="$t('dataset.feedback.dataset.description')">
                     <a-textarea v-model="formModel.reportContent"
                         :placeholder="$t('dataset.feedback.dataset.description.default')"
+                        :max-length="{length:100,errorOnly:false}"
+                        allow-clear
+                        show-word-limit
                         style="margin-top: 5px; height: 150px;">
 
                     </a-textarea>
@@ -96,6 +105,7 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { FileItem } from '@arco-design/web-vue';
 import { queryDatasetList, SelectedDataset, sendFeedback, sendReport} from "@/api/dataset";
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import {getToken} from "@/utils/auth";
@@ -109,13 +119,16 @@ const generateFormModel = () => {
         feedbackContent: '',
         reportReason: '',
         reportContent: '',
-        annex: [] as File[],
+        annex: [] as FileItem[],
+        file: null as File | null,
     }
 };
+
 const feedbackColor = ref('rgb(45, 92, 246)');
 const reportColor = ref('#000000');
 const formModel = ref(generateFormModel());
 const { t } = useI18n();
+
 const SelectedModelInfo = ref<SelectedDataset[]>();
 SelectedModelInfo.value = (await queryDatasetList()).data;
 const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
@@ -124,8 +137,20 @@ const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
         value: model.id,
     }));
 });
+const uploadChange = (fileItem: FileItem) => {
+    formModel.value.annex.push(fileItem);
+    formModel.value.file=fileItem.file!;
+    // userStore.setInfo({ avatar: fileItem.url });
+    // localStorage.setItem('userStore', JSON.stringify(userStore.$state));
+  };
 const handleSubmit = async () => {
-    await sendReport(getToken()!, formModel.value);
+    if(currentForm.value === 'feedbackForm') {
+        await sendFeedback(getToken()!, formModel.value);
+    }
+    if(currentForm.value === 'reportForm') {
+        await sendReport(getToken()!, formModel.value);
+    }
+    
     formModel.value = generateFormModel();
 }
 const switchClick = async (formType: string) => {
