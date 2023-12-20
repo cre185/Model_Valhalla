@@ -218,14 +218,6 @@ import {
     }
     battleHistory.value = await queryLLMBattleRecords(id);
     originalData.value = [];
-    /* for(const data of battleHistory.value.data){
-      console.log(data);
-      originalData.value.push({id: data.id, testUser: data.user_id, testUsername: '1', testUserAvatar: '1',
-        adversarialModel: (data.llm1 === props.modelID) ? (await GetModelInfo(data.llm2)).name: (await GetModelInfo(data.llm1)).name,
-        battleTime: data.add_time, result: data.winner, QA: data.result, displayRound: data.result.length > 0 ? 0 : -1,
-      });
-      console.log(originalData);
-    } */
 
     originalData.value = battleHistory.value.data.map(async (data) => {
       const adversarialModel =

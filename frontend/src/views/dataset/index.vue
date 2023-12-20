@@ -130,7 +130,7 @@
             </a-button>
             <a-button>
               <template #icon>
-                <icon-exclamation  />
+                <icon-exclamation/>
               </template>
               {{ $t('searchDataset.operation.feedback') }}
             </a-button>
@@ -224,40 +224,59 @@
     >
       <template #title>
         <header class="drawer-model-title">
-          <div class="drawer-model-title-text">
-            <p>{{ currentDataset.name }}</p>
-          </div>
-          <a-button
-              class="llm-details-subscribe-btn"
-              type="primary"
-              size="large"
-          >
-            <template #icon>
-              <icon-star :size="30"/>
-            </template>
-            <p>{{ $t('dataset.details.subscribe.btn') }}</p>
-          </a-button>
+          <a-space direction="horizontal" style="margin-top: 8vh; margin-left: -6vw; padding: 2vh 0vw 3vh 3vw;
+          border-bottom: 5px solid lightgrey ">
+            <a-avatar><img :src="currentDataset.uploadUserAvatar"/></a-avatar>
+            <p style="padding-right: 20vw">
+              {{`${currentDataset.uploadUsername} · ${currentDataset.createdTime} ${$t('searchDataset.operation.create')}`}}
+            </p>
+            <a-button shape="round" type="primary" style="width: 5.5vw" @click="handleDownload(currentDataset)">
+              <template #icon>
+                <icon-download/>
+              </template>
+              <p style="font-weight: bolder">
+                {{ $t('searchDataset.columns.operations.download') }}
+              </p>
+            </a-button>
+            <a-button shape="round" style="margin-left: 1.5vw; width: 5.5vw">
+              <template #icon>
+                <icon-exclamation/>
+              </template>
+              <p style="font-weight: bolder">
+                {{ $t('searchDataset.operation.feedback') }}
+              </p>
+            </a-button>
+          </a-space>
+          <a-space direction="horizontal">
+            <div class="drawer-model-title-text">
+              <p>{{ currentDataset.name }}</p>
+            </div>
+            <a-button
+                class="llm-details-subscribe-btn"
+                type="primary"
+                size="large"
+            >
+              <template #icon>
+                <icon-star :size="30"/>
+              </template>
+              <p>{{ $t('dataset.details.subscribe.btn') }}</p>
+            </a-button>
+          </a-space>
         </header>
       </template>
       <div>
-        <a-tabs size="large">
+        <a-tabs size="large" style="margin-top: 7vh">
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
-            <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
+            <DatasetProfile :modelid="ModelID"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('dataset.details.testScore')">
-            <DatasetProfile :modelid="ModelID" />
+            <DatasetPerformance :modelid="ModelID" />
           </a-tab-pane>
           <a-tab-pane key="3" :title="$t('dataset.details.discussions')">
-            <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
-                                 @change-comment="handleChangeComment" />
           </a-tab-pane>
         </a-tabs>
       </div>
     </a-drawer>
-    <!--<Breadcrumb :items="['menu.dataset', 'menu.dataset.details']" />-->
-    <!--<dataset-profile />-->
-    <!--<dataset-discussion-area :commentDetails="commentDetails" :datasetId=ModelID
-                         @change-comment="handleChangeComment" />-->
   </div>
 </template>
 
@@ -272,6 +291,7 @@
   import {DatasetData, queryDatasetList, updateDatasetTags, getDatasetFile } from "@/api/dataset";
   import {getComment} from "@/api/comment";
   import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";
+  import DatasetPerformance from "@/views/dataset/components/dataset-performance.vue";
   import DatasetDiscussionArea from "@/views/dataset/components/dataset-discussion-area.vue";
 
   const generateFormModel = () => {
@@ -403,7 +423,6 @@
     setLoading(true);
     try {
       const data = await queryDatasetList();
-      console.log('ok');
       renderData.value = data.data;
       getTagOptions();
       getDomainOptions();
@@ -475,6 +494,7 @@
           document.getElementById(`tagInput${renderData.value![i].id}`)!.childNodes[1].focus();
         }
       }
+      getTagOptions();
     });
   }
 
@@ -524,7 +544,6 @@
       drawerHeader.style.height = '220px';
       drawerHeader.style.border = '0';
     }
-    console.log(drawerHeader);
 
     const drawerTitle = document.querySelector('.arco-drawer-title');
     if (drawerTitle) {
@@ -598,5 +617,20 @@
       margin-left: 12px;
       cursor: pointer;
     }
+  }
+
+  .drawer-model-title-text{
+    margin-top: -1vh;
+    font-size: 60px;
+  }
+
+  .llm-details-subscribe-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -3vh;
+    margin-left: 2vw;
+    padding: 5px 20px;
+    font-size: 18px;
   }
 </style>

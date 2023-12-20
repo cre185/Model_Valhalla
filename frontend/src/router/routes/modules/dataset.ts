@@ -15,7 +15,7 @@ const DATASET: AppRouteRecordRaw = {
     {
       path: 'details',
       name: 'datasetDetails',
-      component: () => import('@/views/dataset/components/dataset-performance.vue'),
+      component: () => import('@/views/dataset/index.vue'),
       meta: {
         locale: 'menu.dataset.details',
         requiresAuth: true,

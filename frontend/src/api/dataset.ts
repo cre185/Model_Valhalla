@@ -3,6 +3,7 @@ import apiCat from '@/api/main';
 import * as Papa from 'papaparse';
 import {ref} from "vue";
 import {LLMListRes} from "@/api/model-list";
+import {getAvatar, getUsername} from "@/api/user-info";
 
 export class SubjectiveEvaluationData{
     readonly prompt: string;
@@ -82,6 +83,8 @@ export interface DatasetData {
     newTag: string;
     inputRef: any;
     toDownload: boolean;
+    uploadUserAvatar: string;
+    uploadUsername: string;
 }
 
 export interface DatasetListRes {
@@ -110,10 +113,11 @@ export async function queryDatasetList() {
             add_time: string;
             description: string;
             subjective: boolean;
-            author_id: number;
+            author: number;
             domain: number;
             tag: string[];
         };
+        console.log(dataset);
         DatasetList.data.push({
             id: dataset.id,
             name: dataset.name,
@@ -123,14 +127,22 @@ export async function queryDatasetList() {
             contentSize: dataset.content_size,
             createdTime: dataset.add_time,
             description: dataset.description,
-            authorId: dataset.author_id,
+            authorId: dataset.author,
             tags: dataset.tag,
             showInput: false,
             newTag: '',
             inputRef: ref(null),
             toDownload: false,
+            uploadUserAvatar: '',
+            uploadUsername: '',
         });
     }
+    DatasetList.data.map(async (datasetData: DatasetData) => {
+        datasetData.uploadUserAvatar = await getAvatar(datasetData.authorId.toString());
+        datasetData.uploadUsername = await getUsername(datasetData.authorId.toString());
+        console.log(datasetData.uploadUsername);
+        return datasetData;
+    })
     return DatasetList;
 }
 
