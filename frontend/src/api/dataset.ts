@@ -102,6 +102,6 @@ export async function getModelDetails(){
 }
 
 export async function getModelScore(datasetID: number){
-    const response = await axios.post(apiCat(`ranking/list_selected_credit`), { datasetId: datasetID });
-    return response.data;
+    const response = await axios.post(apiCat(`/ranking/list_selected_credit`), { datasetId: datasetID });
+    return response.data.data;
 }
