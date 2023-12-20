@@ -1,3 +1,7 @@
+import os
+from uuid import uuid4
+
+from django.db import transaction
 from django.http import StreamingHttpResponse
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
@@ -106,14 +110,31 @@ class uploadView(APIView):
         if not llm:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
-        dict = request.FILES
-        logo = dict['file']
-        llm.logo = logo
-        llm.save()
+        logo = request.FILES.get('file')
+        if not logo:
+            return Response({"message": "Invalid logo"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # rename file
+        logo_name = str(llm.id) + '_' + uuid4().hex + \
+            '.' + logo.name.split('.')[-1]
+        with transaction.atomic():
+            # remove old file
+            if llm.logo:
+                try:
+                    old_file_path = llm.logo.path
+                    if os.path.isfile(old_file_path):
+                        os.remove(old_file_path)
+                        llm.logo.save(logo_name, logo)
+                except Exception:
+                    return Response({"message": "Upload failed, please try again later."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                llm.logo.save(logo_name, logo)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 
 class testView(APIView):
+    # todo: change it to non-blocking
     @login_required
     def post(self, request):
         data = request.data

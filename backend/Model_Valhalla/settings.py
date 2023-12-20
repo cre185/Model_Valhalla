@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'user.middleware.middlewares.DateTimeFormater',
 ]
 
 ROOT_URLCONF = 'Model_Valhalla.urls'

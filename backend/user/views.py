@@ -1,8 +1,11 @@
 import datetime
+import os
 import random
+from uuid import uuid4
 
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db import transaction
 from rest_framework import generics, mixins, status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -119,7 +122,6 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
                             status=status.HTTP_401_UNAUTHORIZED)
         data = result.data
         data['message'] = 'ok'
-        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
 
     @login_required
@@ -130,7 +132,6 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
                             status=status.HTTP_401_UNAUTHORIZED)
         data = result.data
         data['message'] = 'ok'
-        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -147,7 +148,6 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data = result.data
         data['message'] = 'ok'
         data['password'] = '**********'
-        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -167,10 +167,26 @@ class retrievePasswordView(APIView):
 class updateAvatarView(APIView):
     @login_required
     def post(self, request):
-        dict = request.FILES
-        image = dict['file']
-        request.user.avatar = image
-        request.user.save()
+        image = request.FILES.get('file')
+        if not image:
+            return Response({"message": "Invalid image"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # rename image
+        image_name = str(request.user.id) + '_' + \
+            uuid4().hex + '.' + image.name.split('.')[-1]
+        with transaction.atomic():
+            # remove old file
+            if request.user.avatar and request.user.avatar.name.split('/')[-1] != 'default.jpg':
+                try:
+                    old_file_path = request.user.avatar.path
+                    if os.path.isfile(old_file_path):
+                        os.remove(old_file_path)
+                        request.user.avatar.save(image_name, image)
+                except Exception:
+                    return Response({"message": "Upload failed, please try again later."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                request.user.avatar.save(image_name, image)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 
@@ -298,6 +314,13 @@ class create_messageView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             msg_id = serializer.data['id']
+            try:
+                upload_file = request.FILES['file']
+                msg = Msg.objects.get(id=msg_id)
+                msg.msg_file = upload_file
+                msg.save()
+            except BaseException:
+                pass
             for target in data['target']:
                 msg_target = MsgTarget.objects.create(
                     msg_id=msg_id, target_id=target)
@@ -320,6 +343,13 @@ class create_message_to_adminView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             msg_id = serializer.data['id']
+            try:
+                upload_file = request.FILES['file']
+                msg = Msg.objects.get(id=msg_id)
+                msg.msg_file = upload_file
+                msg.save()
+            except BaseException:
+                pass
             admin = User.objects.filter(is_admin=True)
             for target in admin:
                 msg_target = MsgTarget.objects.create(
