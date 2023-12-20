@@ -273,6 +273,8 @@
             <DatasetPerformance :modelid="ModelID" />
           </a-tab-pane>
           <a-tab-pane key="3" :title="$t('dataset.details.discussions')">
+            <DatasetDiscussionArea :comment-details="commentDetails" :dataset-id="currentDataset.id.toString()"
+            @change-comment="handleChangeComment"/>
           </a-tab-pane>
         </a-tabs>
       </div>
@@ -289,10 +291,11 @@
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import {DatasetData, queryDatasetList, updateDatasetTags, getDatasetFile } from "@/api/dataset";
-  import {getComment} from "@/api/comment";
+  import MyComment, {getComment, updateComment} from "@/api/comment";
   import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";
   import DatasetPerformance from "@/views/dataset/components/dataset-performance.vue";
   import DatasetDiscussionArea from "@/views/dataset/components/dataset-discussion-area.vue";
+  import {getToken} from "@/utils/auth";
 
   const generateFormModel = () => {
     return {
@@ -390,6 +393,8 @@
   const domainOptions = ref<SelectOptionData[]>([]);
   const visible = ref(false);
   const currentDataset = ref<DatasetData>();
+  const commentDetails = ref([] as MyComment[]);
+  const jwt = getToken();
 
   const getTagOptions = () => {
     const currentTags = new Set();
@@ -538,6 +543,15 @@
     visible.value = true;
   }
 
+  const handleChangeComment = async (index: number, content: MyComment) => {
+    await updateComment(currentDataset.value!.id.toString()!, content, jwt!, false);
+    if (index === -1) {
+      commentDetails.value.push(content);
+    } else {
+      commentDetails.value[index].children.push(content);
+    }
+  };
+
   const setDrawer = () => {
     const drawerHeader = document.querySelector('.arco-drawer-header');
     if (drawerHeader) {
@@ -581,6 +595,8 @@
     if(firstTab){
       firstTab.style.margin = '0 25px 0 60px';
     }
+
+    getComment(currentDataset.value!.id.toString(), commentDetails, jwt!, false);
   };
 
   fetchData();

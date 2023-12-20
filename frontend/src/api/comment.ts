@@ -220,7 +220,7 @@ export async function updateComment(
         newComment.commentId = response.data.id;
     }
     else {
-        const response = await axios.post(apiCat('/ranking/comment'),{ datasetId: modelId, comment: newComment.content, respond_to: newComment.toId }, {
+        const response = await axios.post(apiCat('/ranking/comment'),{ dataset: modelId, comment: newComment.content, respond_to: newComment.toId }, {
             headers: {
                 Authorization: jwt,
             },
