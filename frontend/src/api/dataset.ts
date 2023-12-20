@@ -1,6 +1,7 @@
 import axios from 'axios';
 import apiCat from '@/api/main';
 import * as Papa from 'papaparse';
+import { FileItem } from '@arco-design/web-vue';
 
 export class SubjectiveEvaluationData{
     private prompt: string;
@@ -98,14 +99,26 @@ export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvalua
 
 
 interface FormDataset {
-    datasetName: string,
-    datasetMain: string,
-    datasetIntroduction: string,
-    datasetApplication: string,
-    datasetPublisher: string,
-    annex: File[],
+    datasetName?: string,
+    datasetIntroduction?: string,
+    datasetApplication?: string,
+    datasetTags?: string[],
+    annex?: FileItem[],
 }
 export async function sendDataset(jwt: string, formData: FormDataset) {
-    
+    await fetch(apiCat('/dataset/create'), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: jwt,
+        },
+        body: JSON.stringify({
+            name: formData.datasetName,
+            domain: formData.datasetApplication,
+            tag: formData.datasetTags,
+            
+            // author: formData.datasetPublisher
+        }),
+    });
 
 }
