@@ -44,6 +44,7 @@
     - [like\_dataset\_comment](#like_dataset_comment)
     - [like\_llm\_comment](#like_llm_comment)
     - [list](#list-1)
+    - [list\_selected\_credit](#list_selected_credit)
     - [llm\_comment](#llm_comment)
     - [retrieve](#retrieve-2)
     - [update](#update-2)
@@ -856,6 +857,37 @@ status=400
     ]
 },
 status=200
+```
+#### list_selected_credit  
+**功能描述**：获取符合某些条件的分数情况。  
+**请求方式**：POST  
+**请求URL**：`/ranking/list_selected_credit`  
+**请求参数**：  
+```python
+{
+    "datasetId": "数据集id"
+}
+```
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "data": [
+        {
+            "LLM": "模型id",
+            "dataset": "数据集id",
+            "add_time": "添加时间",
+            "credit": "分数",
+        },
+        ...
+    ]
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
 ```
 #### llm_comment  
 **功能描述**：获取某一模型下的全部评论。  

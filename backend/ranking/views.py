@@ -278,10 +278,10 @@ class likeLCommentView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class listSelectedDatasetView(APIView):
+class listSelectedCreditView(APIView):
     def post(self, request):
         data = request.data
-        dataset_id = data['id']
+        dataset_id = data['datasetId']
         try:
             dataset.Dataset.objects.get(id=dataset_id)
         except BaseException:
