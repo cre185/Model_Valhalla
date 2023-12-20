@@ -59,9 +59,6 @@ class updateView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-#
-
-
 class listView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Credit.objects.all()
     serializer_class = CreditSerializer
@@ -180,8 +177,6 @@ class datasetCommentView(APIView):
                 user=request.user, comment=i, dislike=False)) > 0
             data[-1]['if_dislike'] = len(DatasetLike.objects.filter(
                 user=request.user, comment=i, dislike=True)) > 0
-            data[-1]['add_time'] = data[-1]['add_time'].split(
-                'T')[0] + ' ' + data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data},
                         status=status.HTTP_200_OK)
 
@@ -206,8 +201,6 @@ class llmCommentView(APIView):
                 user=request.user, comment=i, dislike=False)) > 0
             data[-1]['if_dislike'] = len(LLMLike.objects.filter(
                 user=request.user, comment=i, dislike=True)) > 0
-            data[-1]['add_time'] = data[-1]['add_time'].split(
-                'T')[0] + ' ' + data[-1]['add_time'].split('T')[1][:5]
         return Response({'message': 'ok', 'data': data},
                         status=status.HTTP_200_OK)
 
