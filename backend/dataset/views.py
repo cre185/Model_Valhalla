@@ -10,6 +10,7 @@ from ranking import models as ranking
 from testing import models as testing
 from utils.admin_required import admin_required
 from utils.jwt import login_required
+from utils.verify_dataset import verify_dataset
 
 from .models import *
 from .serializers import *
@@ -50,6 +51,12 @@ class uploadView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
         # rename file
         dataset_name = str(target.id) + '_' + uuid4().hex + '.csv'
+        content = dataset.read().decode('utf-8')
+        try:
+            target.subjective, target.content_size = verify_dataset(content)
+        except Exception:
+            return Response({"message": "Invalid dataset file"},
+                            status=status.HTTP_400_BAD_REQUEST)
         with transaction.atomic():
             # remove old file
             if target.data_file:
@@ -58,14 +65,13 @@ class uploadView(APIView):
                     if os.path.isfile(old_file_path):
                         os.remove(old_file_path)
                         target.data_file.save(dataset_name, dataset)
+                        target.save()
                 except Exception:
                     return Response({"message": "Upload failed, please try again later."},
                                     status=status.HTTP_400_BAD_REQUEST)
             else:
                 target.data_file.save(dataset_name, dataset)
-        # update content size
-        target.content_size = len(dataset.read().decode('utf-8').split('\n')) - 1
-        target.save()
+                target.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 
