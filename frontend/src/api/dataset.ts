@@ -118,7 +118,6 @@ export async function queryDatasetList() {
             domain: number;
             tag: string[];
         };
-        console.log(dataset);
         DatasetList.data.push({
             id: dataset.id,
             name: dataset.name,
@@ -141,7 +140,6 @@ export async function queryDatasetList() {
     DatasetList.data.map(async (datasetData: DatasetData) => {
         datasetData.uploadUserAvatar = await getAvatar(datasetData.authorId.toString());
         datasetData.uploadUsername = await getUsername(datasetData.authorId.toString());
-        console.log(datasetData.uploadUsername);
         return datasetData;
     })
     return DatasetList;

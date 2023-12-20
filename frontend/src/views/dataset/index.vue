@@ -128,7 +128,7 @@
               </template>
               {{ $t('searchDataset.operation.create') }}
             </a-button>
-            <a-button>
+            <a-button @click="feedbackClick">
               <template #icon>
                 <icon-exclamation/>
               </template>
@@ -279,10 +279,6 @@
         </a-tabs>
       </div>
     </a-drawer>
-    <a-button
-    type="primary"
-    @click="feedbackClick"
-    >Show Dataset Feedback</a-button>
     <DatasetFeedback
     v-model:visible="showDatasetFeedback"/>
   </div>
@@ -403,7 +399,7 @@
   const commentDetails = ref([] as MyComment[]);
   const jwt = getToken();
   const showDatasetFeedback = ref(false);
-  
+
   const feedbackClick = () => {
     showDatasetFeedback.value = true;
   }

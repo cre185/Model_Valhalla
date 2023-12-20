@@ -57,11 +57,11 @@
                     </a-textarea>
                 </a-form-item>
                 <a-form-item :label="$t('dataset.feedback.dataset.upload')">
-                    <a-upload   action="http://127.0.0.1:8000/dataset/test_upload" 
+                    <a-upload   action="http://127.0.0.1:8000/dataset/test_upload"
                                :file-list="formModel.annex"
                                 @success="uploadChange"
                                 >
-                        
+
                     </a-upload>
                 </a-form-item>
             </a-form>
@@ -106,7 +106,7 @@
 import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { FileItem } from '@arco-design/web-vue';
-import { queryDatasetList, SelectedDataset, sendFeedback, sendReport} from "@/api/dataset";
+import { simplifiedQueryDatasetList, SelectedDataset, sendFeedback, sendReport} from "@/api/dataset";
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import {getToken} from "@/utils/auth";
 
@@ -130,7 +130,7 @@ const formModel = ref(generateFormModel());
 const { t } = useI18n();
 
 const SelectedModelInfo = ref<SelectedDataset[]>();
-SelectedModelInfo.value = (await queryDatasetList()).data;
+SelectedModelInfo.value = (await simplifiedQueryDatasetList()).data;
 const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
     return (SelectedModelInfo.value || []).map((model) => ({
         label: model.name,
@@ -157,7 +157,7 @@ const handleSubmit = async () => {
     if(currentForm.value === 'reportForm') {
         await sendReport(getToken()!, formModel.value);
     }
-    
+
     formModel.value = generateFormModel();
 }
 const switchClick = async (formType: string) => {
