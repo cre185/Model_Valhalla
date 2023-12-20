@@ -12,7 +12,8 @@
 
   onMounted(async () => {
     try {
-      const response = await axios.get(apiCat(`/dataset/retrieve/${props.datasetID}`));
+      // const response = await axios.get(apiCat(`/dataset/retrieve/${props.datasetID}`));
+      const response = await axios.get(apiCat(`/dataset/retrieve/1`));
       const responseJson = response.data;
       description.value = responseJson.description;
       author.value = responseJson.author;

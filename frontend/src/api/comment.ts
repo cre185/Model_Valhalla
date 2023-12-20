@@ -155,6 +155,7 @@ class MyComment {
 export default MyComment;
 
 export async function getComment(ModelID: string, commentDetails: any, jwt:string, flag=true) {
+    console.log(1);
     let response;
     if (flag) {
         response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`), {headers: {

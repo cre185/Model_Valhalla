@@ -95,3 +95,13 @@ export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvalua
         })
     })
 }
+
+export async function getModelDetails(){
+    const response = await axios.get(apiCat(`/testing/list`));
+    return response.data.data;
+}
+
+export async function getModelScore(datasetID: number){
+    const response = await axios.post(apiCat(`ranking/list_selected_credit`), { datasetId: datasetID });
+    return response.data;
+}
