@@ -1,3 +1,6 @@
+from uuid import uuid4
+
+from django.db import transaction
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -39,10 +42,17 @@ class uploadView(APIView):
         if not target:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
-        dict = request.FILES
-        dataset = dict['file']
-        target.data_file = dataset
-        target.save()
+        dataset = request.FILES.get('file')
+        if not dataset:
+            return Response({"message": "Invalid dataset file"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # rename file
+        dataset_name = str(target.id) + '_' + uuid4().hex + '.csv'
+        with transaction.atomic():
+            # remove old file
+            if target.data_file:
+                target.data_file.delete()
+            target.data_file.save(dataset_name, dataset)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 

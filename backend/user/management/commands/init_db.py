@@ -1,10 +1,10 @@
+import pandas as pd
 from django.core.management.base import BaseCommand
 
 from dataset.models import *
 from ranking.models import *
 from testing.models import *
 from user.models import *
-import pandas as pd
 
 
 class Command(BaseCommand):
@@ -14,14 +14,14 @@ class Command(BaseCommand):
         # Initalize the database
         # Create users
         df = pd.read_csv("user/management/commands/data/user.csv")
-        user=[]
+        user = []
         for index, row in df.iterrows():
             user.append(User(
-                username = row['username'],
-                password = row['password'],
-                mobile = row['mobile'],
-                email = row['email'],
-                avatar = row['avatar']))
+                username=row['username'],
+                password=row['password'],
+                mobile=row['mobile'],
+                email=row['email'],
+                avatar=row['avatar']))
             if index == 0:
                 user[index].is_admin = True
             user[index].save()
@@ -31,11 +31,11 @@ class Command(BaseCommand):
             dataset = Dataset(
                 name=row['name'],
                 description=row['description'],
-                author = user[0],
-                domain = row['domain'],
+                author=user[0],
+                domain=row['domain'],
                 data_file=row['data_file'],
                 subjective=row['subjective'])
-            dataset.save()  
+            dataset.save()
         # Create the four standard llms
         df = pd.read_csv("user/management/commands/data/llm.csv")
         for index, row in df.iterrows():
@@ -54,12 +54,13 @@ class Command(BaseCommand):
         credit_list = [31, 41, 25, 29, 29, 44, 22, 28, 37, 37, 37, 42]
         for i in range(Dataset.objects.count()):
             for j in range(LLMs.objects.count()):
-                dataset = Dataset.objects.get(id=i+1)
-                llm = LLMs.objects.get(id=j+1)
+                dataset = Dataset.objects.get(id=i + 1)
+                llm = LLMs.objects.get(id=j + 1)
                 credit = Credit(dataset=dataset, LLM=llm)
                 if i * LLMs.objects.count() + j < len(credit_list):
                     credit.credit = credit_list[i * LLMs.objects.count() + j]
                 if dataset.subjective:
-                    subjective_credit = SubjectiveCredit(dataset=dataset, LLM=llm)
+                    subjective_credit = SubjectiveCredit(
+                        dataset=dataset, LLM=llm)
                     subjective_credit.save()
                 credit.save()
