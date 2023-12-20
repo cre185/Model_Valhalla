@@ -253,7 +253,19 @@ class CreditModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(json_data['data'][0], 60)
+        self.assertEqual(json_data['data'][0]['credit'], 60)
+        response = self.client.post(
+            '/ranking/list_selected_credit',
+            {
+                "llmId": llm_id,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(json_data['data'][0]['credit'], 60)
 
     def test_average(self):
         # init credits first
