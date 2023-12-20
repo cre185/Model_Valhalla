@@ -1,4 +1,5 @@
 import datetime
+import os
 import random
 from uuid import uuid4
 
@@ -175,10 +176,17 @@ class updateAvatarView(APIView):
             uuid4().hex + '.' + image.name.split('.')[-1]
         with transaction.atomic():
             # remove old file
-            if request.user.avatar and request.user.avatar != 'default.jpg':
-                print(request.user.avatar.name)
-                request.user.avatar.delete()
-            request.user.avatar.save(image_name, image)
+            if request.user.avatar and request.user.avatar.name.split('/')[-1] != 'default.jpg':
+                try:
+                    old_file_path = request.user.avatar.path
+                    if os.path.isfile(old_file_path):
+                        os.remove(old_file_path)
+                        request.user.avatar.save(image_name, image)
+                except Exception:
+                    return Response({"message": "Upload failed, please try again later."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                request.user.avatar.save(image_name, image)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 

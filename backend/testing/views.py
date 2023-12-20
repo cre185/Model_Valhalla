@@ -1,3 +1,4 @@
+import os
 from uuid import uuid4
 
 from django.db import transaction
@@ -119,8 +120,16 @@ class uploadView(APIView):
         with transaction.atomic():
             # remove old file
             if llm.logo:
-                llm.logo.delete()
-            llm.logo.save(logo_name, logo)
+                try:
+                    old_file_path = llm.logo.path
+                    if os.path.isfile(old_file_path):
+                        os.remove(old_file_path)
+                        llm.logo.save(logo_name, logo)
+                except Exception:
+                    return Response({"message": "Upload failed, please try again later."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                llm.logo.save(logo_name, logo)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 

@@ -1,3 +1,4 @@
+import os
 from uuid import uuid4
 
 from django.db import transaction
@@ -23,6 +24,7 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
     @login_required
     def post(self, request):
         request.data['author'] = request.user.id
+        request.data['content_size'] = 0
         headers = self.create(request)
         data = Dataset.objects.get(id=headers.data['id'])
         for llm in testing.LLMs.objects.all():
@@ -51,8 +53,19 @@ class uploadView(APIView):
         with transaction.atomic():
             # remove old file
             if target.data_file:
-                target.data_file.delete()
-            target.data_file.save(dataset_name, dataset)
+                try:
+                    old_file_path = target.data_file.path
+                    if os.path.isfile(old_file_path):
+                        os.remove(old_file_path)
+                        target.data_file.save(dataset_name, dataset)
+                except Exception:
+                    return Response({"message": "Upload failed, please try again later."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                target.data_file.save(dataset_name, dataset)
+        # update content size
+        target.content_size = len(dataset.read().decode('utf-8').split('\n')) - 1
+        target.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 

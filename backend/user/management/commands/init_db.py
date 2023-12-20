@@ -1,3 +1,5 @@
+import os
+import shutil
 import pandas as pd
 from django.core.management.base import BaseCommand
 
@@ -64,3 +66,11 @@ class Command(BaseCommand):
                         dataset=dataset, LLM=llm)
                     subjective_credit.save()
                 credit.save()
+
+        # Copy the static files
+        src_dir = "user/management/commands/static"
+        dst_dir = "static"
+
+        if(os.path.exists(dst_dir)):
+            shutil.rmtree(dst_dir)
+        shutil.copytree(src_dir, dst_dir)

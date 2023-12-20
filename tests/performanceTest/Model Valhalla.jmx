@@ -107,7 +107,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.delayedStart">true</boolProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -358,7 +358,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.delayedStart">true</boolProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -521,8 +521,8 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="upload_dataset" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\static\data\ceval_select_lite.csv" elementType="HTTPFileArg">
-                <stringProp name="File.path">D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\static\data\ceval_select_lite.csv</stringProp>
+              <elementProp name="D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\user\management\commands\static\data\ceval_select.csv" elementType="HTTPFileArg">
+                <stringProp name="File.path">D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\user\management\commands\static\data\ceval_select.csv</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
                 <stringProp name="File.mimetype">text/csv</stringProp>
               </elementProp>
@@ -606,7 +606,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.delayedStart">true</boolProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -769,9 +769,9 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="upload_logo" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\static\logo\mistral_7b.png" elementType="HTTPFileArg">
+              <elementProp name="D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\user\management\commands\static\logo\mistral_7b.png" elementType="HTTPFileArg">
                 <stringProp name="File.mimetype">image/png</stringProp>
-                <stringProp name="File.path">D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\static\logo\mistral_7b.png</stringProp>
+                <stringProp name="File.path">D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\user\management\commands\static\logo\mistral_7b.png</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
