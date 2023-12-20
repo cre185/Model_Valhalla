@@ -144,8 +144,9 @@ interface FormDatasetData {
         // msg_file: formData.annex || [],
       }),
     });
-  
-  /*export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+}
+
+  /* export async function sendFeedback(jwt: string, formData: FormDatasetData) {
     
     const formDataObject = new FormData();
 
@@ -174,7 +175,7 @@ interface FormDatasetData {
         },
         body: formDataObject,
      });
-}*/
+} */
 
 export async function sendReport(jwt: string, formData: FormDatasetData) {
     const response = await fetch(apiCat('/user/create_message_to_admin'), {
