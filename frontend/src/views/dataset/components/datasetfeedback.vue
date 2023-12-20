@@ -57,10 +57,10 @@
                     </a-textarea>
                 </a-form-item>
                 <a-form-item :label="$t('dataset.feedback.dataset.upload')">
-                    <a-upload  action="http://localhost:8000//user/create_message_to_admin"
-                                :file-list="annex"
+                    <a-upload   action="http://127.0.0.1:8000/dataset/test_upload" 
+                               :file-list="formModel.annex"
                                 @success="uploadChange"
-                                :auto-upload="false">
+                                >
                         
                     </a-upload>
                 </a-form-item>
@@ -120,7 +120,7 @@ const generateFormModel = () => {
         reportReason: '',
         reportContent: '',
         annex: [] as FileItem[],
-        file: null as File | null,
+        file: [] as File[] ,
     }
 };
 
@@ -137,9 +137,16 @@ const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
         value: model.id,
     }));
 });
-const uploadChange = (fileItem: FileItem) => {
+const uploadChange = async (fileItem: FileItem) => {
+    // fileItemList.push(fileItem);
     formModel.value.annex.push(fileItem);
-    formModel.value.file=fileItem.file!;
+    if(fileItem.file)
+    {
+        formModel.value.file.push(fileItem.file);
+        console.log(formModel.value.file[0].name);
+    }
+    // formModel.value.file = fileItem.file!;
+    // formModel.value.file=fileItem.file!;
     // userStore.setInfo({ avatar: fileItem.url });
     // localStorage.setItem('userStore', JSON.stringify(userStore.$state));
   };

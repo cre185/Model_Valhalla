@@ -115,38 +115,68 @@ export async function queryDatasetList()
     return LLMList;
 }
 
-interface FormData {
+interface FormDatasetData {
     datasetName: string;
     feedbackType: string;
     feedbackContent: string;
     reportReason: string;
     reportContent: string;
     annex: FileItem[];
-    file: File | null;
+    file: File[];
   }
 
-export async function sendFeedback(jwt: string, formData: FormData) {
-      const response = await fetch(apiCat('/user/create_message_to_admin'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: jwt,
+  export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+    const response = await fetch(apiCat('/user/create_message_to_admin'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: jwt,
+      },
+      body: JSON.stringify({
+        msg: formData.feedbackType,
+        msg_type: 'feedback',
+        msg_content : {
+          'datasetID': formData.datasetName,
+          'feedbackType': formData.feedbackType,
+          'feedbackContent': formData.feedbackContent,
         },
-        body: JSON.stringify({
-          msg: formData.feedbackType,
-          msg_type: 'feedback',
-          msg_content : {
-            'datasetID': formData.datasetName,
-            'feedbackType': formData.feedbackType,
-            'feedbackContent': formData.feedbackContent,
-          },
-          msg_file: formData.file,
-          // msg_file: formData.annex || [],
-        }),
-      });
-}
+        // msg_file: formData.file,
+        // msg_file: formData.annex || [],
+      }),
+    });
+  
+  /*export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+    
+    const formDataObject = new FormData();
 
-export async function sendReport(jwt: string, formData: FormData) {
+    formDataObject.append('msg', formData.feedbackType);
+    formDataObject.append('msg_type', 'feedback');
+    formDataObject.append('msg_content', JSON.stringify({
+        'datasetID': formData.datasetName,
+        'feedbackType': formData.feedbackType,
+        'feedbackContent': formData.feedbackContent,
+    }));
+
+    if (formData.file) {
+        console.log(formData.file[0]);
+        formDataObject.append('msg_file', formData.file[0]);
+    }
+    // const request = new XMLHttpRequest();
+    // request.open("POST", "http://localhost:8000/user/create_message_to_admin");
+    // request.setRequestHeader('Authorization', jwt);
+    // request.send(formDataObject);
+
+    const response = await fetch('http://localhost:8000/user/create_message_to_admin',{
+    method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': jwt,
+        },
+        body: formDataObject,
+     });
+}*/
+
+export async function sendReport(jwt: string, formData: FormDatasetData) {
     const response = await fetch(apiCat('/user/create_message_to_admin'), {
       method: 'POST',
       headers: {
