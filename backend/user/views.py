@@ -166,8 +166,12 @@ class updateAvatarView(APIView):
     def post(self, request):
         dict = request.FILES
         image = dict['file']
-        request.user.avatar = image
-        request.user.save()
+        if request.user.avatar.name == 'static/avatar/default.jpg':
+            request.user.avatar = image
+            request.user.save()
+        else:
+            request.user.avatar.delete(save=False)
+            request.user.avatar.save(image.name, image)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 
