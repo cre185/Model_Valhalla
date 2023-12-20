@@ -1,3 +1,7 @@
+import os
+from uuid import uuid4
+
+from django.db import transaction
 from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -6,6 +10,7 @@ from ranking import models as ranking
 from testing import models as testing
 from utils.admin_required import admin_required
 from utils.jwt import login_required
+from utils.verify_dataset import verify_dataset
 
 from .models import *
 from .serializers import *
@@ -20,6 +25,7 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
     @login_required
     def post(self, request):
         request.data['author'] = request.user.id
+        request.data['content_size'] = 0
         headers = self.create(request)
         data = Dataset.objects.get(id=headers.data['id'])
         for llm in testing.LLMs.objects.all():
@@ -39,10 +45,33 @@ class uploadView(APIView):
         if not target:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
-        dict = request.FILES
-        dataset = dict['file']
-        target.data_file = dataset
-        target.save()
+        dataset = request.FILES.get('file')
+        if not dataset:
+            return Response({"message": "Invalid dataset file"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # rename file
+        dataset_name = str(target.id) + '_' + uuid4().hex + '.csv'
+        content = dataset.read().decode('utf-8')
+        try:
+            target.subjective, target.content_size = verify_dataset(content)
+        except Exception:
+            return Response({"message": "Invalid dataset file"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        with transaction.atomic():
+            # remove old file
+            if target.data_file:
+                try:
+                    old_file_path = target.data_file.path
+                    if os.path.isfile(old_file_path):
+                        os.remove(old_file_path)
+                        target.data_file.save(dataset_name, dataset)
+                        target.save()
+                except Exception:
+                    return Response({"message": "Upload failed, please try again later."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                target.data_file.save(dataset_name, dataset)
+                target.save()
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 
@@ -119,6 +148,19 @@ class downloadView(APIView):
             response['Content-Disposition'] = 'attachment;filename="{}"'.format(
                 target.name)
             return response
+        except BaseException:
+            return Response({"message": "Invalid dataset id"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class updateTagView(APIView):
+    @login_required
+    def post(self, request):
+        try:
+            target = Dataset.objects.get(id=request.data['id'])
+            target.tag = request.data['tag']
+            target.save()
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except BaseException:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)

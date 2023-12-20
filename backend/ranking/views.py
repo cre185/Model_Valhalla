@@ -276,3 +276,21 @@ class likeLCommentView(APIView):
         except BaseException:
             return Response({"message": "Invalid commentId"},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class listSelectedDatasetView(APIView):
+    def post(self, request):
+        data = request.data
+        dataset_id = data['id']
+        try:
+            dataset.Dataset.objects.get(id=dataset_id)
+        except BaseException:
+            return Response({"message": "Invalid datasetId"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        result = Credit.objects.filter(dataset_id=dataset_id)
+        data = []
+        for i in result:
+            if i.credit is not None:
+                data.append(i.credit)
+        return Response({'message': 'ok', 'data': data},
+                        status=status.HTTP_200_OK)

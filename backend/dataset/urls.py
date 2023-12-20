@@ -10,4 +10,5 @@ urlpatterns = [
     path("retrieve/<int:id>", views.retrieveView.as_view(), name="retrieve"),
     path("list", views.listView.as_view(), name="list"),
     path("download/<int:id>", views.downloadView.as_view(), name="download"),
+    path("update_tag", views.updateTagView.as_view(), name="update_tag"),
 ]

@@ -1,8 +1,11 @@
 import datetime
+import os
 import random
+from uuid import uuid4
 
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db import transaction
 from rest_framework import generics, mixins, status
 from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
@@ -164,14 +167,26 @@ class retrievePasswordView(APIView):
 class updateAvatarView(APIView):
     @login_required
     def post(self, request):
-        dict = request.FILES
-        image = dict['file']
-        if request.user.avatar.name == 'static/avatar/default.jpg':
-            request.user.avatar = image
-            request.user.save()
-        else:
-            request.user.avatar.delete(save=False)
-            request.user.avatar.save(image.name, image)
+        image = request.FILES.get('file')
+        if not image:
+            return Response({"message": "Invalid image"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # rename image
+        image_name = str(request.user.id) + '_' + \
+            uuid4().hex + '.' + image.name.split('.')[-1]
+        with transaction.atomic():
+            # remove old file
+            if request.user.avatar and request.user.avatar.name.split('/')[-1] != 'default.jpg':
+                try:
+                    old_file_path = request.user.avatar.path
+                    if os.path.isfile(old_file_path):
+                        os.remove(old_file_path)
+                        request.user.avatar.save(image_name, image)
+                except Exception:
+                    return Response({"message": "Upload failed, please try again later."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                request.user.avatar.save(image_name, image)
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
 
