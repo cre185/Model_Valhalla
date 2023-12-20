@@ -1,9 +1,11 @@
 import axios from 'axios';
 import apiCat from '@/api/main';
 import * as Papa from 'papaparse';
+import {ref} from "vue";
+import {LLMListRes} from "@/api/model-list";
 
 export class SubjectiveEvaluationData{
-    private prompt: string;
+    readonly prompt: string;
 
     private subjects: string[];
 
@@ -65,22 +67,84 @@ export class SubjectiveEvaluationData{
     }
 }
 
-async function getDatasetFile(datasetID: number){
+export interface DatasetData {
+    id: number;
+    name: string;
+    file: string;
+    isSubjective: boolean;
+    domain: string;
+    contentSize: number;
+    createdTime: string;
+    description: string;
+    authorId: number;
+    tags: string[];
+    showInput: boolean;
+    newTag: string;
+    inputRef: any;
+    toDownload: boolean;
+}
+
+export interface DatasetListRes {
+    message: string;
+    data: [];
+}
+
+export async function getDatasetFile(datasetID: number){
     return axios.get(apiCat(`/dataset/retrieve/${datasetID}`));
 }
 
-async function downloadDataset(datasetID: number){
+export async function downloadDataset(datasetID: number){
     return axios.get(apiCat(`/dataset/download/${datasetID}`));
 }
 
+export async function queryDatasetList() {
+    const DatasetList: { data: any; total: number } = {data: [], total: 0};
+    const response = await axios.get<DatasetListRes>(apiCat('/dataset/list'));
+    DatasetList.total = response.data.data.length;
+    for (let i = 0; i < response.data.data.length; i += 1) {
+        const dataset = response.data.data[i] as {
+            id: number;
+            name: string;
+            data_file: string;
+            content_size: number;
+            add_time: string;
+            description: string;
+            subjective: boolean;
+            author_id: number;
+            domain: number;
+            tag: string[];
+        };
+        DatasetList.data.push({
+            id: dataset.id,
+            name: dataset.name,
+            file: dataset.data_file,
+            isSubjective: dataset.subjective,
+            domain: dataset.domain,
+            contentSize: dataset.content_size,
+            createdTime: dataset.add_time,
+            description: dataset.description,
+            authorId: dataset.author_id,
+            tags: dataset.tag,
+            showInput: false,
+            newTag: '',
+            inputRef: ref(null),
+            toDownload: false,
+        });
+    }
+    return DatasetList;
+}
+
+export async function updateDatasetTags (datasetID: number, tags: string[]) {
+    return axios.post(apiCat(`/dataset/update_tag`), {id: datasetID, tag: tags});
+}
 export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvaluationData[]> => {
     return new Promise((resolve, reject) => {
         const dataList: SubjectiveEvaluationData[] = [];
         downloadDataset(datasetID).then(returnValue => {
             const parsedData = Papa.parse(returnValue.data.join(''), {
-                header: true,  // 设置为 true 表示第一行是标题行
-                dynamicTyping: true,  // 根据内容自动转换为数字等类型
-                skipEmptyLines: true,  // 跳过空行
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
             })
             for(let i = 0; i < parsedData.data.length; i += 1){
                 const data = parsedData.data[i] as {Prompt: string; subject: string}
