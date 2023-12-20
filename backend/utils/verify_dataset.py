@@ -28,6 +28,5 @@ def verify_dataset(content):
                 count += 1
             i += 1
         if count != len(headers) - 1:
-            print(line)
             raise Exception("Invalid file")
     return subjective, line_count

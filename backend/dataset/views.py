@@ -151,3 +151,16 @@ class downloadView(APIView):
         except BaseException:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class updateTagView(APIView):
+    @login_required
+    def post(self, request):
+        try:
+            target = Dataset.objects.get(id=request.data['id'])
+            target.tag = request.data['tag']
+            target.save()
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid dataset id"},
+                            status=status.HTTP_400_BAD_REQUEST)

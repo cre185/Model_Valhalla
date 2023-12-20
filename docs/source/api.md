@@ -33,6 +33,7 @@
     - [list](#list)
     - [retrieve](#retrieve-1)
     - [update](#update-1)
+    - [update\_tag](#update_tag)
     - [upload](#upload)
   - [排行榜部分](#排行榜部分)
     - [average](#average)
@@ -631,6 +632,30 @@ status=200
 * ID异常  
 ```python
 status=404
+```
+#### update_tag  
+**功能描述**：更新指定数据集的标签。  
+**请求方式**：POST  
+**请求URL**：`/dataset/update_tag`  
+**请求参数**：  
+```python
+{
+    "id": "数据集id",
+    "tag": "数据集标签列表"
+}
+```
+**额外需求**：login_required  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
 ```
 #### upload  
 **功能描述**：上传数据集文件。  

@@ -313,9 +313,9 @@
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="update_avatar" enabled="true">
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\static\avatar\avatar.png" elementType="HTTPFileArg">
-                <stringProp name="File.mimetype">image/png</stringProp>
-                <stringProp name="File.path">D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\static\avatar\avatar.png</stringProp>
+              <elementProp name="D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\user\management\commands\static\avatar\default.jpg" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">image/jpg</stringProp>
+                <stringProp name="File.path">D:\paper\homework\3.1\Software Engineering\TermProj\Model_Valhalla\backend\user\management\commands\static\avatar\default.jpg</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
@@ -358,7 +358,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.delayedStart">true</boolProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
@@ -613,7 +613,7 @@
           <stringProp name="LoopController.loops">1</stringProp>
           <boolProp name="LoopController.continue_forever">false</boolProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">20</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.delayedStart">true</boolProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>

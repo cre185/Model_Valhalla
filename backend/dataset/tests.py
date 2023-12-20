@@ -140,6 +140,20 @@ class DatasetModelTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 404)
+        # test update tag
+        response = self.client.post(
+            '/dataset/update_tag',
+            {
+                "id": 1,
+                "tag": ["tag1", "tag2"],
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Dataset.objects.get(id=1).tag, ["tag1", "tag2"])
 
     def test_retrieve(self):
         # the correct case
