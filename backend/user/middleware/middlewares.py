@@ -1,5 +1,4 @@
 
-from typing import Any
 
 
 class DateTimeFormater:
@@ -12,7 +11,7 @@ class DateTimeFormater:
             self.format_datetime(response.data)
             response._is_rendered = False
             response.render()
-        except:
+        except BaseException:
             pass
         return response
 
@@ -23,5 +22,6 @@ class DateTimeFormater:
         if isinstance(data, dict):
             for key, value in data.items():
                 if isinstance(key, str) and key == 'add_time':
-                    data[key] = value.split('T')[0]+' '+value.split('T')[1][:5]
+                    data[key] = value.split(
+                        'T')[0] + ' ' + value.split('T')[1][:5]
                 self.format_datetime(value)
