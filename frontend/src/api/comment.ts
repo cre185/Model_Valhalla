@@ -52,35 +52,58 @@ class MyComment {
         this.like -= 1
     }
 
-    async changeLikeState(jwt:string) {
+    async changeLikeState(jwt:string, flag=true) {
         this.ifLike = !this.ifLike
         if (this.ifLike) {
             this.increaseLike()
         } else {
             this.decreaseLike()
         }
-        await axios.post(apiCat('/ranking/like_llm_comment'), {
-            id: this.commentId
-        }, {
-            headers: {
-                Authorization: jwt,
-            },
-        });
+        if (flag) {
+            await axios.post(apiCat('/ranking/like_llm_comment'), {
+                id: this.commentId
+            }, {
+                headers: {
+                    Authorization: jwt,
+                },
+            });
+        }
+        else {
+            await axios.post(apiCat('/ranking/like_dataset_comment'), {
+                id: this.commentId
+            }, {
+                headers: {
+                    Authorization: jwt,
+                },
+            });
+        }
         if (this.ifHate) {
             this.ifHate = false;
         }
     }
 
-    async changeHateState(jwt:string) {
+    async changeHateState(jwt:string, flag=true) {
         this.ifHate = !this.ifHate
-        await axios.post(apiCat('/ranking/like_llm_comment'), {
-            id: this.commentId,
-            dislike: true
-        }, {
-            headers: {
-                Authorization: jwt,
-            },
-        });
+        if (flag) {
+            await axios.post(apiCat('/ranking/like_llm_comment'), {
+                id: this.commentId,
+                dislike: true
+            }, {
+                headers: {
+                    Authorization: jwt,
+                },
+            });
+        }
+        else {
+            await axios.post(apiCat('/ranking/like_dataset_comment'), {
+                id: this.commentId,
+                dislike: true
+            }, {
+                headers: {
+                    Authorization: jwt,
+                },
+            });
+        }
         if (this.ifLike) {
             this.ifLike = false;
             this.decreaseLike()
@@ -103,7 +126,7 @@ class MyComment {
         newComment.content = ''
     }
 
-    async addComment(item: MyComment, newComment: MyComment, modelId:string, jwt:string) {
+    async addComment(item: MyComment, newComment: MyComment, modelId:string, jwt:string, flag=false) {
         this.ifReply = false
         const tmp = new MyComment('', '', '', '', '', 0, false, false, false, []);
         const date = new Date();
@@ -122,7 +145,7 @@ class MyComment {
         tmp.author = newComment.author;
         tmp.toAuthor = newComment.toAuthor;
         tmp.toId = newComment.toId;
-        await updateComment(modelId, tmp, jwt);
+        await updateComment(modelId, tmp, jwt, flag);
         item.children.push(tmp)
         newComment.content = ''
         newComment.toId = undefined;
@@ -131,10 +154,19 @@ class MyComment {
 
 export default MyComment;
 
-export async function getComment(ModelID: string, commentDetails: any, jwt:string) {
-    const response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`), {headers: {
-            Authorization: jwt,
-        },});
+export async function getComment(ModelID: string, commentDetails: any, jwt:string, flag=true) {
+    console.log(1);
+    let response;
+    if (flag) {
+        response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`), {headers: {
+                Authorization: jwt,
+            },});
+    }
+    else {
+        response = await axios.get(apiCat(`/ranking/dataset_comment/${ModelID}`), {headers: {
+                Authorization: jwt,
+            },});
+    }
     commentDetails.value = [];
     for (const item of response.data.data) {
         const id = item.user;
@@ -176,12 +208,23 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
 export async function updateComment(
     modelId: string,
     newComment: any,
-    jwt: string
+    jwt: string,
+    flag=true
 ) {
-    const response = await axios.post(apiCat('/ranking/comment'),{ llm: modelId, comment: newComment.content, respond_to: newComment.toId }, {
-        headers: {
-            Authorization: jwt,
-        },
-    });
-    newComment.commentId = response.data.id;
+    if (flag) {
+        const response = await axios.post(apiCat('/ranking/comment'),{ llm: modelId, comment: newComment.content, respond_to: newComment.toId }, {
+            headers: {
+                Authorization: jwt,
+            },
+        });
+        newComment.commentId = response.data.id;
+    }
+    else {
+        const response = await axios.post(apiCat('/ranking/comment'),{ datasetId: modelId, comment: newComment.content, respond_to: newComment.toId }, {
+            headers: {
+                Authorization: jwt,
+            },
+        });
+        newComment.commentId = response.data.id;
+    }
 }

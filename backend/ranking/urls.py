@@ -48,7 +48,7 @@ urlpatterns = [
         views.likeLCommentView.as_view(),
         name='like_llm_comment'),
     path(
-        'list_selected_dataset',
-        views.listSelectedDatasetView.as_view(),
-        name='list_selected_dataset'),
+        'list_selected_credit',
+        views.listSelectedCreditView.as_view(),
+        name='list_selected_credit'),
 ]

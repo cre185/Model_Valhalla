@@ -254,6 +254,10 @@
         </a-tabs>
       </div>
     </a-drawer>
+    <!--<Breadcrumb :items="['menu.dataset', 'menu.dataset.details']" />-->
+    <!--<dataset-profile />-->
+    <!--<dataset-discussion-area :commentDetails="commentDetails" :datasetId=ModelID
+                         @change-comment="handleChangeComment" />-->
   </div>
 </template>
 
@@ -267,6 +271,8 @@
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import {DatasetData, queryDatasetList, updateDatasetTags, getDatasetFile } from "@/api/dataset";
   import {getComment} from "@/api/comment";
+  import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";
+  import DatasetDiscussionArea from "@/views/dataset/components/dataset-discussion-area.vue";
 
   const generateFormModel = () => {
     return {
