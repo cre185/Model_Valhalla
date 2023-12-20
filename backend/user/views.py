@@ -1,6 +1,7 @@
 import datetime
 import os
 import random
+import time
 from uuid import uuid4
 
 from django.conf import settings
@@ -167,6 +168,7 @@ class retrievePasswordView(APIView):
 class updateAvatarView(APIView):
     @login_required
     def post(self, request):
+        start = time.time()
         image = request.FILES.get('file')
         if not image:
             return Response({"message": "Invalid image"},
@@ -182,6 +184,7 @@ class updateAvatarView(APIView):
                     if os.path.isfile(old_file_path):
                         os.remove(old_file_path)
                         request.user.avatar.save(image_name, image)
+                        print(time.time() - start)
                 except Exception:
                     return Response({"message": "Upload failed, please try again later."},
                                     status=status.HTTP_400_BAD_REQUEST)
