@@ -27,9 +27,39 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
         request.data['author'] = request.user.id
         request.data['content_size'] = 0
         headers = self.create(request)
-        data = Dataset.objects.get(id=headers.data['id'])
+        target = Dataset.objects.get(id=headers.data['id'])
         for llm in testing.LLMs.objects.all():
-            ranking.Credit.objects.create(LLM=llm, dataset=data, credit=None)
+            ranking.Credit.objects.create(LLM=llm, dataset=target, credit=None)
+        if not target:
+            return Response({"message": "Invalid dataset id"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        dataset = request.FILES.get('file')
+        if not dataset:
+            return Response({"message": "Invalid dataset file"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # rename file
+        dataset_name = str(target.id) + '_' + uuid4().hex + '.csv'
+        content = dataset.read().decode('utf-8')
+        try:
+            target.subjective, target.content_size = verify_dataset(content)
+        except Exception:
+            return Response({"message": "Invalid dataset file"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        with transaction.atomic():
+            # remove old file
+            if target.data_file:
+                try:
+                    old_file_path = target.data_file.path
+                    if os.path.isfile(old_file_path):
+                        os.remove(old_file_path)
+                        target.data_file.save(dataset_name, dataset)
+                        target.save()
+                except Exception:
+                    return Response({"message": "Upload failed, please try again later."},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                target.data_file.save(dataset_name, dataset)
+                target.save()
         return Response({"message": "ok",
                          "datasetId": headers.data['id']},
                         status=status.HTTP_201_CREATED)
