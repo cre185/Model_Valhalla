@@ -267,10 +267,10 @@
       <div>
         <a-tabs size="large" style="margin-top: 7vh">
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
-            <DatasetProfile :modelid="ModelID"/>
+            <DatasetProfile :datasetID="currentDataset.id.toString()"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('dataset.details.testScore')">
-            <DatasetPerformance :modelid="ModelID" />
+            <DatasetPerformance :datasetID="currentDataset.id.toString()" />
           </a-tab-pane>
           <a-tab-pane key="3" :title="$t('dataset.details.discussions')">
             <DatasetDiscussionArea :comment-details="commentDetails" :dataset-id="currentDataset.id.toString()"
