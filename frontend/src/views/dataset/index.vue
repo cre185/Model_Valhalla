@@ -267,7 +267,7 @@
       <div>
         <a-tabs size="large" style="margin-top: 7vh">
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
-            <DatasetProfile :datasetID="currentDataset.id.toString()"/>
+            <DatasetProfile :datasetID="currentDataset.id.toString()" @change-tag="fetchData"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('dataset.details.testScore')">
             <DatasetPerformance :datasetID="currentDataset.id.toString()" />

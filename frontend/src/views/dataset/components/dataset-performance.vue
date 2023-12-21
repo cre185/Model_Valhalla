@@ -152,7 +152,10 @@
 
 <template>
   <div id="container">
-    <a-table :columns="columns" :data="data" id="scoreTable"/>
+    <div id="scoreTable">
+      <h1>{{ $t('dataset.result') }}</h1>
+      <a-table :columns="columns" :data="data"/>
+    </div>
     <div id="separator"></div>
     <div id="visualization">
       <h1>{{ $t('dataset.visualization') }}</h1>
@@ -164,7 +167,7 @@
         </div>
       </div>
       <a-divider />
-      <div id="select">
+      <a-space size="medium">
         <a-select :default-value="[]" :style="{width:'360px'}" :placeholder="$t('dataset.select')" multiple
                   :scrollbar="true" :limit="3" @change="handleThreeSelect">
           <a-option v-for="model in modelDetails" :key="model">{{ model.name }}</a-option>
@@ -175,7 +178,8 @@
           </template>
           <template #default>{{ $t('dataset.confirm') }}</template>
         </a-button>
-      </div>
+      </a-space>
+      <br>
       <canvas ref="visChart" :style="{width:'400px'}" id="myChart"></canvas>
     </div>
   </div>
@@ -183,10 +187,10 @@
 
 <style scoped lang="less">
  #container {
-   height: 500px;
+   height: 460px;
    display: flex;
-   justify-content: space-between;
-   align-items: center;
+   margin-left: 20px;
+   margin-right: 20px;
  }
 
  #scoreTable {
@@ -206,7 +210,6 @@
     flex: 9;
     display: flex;
     flex-direction: column;
-    justify-content: center;
   }
 
  .boxTest {
@@ -227,10 +230,5 @@
    align-items: center;
    height: 100%;
    padding-left: 20px;
- }
-
- #select {
-   display: flex;
-   justify-content: space-between;
  }
 </style>

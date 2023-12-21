@@ -82,4 +82,5 @@ export default {
   'dataset.visualization.rule': 'Select three models and visualize the range of test scores from the minimum to the maximum',
   'dataset.select': 'Please select ...',
   'dataset.confirm': 'confirm',
+  'dataset.result': 'LLM Score',
 };

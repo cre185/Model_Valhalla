@@ -83,4 +83,5 @@ export default {
   'dataset.upload.application.two': '说',
   'dataset.upload.application.three': '其他',
   'dataset.confirm': '确认',
+  'dataset.result': '模型得分',
 };
