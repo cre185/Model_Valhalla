@@ -26,12 +26,11 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
     def post(self, request):
         request.data['author'] = request.user.id
         request.data['content_size'] = 0
-        print('creating dataset')
         headers = self.create(request)
         target = Dataset.objects.get(id=headers.data['id'])
         for llm in testing.LLMs.objects.all():
             ranking.Credit.objects.create(LLM=llm, dataset=target, credit=None)
-        dataset = request.FILES.get('file')
+        dataset = request.data('file')
         if not dataset:
             return Response({"message": "ok",
                          "datasetId": headers.data['id']},

@@ -36,7 +36,8 @@ class Command(BaseCommand):
                 author=user[0],
                 domain=row['domain'],
                 data_file=row['data_file'],
-                subjective=row['subjective'])
+                subjective=row['subjective'],
+                content_size=row['content_size'])
             dataset.save()
         # Create the four standard llms
         df = pd.read_csv("user/management/commands/data/llm.csv")
@@ -53,15 +54,15 @@ class Command(BaseCommand):
                 released_time=row['released_time'])
             llm.save()
         # Create credits
-        credit_list = [31, 41, 25, 29, 29, 44, 22, 28, 37, 37, 37, 42]
+        credit_list = [[28.,31.5],[36.,41.],[23.5,25.5],[28.5,25.5],[27.4111675,28.9340102],[41.1167513,45.1776650],[23.8578680,23.3502538],[31.9796954,28.4263959],[42.1319797,38.0710660],[41.6243655,38.5786802],[37.5634518,37.0558376],[40.1015228,47.7157360]]
         for i in range(Dataset.objects.count()):
             for j in range(LLMs.objects.count()):
                 dataset = Dataset.objects.get(id=i + 1)
                 llm = LLMs.objects.get(id=j + 1)
                 credit = Credit(dataset=dataset, LLM=llm)
-                '''if i * LLMs.objects.count() + j < len(credit_list):
-                    credit.credit = credit_list[i * LLMs.objects.count() + j]
-                    credit.credit_list = [credit.credit+2, credit.credit+1, credit.credit-1, credit.credit-2]'''
+                if i * LLMs.objects.count() + j < len(credit_list):
+                    credit.credit_list = credit_list[i * LLMs.objects.count() + j]
+                    credit.credit = sum(credit.credit_list) / len(credit.credit_list)
                 credit.save()
 
         # Copy the static files
