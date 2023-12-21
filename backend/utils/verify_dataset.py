@@ -1,8 +1,15 @@
+import csv
+from io import StringIO
+
 def verify_dataset(content):
     if not content:
         raise Exception("Empty file")
+
+    content = StringIO(content)
+    reader = csv.reader(content)
+
     # test if the file is valid
-    headers = set(content.replace('\r\n', '\n').split('\n')[0].lower().split(','))
+    headers = set(c.lower() for c in next(reader))
     obj1 = set(['question', 'choices', 'answer'])
     obj2 = set(['question', 'a','b','c','d', 'answer'])
     sub1 = set(['prompt'])
@@ -12,21 +19,21 @@ def verify_dataset(content):
         subjective = True
     else:
         raise Exception("Invalid file")
-    lines = content.split('\n')[1:]
+    
     line_count = 0
-    for line in lines:
+    for line in reader:
         if line == '':
             continue
         line_count += 1
-        i = 0
-        inside = False
-        count = 0
-        while i < len(line):
-            if line[i] == '"':
-                inside = not inside
-            elif line[i] == ',' and not inside:
-                count += 1
-            i += 1
-        if count != len(headers) - 1:
+        if len(line) != len(headers):
+            print(line)
             raise Exception("Invalid file")
     return subjective, line_count
+
+if __name__ == '__main__':
+    with open('mmlu_select.csv', 'r', encoding='utf-8') as f:
+        try:
+            content = f.read()
+            print(verify_dataset(content))
+        except Exception as e:
+            print(e)
