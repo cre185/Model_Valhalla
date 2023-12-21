@@ -20,40 +20,25 @@ class updateView(APIView):
         dataset_id = data['datasetId']
         llm_id = data['llmId']
         try:
+            target = Credit.objects.get(dataset_id=dataset_id, LLM_id=llm_id)
             d = dataset.Dataset.objects.get(id=dataset_id)
             if not d.subjective and not request.user.is_admin:
                 return Response({"message": "User must be admin."},
                                 status=status.HTTP_400_BAD_REQUEST)
-        except BaseException:
-            return Response({"message": "Invalid datasetId or llmId"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        try:
-            target = Credit.objects.get(dataset_id=dataset_id, LLM_id=llm_id)
-            d = dataset.Dataset.objects.get(id=dataset_id)
-            if not d.subjective:
-                serializer = CreditSerializer(target, data=data, partial=True)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response({"message": "ok"},
-                                    status=status.HTTP_200_OK)
-                else:
-                    return Response({"message": "Invalid credit"},
-                                    status=status.HTTP_400_BAD_REQUEST)
-            else:
-                sub_credit = SubjectiveCredit.objects.get(
-                    dataset_id=dataset_id, LLM_id=llm_id)
-                credit_list = sub_credit.credit_list
-                try:
-                    int(data['credit'])
-                except BaseException:
-                    return Response({"message": "Invalid credit"},
-                                    status=status.HTTP_400_BAD_REQUEST)
-                credit_list.append(int(data['credit']))
-                sub_credit.credit_list = credit_list
-                sub_credit.save()
-                target.credit = sum(credit_list) / len(credit_list)
-                target.save()
-                return Response({"message": "ok"}, status=status.HTTP_200_OK)
+            credit_list = target.credit_list
+            try:
+                int(data['credit'])
+            except BaseException:
+                return Response({"message": "Invalid credit"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            if int(data['credit']) < 0 or int(data['credit']) > 100:
+                return Response({"message": "Invalid credit"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            credit_list.append(int(data['credit']))
+            target.credit_list = credit_list
+            target.credit = sum(credit_list) / len(credit_list)
+            target.save()
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except BaseException:
             return Response({"message": "Invalid datasetId or llmId"},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -93,6 +78,7 @@ class clearView(APIView):
         try:
             target = Credit.objects.get(dataset_id=dataset_id, LLM_id=llm_id)
             target.credit = None
+            target.credit_list = []
             target.save()
         except BaseException:
             return Response({"message": "Invalid datasetId or llmId"},
@@ -281,16 +267,23 @@ class likeLCommentView(APIView):
 class listSelectedCreditView(APIView):
     def post(self, request):
         data = request.data
-        dataset_id = data['datasetId']
-        try:
-            dataset.Dataset.objects.get(id=dataset_id)
-        except BaseException:
-            return Response({"message": "Invalid datasetId"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        result = Credit.objects.filter(dataset_id=dataset_id)
+        credits = Credit.objects.all()
+        if 'datasetId' in data:
+            credits = credits.filter(dataset_id=data['datasetId'])
+        if 'llmId' in data:
+            credits = credits.filter(LLM_id=data['llmId'])
         data = []
-        for i in result:
+        for i in credits:
+            serializer = CreditSerializer(i)
+            data.append(serializer.data)
+            data[-1]['LLM_name']=testing.LLMs.objects.get(id=i.LLM_id).name
+            data[-1]['dataset_name']=dataset.Dataset.objects.get(id=i.dataset_id).name
             if i.credit is not None:
-                data.append(i.credit)
+                data[-1]['max_credit'] = max(i.credit_list)
+                data[-1]['min_credit'] = min(i.credit_list)
+            else:
+                data[-1]['max_credit'] = 0
+                data[-1]['min_credit'] = 0
+            del data[-1]['credit_list']
         return Response({'message': 'ok', 'data': data},
                         status=status.HTTP_200_OK)

@@ -11,13 +11,8 @@ class Credit(models.Model):
     dataset = models.ForeignKey(to=dataset.Dataset, on_delete=models.CASCADE)
     LLM = models.ForeignKey(to=testing.LLMs, on_delete=models.CASCADE)
     credit = models.FloatField(null=True)
-    add_time = models.DateTimeField(auto_now_add=True)
-
-
-class SubjectiveCredit(models.Model):
-    dataset = models.ForeignKey(to=dataset.Dataset, on_delete=models.CASCADE)
-    LLM = models.ForeignKey(to=testing.LLMs, on_delete=models.CASCADE)
     credit_list = models.JSONField(default=list)
+    add_time = models.DateTimeField(auto_now_add=True)
 
 
 class DatasetComment(models.Model):

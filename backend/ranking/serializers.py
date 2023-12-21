@@ -17,6 +17,17 @@ class CreditSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     "Credit should be less than 100.")
         return credit
+    
+    def validate_credit_list(self, credit_list):
+        credit = credit_list[-1]
+        if credit is not None:
+            if credit < 0:
+                raise serializers.ValidationError(
+                    "Credit should be a positive number.")
+            if credit > 100:
+                raise serializers.ValidationError(
+                    "Credit should be less than 100.")
+        return credit_list
 
 
 class DatasetCommentSerializer(serializers.ModelSerializer):
