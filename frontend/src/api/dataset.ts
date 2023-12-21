@@ -5,6 +5,7 @@ import {ref} from "vue";
 import {LLMListRes} from "@/api/model-list";
 import {getAvatar, getUsername} from "@/api/user-info";
 import { FileItem } from '@arco-design/web-vue';
+import * as fs from 'fs';
 
 export class SubjectiveEvaluationData{
     readonly prompt: string;
@@ -207,7 +208,7 @@ interface FormDatasetData {
     file: File[];
   }
 
-  export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+  /* export async function sendFeedback(jwt: string, formData: FormDatasetData) {
     const response = await fetch(apiCat('/user/create_message_to_admin'), {
       method: 'POST',
       headers: {
@@ -226,9 +227,9 @@ interface FormDatasetData {
         // msg_file: formData.annex || [],
       }),
     });
-}
+} */
 
-  /* export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+   export async function sendFeedback(jwt: string, formData: FormDatasetData) {
 
     const formDataObject = new FormData();
 
@@ -241,9 +242,9 @@ interface FormDatasetData {
     }));
 
     if (formData.file) {
-        console.log(formData.file[0]);
-        formDataObject.append('msg_file', formData.file[0]);
+        formDataObject.append('msg_file', formData.file[0], formData.file[0].name);
     }
+    // console.log(formData.file[0].stream());
     // const request = new XMLHttpRequest();
     // request.open("POST", "http://localhost:8000/user/create_message_to_admin");
     // request.setRequestHeader('Authorization', jwt);
@@ -257,7 +258,7 @@ interface FormDatasetData {
         },
         body: formDataObject,
      });
-} */
+} 
 
 export async function sendReport(jwt: string, formData: FormDatasetData) {
     const response = await fetch(apiCat('/user/create_message_to_admin'), {
@@ -280,11 +281,12 @@ export async function sendReport(jwt: string, formData: FormDatasetData) {
 
 
 interface FormDataset {
-    datasetName?: string,
-    datasetIntroduction?: string,
-    datasetApplication?: string,
-    datasetTags?: string[],
-    annex?: FileItem[],
+    datasetName: string,
+    datasetIntroduction: string,
+    datasetApplication: string,
+    datasetTags: string[],
+    annex: FileItem[],
+    files: File[],
 }
 export async function sendDataset(jwt: string, formData: FormDataset) {
     await fetch(apiCat('/dataset/create'), {
@@ -301,5 +303,10 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             // author: formData.datasetPublisher
         }),
     });
+    const DatasetFile = new FormData();
+    DatasetFile.append('name', formData.datasetName);
+    DatasetFile.append('msg_file', formData.annex[0].file);
+
+
 
 }

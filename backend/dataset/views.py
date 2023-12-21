@@ -41,7 +41,7 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
 class uploadView(APIView):
     @login_required
     def post(self, request):
-        target = Dataset.objects.get(id=request.data['id'])
+        target = Dataset.objects.get(id=request.data['name'])
         if not target:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
