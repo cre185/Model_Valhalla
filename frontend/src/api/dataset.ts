@@ -176,10 +176,6 @@ export async function getModelDetails(){
     return response.data.data;
 }
 
-export async function getModelScore(datasetID: number) {
-    const response = await axios.post(apiCat(`ranking/list_selected_credit`), {datasetId: datasetID});
-    return response.data;
-}
 export interface SelectedDataset {
     id: string;
     name: string;
@@ -302,4 +298,9 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
         }),
     });
 
+}
+
+export async function getModelScore(datasetID: number){
+    const response = await axios.post(apiCat(`/ranking/list_selected_credit`), { datasetId: datasetID });
+    return response.data.data;
 }

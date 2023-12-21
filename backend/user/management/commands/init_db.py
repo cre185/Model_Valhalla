@@ -61,10 +61,7 @@ class Command(BaseCommand):
                 credit = Credit(dataset=dataset, LLM=llm)
                 if i * LLMs.objects.count() + j < len(credit_list):
                     credit.credit = credit_list[i * LLMs.objects.count() + j]
-                if dataset.subjective:
-                    subjective_credit = SubjectiveCredit(
-                        dataset=dataset, LLM=llm)
-                    subjective_credit.save()
+                    credit.credit_list = [credit.credit]
                 credit.save()
 
         # Copy the static files
