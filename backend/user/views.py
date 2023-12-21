@@ -318,7 +318,7 @@ class create_messageView(APIView):
             serializer.save()
             msg_id = serializer.data['id']
             try:
-                upload_file = request.FILES['file']
+                upload_file = request.data['file']
                 msg = Msg.objects.get(id=msg_id)
                 msg.msg_file = upload_file
                 msg.save()
@@ -347,7 +347,7 @@ class create_message_to_adminView(APIView):
             serializer.save()
             msg_id = serializer.data['id']
             try:
-                upload_file = request.FILES['file']
+                upload_file = request.data['file']
                 msg = Msg.objects.get(id=msg_id)
                 msg.msg_file = upload_file
                 msg.save()
