@@ -61,7 +61,7 @@ class Command(BaseCommand):
                 credit = Credit(dataset=dataset, LLM=llm)
                 if i * LLMs.objects.count() + j < len(credit_list):
                     credit.credit = credit_list[i * LLMs.objects.count() + j]
-                    credit.credit_list = [credit.credit]
+                    credit.credit_list = [credit.credit+2, credit.credit+1, credit.credit-1, credit.credit-2]
                 credit.save()
 
         # Copy the static files
