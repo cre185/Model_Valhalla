@@ -7,7 +7,7 @@
   const description = ref('');
   const author = ref('');
   const domain = ref('');
-  const tag = ref('');
+  const tag = ref<string[]>([]);
   const license = ref('');
 
   onMounted(async () => {
@@ -25,7 +25,6 @@
     }
   });
 
-  const tags = ref(['Tag 1', 'Tag 2', 'Tag 3']);
   const inputRef = ref(null);
   const showInput = ref(false);
   const inputVal = ref('');
@@ -35,21 +34,19 @@
 
     nextTick(() => {
       if (inputRef.value) {
-        // inputRef.value.focus();
+        inputRef.value.focus();
       }
     });
   };
 
   const handleAdd = () => {
     if (inputVal.value) {
-      tags.value.push(inputVal.value);
+      if (!(inputVal.value in tag.value)) {
+        tag.value.push(inputVal.value);
+      }
       inputVal.value = '';
     }
     showInput.value = false;
-  };
-
-  const handleRemove = (key: string) => {
-    tags.value = tags.value.filter((tagg) => tagg !== key);
   };
 
 </script>
@@ -79,12 +76,10 @@
           <a-card :title="$t('dataset.tag')" :bordered="false">
             <a-space wrap>
               <a-tag
-                  v-for="(tag, index) of tags"
-                  :key="tag"
-                  :closable="index !== 0"
-                  @close="handleRemove(tag)"
+                  v-for="tagItem of tag"
+                  :key="tagItem"
               >
-                {{ tag }}
+                {{ tagItem }}
               </a-tag>
 
               <a-input
