@@ -47,7 +47,8 @@
             <a-form-item :label="$t('dataset.upload.file.title')">
                 <a-upload action="http://127.0.0.1:8000/dataset/test_upload"
                             :file-list="UploadModel.annex"
-                            @success="uploadChange">
+                            @success="uploadChange"
+                            >
 
                 </a-upload>
             </a-form-item>
@@ -85,17 +86,21 @@ const handleEdit = () => {
         }
     });
 };
+
 const uploadChange = async (fileItem: FileItem) => {
     // fileItemList.push(fileItem);
-    UploadModel.value.annex.push
-    console.log(UploadModel.value.annex[0].file?.name);
-    UploadModel.value.files.push(UploadModel.value.annex[0].file!);
-    
+    UploadModel.value.annex.push(fileItem);
+    if(fileItem.file)
+    {
+        UploadModel.value.files.push(fileItem.file);
+        console.log(UploadModel.value.files[0].name);
+    }
     // formModel.value.file = fileItem.file!;
     // formModel.value.file=fileItem.file!;
     // userStore.setInfo({ avatar: fileItem.url });
     // localStorage.setItem('userStore', JSON.stringify(userStore.$state));
   };
+
 const handleAdd = () => {
     if (inputTag.value) {
         UploadModel.value.datasetTags.push(inputTag.value);

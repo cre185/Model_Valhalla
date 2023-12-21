@@ -303,10 +303,20 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             // author: formData.datasetPublisher
         }),
     });
+    
     const DatasetFile = new FormData();
     DatasetFile.append('name', formData.datasetName);
-    DatasetFile.append('msg_file', formData.annex[0].file);
-
+    DatasetFile.append('msg_file', formData.files[0]);
+    console.log(formData.files[0]);
+    // DatasetFile.append('msg_file', formData.annex[0].file);
+    await fetch(apiCat('/dataset/upload'),{
+    method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': jwt,
+        },
+        body: DatasetFile,
+     });
 
 
 }
