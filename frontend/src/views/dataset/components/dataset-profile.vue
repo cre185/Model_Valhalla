@@ -41,8 +41,9 @@
 
   const handleAdd = () => {
     if (inputVal.value) {
-      if (!(inputVal.value in tag.value)) {
+      if (!tag.value.includes(inputVal.value)) {
         tag.value.push(inputVal.value);
+        
       }
       inputVal.value = '';
     }
