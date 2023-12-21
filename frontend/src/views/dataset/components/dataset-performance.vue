@@ -30,7 +30,7 @@
       .catch(error => {});
 
   let modelScore:any;
-  await getModelScore(1)
+  await getModelScore(props.datasetID)
       .then(result => {
         modelScore = result;
       })
@@ -63,9 +63,9 @@
       {
         label: 'first',
         data: [
-          { x: 10, y: 1 },
-          { x: 15, y: 1 },
-          { x: 20, y: 1 },
+          { x: modelScore[0].min_credit, y: 1 },
+          { x: modelScore[0].credit, y: 1 },
+          { x: modelScore[0].max_credit, y: 1 },
         ],
         backgroundColor: 'rgba(255, 159, 64, 0.2)',
         pointRadius: 4,
@@ -76,9 +76,9 @@
       {
         label: 'second',
         data: [
-          { x: 10, y: 2 },
-          { x: 15, y: 2 },
-          { x: 20, y: 2 },
+          { x: modelScore[1].min_credit, y: 2 },
+          { x: modelScore[1].credit, y: 2 },
+          { x: modelScore[1].max_credit, y: 2 },
         ],
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         pointRadius: 4,
@@ -89,9 +89,9 @@
       {
         label: 'third',
         data: [
-          { x: 10, y: 3 },
-          { x: 15, y: 3 },
-          { x: 20, y: 3 },
+          { x: modelScore[2].min_credit, y: 3 },
+          { x: modelScore[2].credit, y: 3 },
+          { x: modelScore[2].max_credit, y: 3 },
         ],
         backgroundColor: 'rgba(153, 102, 255, 0.2)',
         pointRadius: 4,

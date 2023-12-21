@@ -882,7 +882,8 @@ status=200
             "LLM": "模型id",
             "LLM_name": "模型名称",
             "credit": "最终分数",
-            "credit_list": "分数列表",
+            "max_credit": "最高分数",
+            "min_credit": "最低分数",
             "add_time": "添加时间"
         },
         ...
