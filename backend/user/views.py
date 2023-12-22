@@ -192,7 +192,6 @@ class updateAvatarView(APIView):
 
 
 class logoutView(APIView):
-    @login_required
     def post(self, request):
         return Response({"message": "ok"}, status=status.HTTP_200_OK)
 
