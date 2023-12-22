@@ -8,7 +8,6 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.db import transaction
 from rest_framework import generics, mixins, status
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -25,7 +24,7 @@ from .serializers import *
 
 class loginView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             user = User.objects.get(
                 username=data['username'],
@@ -42,7 +41,7 @@ class loginView(APIView):
 
 class login_with_verify_codeView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             verify_msg = VerifyMsg.objects.get(
                 mobile=data['mobile'], code=data['code'])
@@ -63,7 +62,7 @@ class login_with_verify_codeView(APIView):
 
 class send_messageView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         data["code"] = random.randint(100000, 999999)
         serializer = VerifyMsgSerializer(data=data)
 
@@ -77,7 +76,7 @@ class send_messageView(APIView):
 
 class verify_codeView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             verify_msg = VerifyMsg.objects.get(
                 mobile=data['mobile'], code=data['code'])
@@ -215,7 +214,7 @@ class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
 
 class send_emailView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         data["code"] = random.randint(100000, 999999)
         serializer = VerifyEmailSerializer(data=data)
 
@@ -234,7 +233,7 @@ class send_emailView(APIView):
 
 class verify_emailView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             verify_email = VerifyEmail.objects.get(
                 email=data['email'], code=data['code'])
@@ -252,7 +251,7 @@ class verify_emailView(APIView):
 class subscribeView(APIView):
     @login_required
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             llm = LLMs.objects.get(id=data['llmId'])
             if Subscription.objects.filter(
@@ -308,7 +307,7 @@ class list_messageView(APIView):
 class create_messageView(APIView):
     @login_required
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             data['author'] = request.user.id
             serializer = MsgSerializer(data=data)
@@ -320,8 +319,8 @@ class create_messageView(APIView):
             try:
                 upload_file = request.FILES.get('file')
                 msg = Msg.objects.get(id=msg_id)
-                msg.msg_file = upload_file
-                msg.save()
+                file_name = str(msg_id) + '_' + uuid4().hex + '.' + upload_file.name.split('.')[-1]
+                msg.msg_file.save(file_name, upload_file)
             except BaseException:
                 pass
             for target in data['target']:
@@ -349,8 +348,8 @@ class create_message_to_adminView(APIView):
             try:
                 upload_file = request.FILES.get('file')
                 msg = Msg.objects.get(id=msg_id)
-                msg.msg_file = upload_file
-                msg.save()
+                file_name = str(msg_id) + '_' + uuid4().hex + '.' + upload_file.name.split('.')[-1]
+                msg.msg_file.save(file_name, upload_file)
             except BaseException:
                 pass
             admin = User.objects.filter(is_admin=True)
@@ -367,7 +366,7 @@ class create_message_to_adminView(APIView):
 class check_messageView(APIView):
     @login_required
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             message = Msg.objects.get(id=data['id'])
             read = MsgTarget.objects.get(msg=message, target=request.user)
