@@ -30,7 +30,7 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
         target = Dataset.objects.get(id=headers.data['id'])
         for llm in testing.LLMs.objects.all():
             ranking.Credit.objects.create(LLM=llm, dataset=target, credit=None)
-        dataset = request.data['file']
+        dataset = request.FILES.get('file')
         if not dataset:
             return Response({"message": "ok",
                          "datasetId": headers.data['id']},
