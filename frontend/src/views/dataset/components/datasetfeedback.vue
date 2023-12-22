@@ -58,7 +58,7 @@
                 </a-form-item>
                 <a-form-item :label="$t('dataset.upload.button.title')">
                     <div style="display: flex; flex-direction: column; align-items: left;">
-                    <a-upload   action="http://127.0.0.1:8000/dataset/test_upload"
+                    <a-upload   action="http://127.0.0.1:8000/user/logout"
                                :file-list="formModel.annex"
                                 @success="uploadChange"
                                 :limit = 1
@@ -107,7 +107,7 @@
     </a-modal>
 </template>
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { FileItem } from '@arco-design/web-vue';
 import { simplifiedQueryDatasetList, SelectedDataset, sendFeedback, sendReport} from "@/api/dataset";
@@ -115,17 +115,24 @@ import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface'
 import {getToken} from "@/utils/auth";
 
 const props = defineProps({
-    datasetid: {
+    datasetFeedbackID: {
       type: String,
       default: '-1',
     },
+    datasetShown: {
+      type: String,
+      default: 'false'  
+    },
 });
-console.log(props.datasetid)
+
 const currentForm = ref('feedbackForm')
 const datasetIdKnown = ref(false) // datasetid是否已确定，决定是否禁用选择框
 const generateFormModel = () => {
-    if(props.datasetid === '-1')
+    console.log("ID", props.datasetFeedbackID)
+    console.log("Shown", props.datasetShown)
+    if(props.datasetShown === 'false')
     {
+        datasetIdKnown.value = false;
         return {
             datasetName: '',
             feedbackType: '',
@@ -138,7 +145,7 @@ const generateFormModel = () => {
     }
     datasetIdKnown.value = true;
     return {
-        datasetName: props.datasetid,
+        datasetName: props.datasetFeedbackID,
         feedbackType: '',
         feedbackContent: '',
         reportReason: '',
@@ -147,24 +154,24 @@ const generateFormModel = () => {
         file: [] as File[] , 
     }
 };
-/* watch(
-        () => currentForm,
+const formModel = ref(generateFormModel());
+watch(
+        () => props.datasetShown,
     
         async (newModelid, oldModelid) => {
             try {
-                currentForm.value = newModelid.value;
+                formModel.value = generateFormModel();
 
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
             },
-        {
-            immediate: true // 立即执行一次回调函数
-        }
-     ); */
+        // {
+        //    immediate: true // 立即执行一次回调函数
+        // }
+     );
 const feedbackColor = ref('rgb(45, 92, 246)');
 const reportColor = ref('#000000');
-const formModel = ref(generateFormModel());
 const { t } = useI18n();
 
 const SelectedModelInfo = ref<SelectedDataset[]>();
@@ -176,6 +183,7 @@ const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
     }));
 });
 const uploadChange = async (fileItem: FileItem) => {
+    console.log(props.datasetFeedbackID)
     // fileItemList.push(fileItem);
     formModel.value.annex.push(fileItem);
     if(fileItem.file)
@@ -186,6 +194,7 @@ const uploadChange = async (fileItem: FileItem) => {
     
   };
 const handleSubmit = async () => {
+    console.log("Name", formModel.value.datasetName)
     if(currentForm.value === 'feedbackForm') {
         await sendFeedback(getToken()!, formModel.value);
     }

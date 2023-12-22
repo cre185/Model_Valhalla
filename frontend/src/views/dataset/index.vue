@@ -238,7 +238,7 @@
                 {{ $t('searchDataset.columns.operations.download') }}
               </p>
             </a-button>
-            <a-button shape="round" style="margin-left: 1.5vw; width: 5.5vw">
+            <a-button shape="round" style="margin-left: 1.5vw; width: 5.5vw" @click="handleFeedback()">
               <template #icon>
                 <icon-exclamation/>
               </template>
@@ -279,7 +279,7 @@
         </a-tabs>
       </div>
     </a-drawer>
-    <DatasetFeedback
+    <DatasetFeedback :datasetFeedbackID="currentDataset?.id.toString()" :datasetShown="visible.toString()"
     v-model:visible="showDatasetFeedback"/>
     <DatasetUpload
     v-model:visible="showDatasetUpload"/>
@@ -536,7 +536,10 @@
       downloadLink.click();
     });
   }
+  const handleFeedback = () => {
+    showDatasetFeedback.value = true;
 
+  }
   const handleSelectDataset = (record: DatasetData) => {
     record.toDownload = !record.toDownload;
   }

@@ -45,7 +45,7 @@
                 </a-tag>
             </a-form-item>
             <a-form-item :label="$t('dataset.upload.file.title')">
-                <a-upload action="http://127.0.0.1:8000/dataset/test_upload"
+                <a-upload action="http://127.0.0.1:8000/user/logout"
                             :file-list="UploadModel.annex"
                             @success="uploadChange"
                             :limit = 1
