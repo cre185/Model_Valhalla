@@ -338,7 +338,7 @@ class UserDataModelTests(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         response = self.client.post(
-            '/user/subscribe',
+            '/user/subscribe_llm',
             {
                 "llmId": 1
             },
@@ -348,13 +348,10 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            User.objects.get(
-                id=1).subscribed_llm.all()[0].name,
-            "testllm")
+        self.assertEqual(LLMSubscription.objects.all().count(), 1)
         # request with wrong llm_id
         response = self.client.post(
-            '/user/subscribe',
+            '/user/subscribe_llm',
             {
                 "llmId": 2
             },
@@ -365,7 +362,7 @@ class UserDataModelTests(TestCase):
         self.assertEqual(response.status_code, 400)
         # request again to unsubscribe
         response = self.client.post(
-            '/user/subscribe',
+            '/user/subscribe_llm',
             {
                 "llmId": 1
             },
@@ -375,12 +372,10 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            User.objects.get(
-                id=1).subscribed_llm.all().count(), 0)
+        self.assertEqual(LLMSubscription.objects.all().count(), 0)
         # auto remove subscription when user is deleted
         response = self.client.post(
-            '/user/subscribe',
+            '/user/subscribe_llm',
             {
                 "llmId": 1
             },
@@ -390,9 +385,7 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            User.objects.get(
-                id=1).subscribed_llm.all().count(), 1)
+        self.assertEqual(LLMSubscription.objects.all().count(), 1)
         user = User.objects.create(
             username="testuser2",
             password="testuser2",
@@ -417,7 +410,29 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Subscription.objects.all().count(), 0)
+        self.assertEqual(LLMSubscription.objects.all().count(), 0)
+        # test subscribe dataset
+        response = self.client.post(
+            '/dataset/create',
+            {
+                "name": "testdataset",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post(
+            '/user/subscribe_dataset',
+            {
+                "datasetId": 1
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(DatasetSubscription.objects.all().count(), 1)
 
     def test_sublist(self):
         # the correct case
@@ -441,7 +456,7 @@ class UserDataModelTests(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         response = self.client.post(
-            '/user/subscribe',
+            '/user/subscribe_llm',
             {
                 "llmId": 1
             },
@@ -452,7 +467,7 @@ class UserDataModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         response = self.client.get(
-            '/user/list_subscription/1',
+            '/user/list_llm_subscription/1',
             format="json"
         )
         json_data = response.json()
@@ -461,11 +476,33 @@ class UserDataModelTests(TestCase):
         self.assertEqual(response.status_code, 200)
         # request with wrong id
         response = self.client.get(
-            '/user/list_subscription/3',
+            '/user/list_llm_subscription/3',
             format="json"
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
+        # test list dataset subscription
+        response = self.client.post(
+            '/dataset/create',
+            {
+                "name": "testdataset",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post(
+            '/user/subscribe_dataset',
+            {
+                "datasetId": 1
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(DatasetSubscription.objects.all().count(), 1)
 
 
 class UserAdminModelTests(TestCase):

@@ -103,7 +103,6 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
 class uploadView(APIView):
     @login_required
     def post(self, request):
-        start = time.time()
         llm = LLMs.objects.get(id=int(request.data['llmId']))
         if not llm:
             return Response({"message": "Invalid dataset id"},
@@ -123,7 +122,6 @@ class uploadView(APIView):
                     if os.path.isfile(old_file_path):
                         os.remove(old_file_path)
                         llm.logo.save(logo_name, logo)
-                        print("upload time: ", time.time() - start)
                 except Exception:
                     return Response({"message": "Upload failed, please try again later."},
                                     status=status.HTTP_400_BAD_REQUEST)

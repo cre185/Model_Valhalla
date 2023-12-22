@@ -66,9 +66,13 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
 class uploadView(APIView):
     @login_required
     def post(self, request):
-        target = Dataset.objects.get(name=request.data['name'])
-        if not target:
-            return Response({"message": "Invalid dataset id"},
+        try:
+            if 'id' in request.data:
+                target = Dataset.objects.get(id=request.data['id'])
+            else:
+                target = Dataset.objects.get(name=request.data['name'])
+        except BaseException:
+            return Response({"message": "Invalid dataset"},
                             status=status.HTTP_400_BAD_REQUEST)
         dataset = request.FILES.get('file')
         if not dataset:
@@ -188,10 +192,3 @@ class updateTagView(APIView):
         except BaseException:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
-
-class testUploadView(APIView):
-    def post(self, request):
-        dict = request.FILES
-        dataset = dict['file']
-        # print(dataset.read())
-        return Response({"message": "ok"}, status=status.HTTP_200_OK)

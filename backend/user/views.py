@@ -8,12 +8,12 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.db import transaction
 from rest_framework import generics, mixins, status
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from testing.models import LLMs
 from testing.serializers import *
+from dataset.serializers import *
 from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
 
@@ -25,7 +25,7 @@ from .serializers import *
 
 class loginView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             user = User.objects.get(
                 username=data['username'],
@@ -42,7 +42,7 @@ class loginView(APIView):
 
 class login_with_verify_codeView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             verify_msg = VerifyMsg.objects.get(
                 mobile=data['mobile'], code=data['code'])
@@ -63,7 +63,7 @@ class login_with_verify_codeView(APIView):
 
 class send_messageView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         data["code"] = random.randint(100000, 999999)
         serializer = VerifyMsgSerializer(data=data)
 
@@ -77,7 +77,7 @@ class send_messageView(APIView):
 
 class verify_codeView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             verify_msg = VerifyMsg.objects.get(
                 mobile=data['mobile'], code=data['code'])
@@ -168,7 +168,6 @@ class retrievePasswordView(APIView):
 class updateAvatarView(APIView):
     @login_required
     def post(self, request):
-        start = time.time()
         image = request.FILES.get('file')
         if not image:
             return Response({"message": "Invalid image"},
@@ -184,7 +183,6 @@ class updateAvatarView(APIView):
                     if os.path.isfile(old_file_path):
                         os.remove(old_file_path)
                         request.user.avatar.save(image_name, image)
-                        print(time.time() - start)
                 except Exception:
                     return Response({"message": "Upload failed, please try again later."},
                                     status=status.HTTP_400_BAD_REQUEST)
@@ -215,7 +213,7 @@ class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
 
 class send_emailView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         data["code"] = random.randint(100000, 999999)
         serializer = VerifyEmailSerializer(data=data)
 
@@ -234,7 +232,7 @@ class send_emailView(APIView):
 
 class verify_emailView(APIView):
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             verify_email = VerifyEmail.objects.get(
                 email=data['email'], code=data['code'])
@@ -249,37 +247,75 @@ class verify_emailView(APIView):
                             status=status.HTTP_401_UNAUTHORIZED)
 
 
-class subscribeView(APIView):
+class subscribeLLMView(APIView):
     @login_required
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             llm = LLMs.objects.get(id=data['llmId'])
-            if Subscription.objects.filter(
+            if LLMSubscription.objects.filter(
                     user=request.user, llm=llm).exists():
-                subscription = Subscription.objects.get(
+                subscription = LLMSubscription.objects.filter(
                     user=request.user, llm=llm)
                 subscription.delete()
                 return Response({"message": "ok"}, status=status.HTTP_200_OK)
-            subscription = Subscription.objects.create(
+            subscription = LLMSubscription.objects.create(
                 user=request.user, llm=llm)
             subscription.save()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except BaseException:
+            print('error')
             return Response({"message": "Invalid llmId"},
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class list_subscriptionView(APIView):
+class subscribeDatasetView(APIView):
+    @login_required
+    def post(self, request):
+        data = request.data
+        try:
+            dataset = Dataset.objects.get(id=data['datasetId'])
+            if DatasetSubscription.objects.filter(
+                    user=request.user, dataset=dataset).exists():
+                subscription = DatasetSubscription.objects.filter(
+                    user=request.user, dataset=dataset)
+                subscription.delete()
+                return Response({"message": "ok"}, status=status.HTTP_200_OK)
+            subscription = DatasetSubscription.objects.create(
+                user=request.user, dataset=dataset)
+            subscription.save()
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid datasetId"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class list_llm_subscriptionView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             user = User.objects.get(id=kwargs['id'])
-            subscriptions = Subscription.objects.filter(user=user)
+            subscriptions = LLMSubscription.objects.filter(user=user)
             llms = []
             for subscription in subscriptions:
                 serializer = LLMsSerializer(subscription.llm)
                 llms.append(serializer.data)
             return Response({"message": "ok", "llms": llms},
+                            status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid userId"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+
+class list_dataset_subscriptionView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(id=kwargs['id'])
+            subscriptions = DatasetSubscription.objects.filter(user=user)
+            datasets = []
+            for subscription in subscriptions:
+                serializer = DatasetSerializer(subscription.dataset)
+                datasets.append(serializer.data)
+            return Response({"message": "ok", "datasets": datasets},
                             status=status.HTTP_200_OK)
         except BaseException:
             return Response({"message": "Invalid userId"},
@@ -308,7 +344,7 @@ class list_messageView(APIView):
 class create_messageView(APIView):
     @login_required
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             data['author'] = request.user.id
             serializer = MsgSerializer(data=data)
@@ -320,8 +356,8 @@ class create_messageView(APIView):
             try:
                 upload_file = request.FILES.get('file')
                 msg = Msg.objects.get(id=msg_id)
-                msg.msg_file = upload_file
-                msg.save()
+                file_name = str(msg_id) + '_' + uuid4().hex + '.' + upload_file.name.split('.')[-1]
+                msg.msg_file.save(file_name, upload_file)
             except BaseException:
                 pass
             for target in data['target']:
@@ -349,8 +385,8 @@ class create_message_to_adminView(APIView):
             try:
                 upload_file = request.FILES.get('file')
                 msg = Msg.objects.get(id=msg_id)
-                msg.msg_file = upload_file
-                msg.save()
+                file_name = str(msg_id) + '_' + uuid4().hex + '.' + upload_file.name.split('.')[-1]
+                msg.msg_file.save(file_name, upload_file)
             except BaseException:
                 pass
             admin = User.objects.filter(is_admin=True)
@@ -367,7 +403,7 @@ class create_message_to_adminView(APIView):
 class check_messageView(APIView):
     @login_required
     def post(self, request):
-        data = JSONParser().parse(request)
+        data = request.data
         try:
             message = Msg.objects.get(id=data['id'])
             read = MsgTarget.objects.get(msg=message, target=request.user)
