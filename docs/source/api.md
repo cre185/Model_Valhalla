@@ -12,7 +12,8 @@
     - [create\_message\_to\_admin](#create_message_to_admin)
     - [delete](#delete)
     - [list\_message](#list_message)
-    - [list\_subscription](#list_subscription)
+    - [list\_dataset\_subscription](#list_dataset_subscription)
+    - [list\_llm\_subscription](#list_llm_subscription)
     - [login](#login)
     - [login\_with\_verify\_code](#login_with_verify_code)
     - [logout](#logout)
@@ -21,7 +22,8 @@
     - [retrieve\_password](#retrieve_password)
     - [send\_email](#send_email)
     - [send\_message](#send_message)
-    - [subscribe](#subscribe)
+    - [subscribe\_dataset](#subscribe_dataset)
+    - [subscribe\_llm](#subscribe_llm)
     - [update](#update)
     - [update\_avatar](#update_avatar)
     - [verify\_code](#verify_code)
@@ -177,10 +179,31 @@ status=200
     ]
 },
 ```
-#### list_subscription  
+#### list_dataset_subscription  
+**功能描述**：列出指定用户订阅的所有数据集。  
+**请求方式**：GET  
+**请求URL**：`/user/list_dataset_subscription/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "datasets": [
+        # 详见testing部分的dataset_list接口
+        ...
+    ]
+},
+status=200
+```
+* id异常  
+```python
+status=400
+```
+#### list_llm_subscription  
 **功能描述**：列出指定用户订阅的所有模型。  
 **请求方式**：GET  
-**请求URL**：`/user/list_subscription/<id>`  
+**请求URL**：`/user/list_llm_subscription/<id>`  
 **请求参数**：无  
 **返回情况**：  
 * 正常返回  
@@ -387,10 +410,33 @@ status=201
 ```python
 status=401
 ```
-#### subscribe  
+#### subscribe_dataset  
+**功能描述**：订阅某一数据集。  
+**请求方式**：POST  
+**请求URL**：`/user/subscribe_dataset`  
+**请求参数**：  
+```python
+{
+    "datasetId": "数据集id"
+}
+```
+**额外需求**：jwt  
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok"
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
+#### subscribe_llm    
 **功能描述**：订阅某一模型。  
 **请求方式**：POST  
-**请求URL**：`/user/subscribe`  
+**请求URL**：`/user/subscribe_llm`  
 **请求参数**：  
 ```python
 {
@@ -524,7 +570,8 @@ status=401
     # "author": "作者",
     # "data_file": "数据集文件",
     # "domain": "数据集领域",
-    # "tag": "数据集标签"
+    # "tag": "数据集标签"，
+    # "file": "数据集文件"
 }
 ```
 **额外需求**：jwt  
@@ -662,7 +709,7 @@ status=400
 **功能描述**：上传数据集文件。  
 **请求方式**：POST  
 **请求URL**：`/dataset/upload`  
-**请求参数**：文件file，字符串datasetId  
+**请求参数**：文件file，字符串id/字符串name    
 **额外需求**：jwt  
 **返回情况**：  
 * 正常返回  

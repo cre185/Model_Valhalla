@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 
 from testing.models import LLMs
 from testing.serializers import *
+from dataset.serializers import *
 from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
 
@@ -167,7 +168,6 @@ class retrievePasswordView(APIView):
 class updateAvatarView(APIView):
     @login_required
     def post(self, request):
-        start = time.time()
         image = request.FILES.get('file')
         if not image:
             return Response({"message": "Invalid image"},
@@ -183,7 +183,6 @@ class updateAvatarView(APIView):
                     if os.path.isfile(old_file_path):
                         os.remove(old_file_path)
                         request.user.avatar.save(image_name, image)
-                        print(time.time() - start)
                 except Exception:
                     return Response({"message": "Upload failed, please try again later."},
                                     status=status.HTTP_400_BAD_REQUEST)
@@ -248,37 +247,75 @@ class verify_emailView(APIView):
                             status=status.HTTP_401_UNAUTHORIZED)
 
 
-class subscribeView(APIView):
+class subscribeLLMView(APIView):
     @login_required
     def post(self, request):
         data = request.data
         try:
             llm = LLMs.objects.get(id=data['llmId'])
-            if Subscription.objects.filter(
+            if LLMSubscription.objects.filter(
                     user=request.user, llm=llm).exists():
-                subscription = Subscription.objects.get(
+                subscription = LLMSubscription.objects.filter(
                     user=request.user, llm=llm)
                 subscription.delete()
                 return Response({"message": "ok"}, status=status.HTTP_200_OK)
-            subscription = Subscription.objects.create(
+            subscription = LLMSubscription.objects.create(
                 user=request.user, llm=llm)
             subscription.save()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except BaseException:
+            print('error')
             return Response({"message": "Invalid llmId"},
                             status=status.HTTP_400_BAD_REQUEST)
 
 
-class list_subscriptionView(APIView):
+class subscribeDatasetView(APIView):
+    @login_required
+    def post(self, request):
+        data = request.data
+        try:
+            dataset = Dataset.objects.get(id=data['datasetId'])
+            if DatasetSubscription.objects.filter(
+                    user=request.user, dataset=dataset).exists():
+                subscription = DatasetSubscription.objects.filter(
+                    user=request.user, dataset=dataset)
+                subscription.delete()
+                return Response({"message": "ok"}, status=status.HTTP_200_OK)
+            subscription = DatasetSubscription.objects.create(
+                user=request.user, dataset=dataset)
+            subscription.save()
+            return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid datasetId"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class list_llm_subscriptionView(APIView):
     def get(self, request, *args, **kwargs):
         try:
             user = User.objects.get(id=kwargs['id'])
-            subscriptions = Subscription.objects.filter(user=user)
+            subscriptions = LLMSubscription.objects.filter(user=user)
             llms = []
             for subscription in subscriptions:
                 serializer = LLMsSerializer(subscription.llm)
                 llms.append(serializer.data)
             return Response({"message": "ok", "llms": llms},
+                            status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid userId"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+
+class list_dataset_subscriptionView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(id=kwargs['id'])
+            subscriptions = DatasetSubscription.objects.filter(user=user)
+            datasets = []
+            for subscription in subscriptions:
+                serializer = DatasetSerializer(subscription.dataset)
+                datasets.append(serializer.data)
+            return Response({"message": "ok", "datasets": datasets},
                             status=status.HTTP_200_OK)
         except BaseException:
             return Response({"message": "Invalid userId"},

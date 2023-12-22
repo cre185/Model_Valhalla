@@ -56,13 +56,21 @@ urlpatterns = [
         views.verify_emailView.as_view(),
         name="verify_email"),
     path(
-        "subscribe",
-        views.subscribeView.as_view(),
-        name="subscribe"),
+        "subscribe_llm",
+        views.subscribeLLMView.as_view(),
+        name="subscribe_llm"),
     path(
-        "list_subscription/<int:id>",
-        views.list_subscriptionView.as_view(),
-        name="list_subscription"),
+        "subscribe_dataset",
+        views.subscribeDatasetView.as_view(),
+        name="subscribe_dataset"),
+    path(
+        "list_llm_subscription/<int:id>",
+        views.list_llm_subscriptionView.as_view(),
+        name="list_llm_subscription"),
+    path(
+        "list_dataset_subscription/<int:id>",
+        views.list_dataset_subscriptionView.as_view(),
+        name="list_dataset_subscription"),
     path(
         "list_message",
         views.list_messageView.as_view(),
