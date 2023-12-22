@@ -44,8 +44,6 @@ export default {
   'dataset.license': 'License',
   'dataset.LLMName': 'Large Language Model Name',
   'dataset.score': 'Score',
-  'dataset.visualization.rule': 'Select three models to visualize the range of test scores from lowest to highest',
-  'dataset.select': 'Please select...',
   'dataset.feedback.title': 'Feedback',
   'dataset.report.title': 'Report a dataset',
   'dataset.feedback.ok.text': 'Submit',
@@ -81,4 +79,9 @@ export default {
   'dataset.upload.application.one': 'Listen',
   'dataset.upload.application.two': 'Say',
   'dataset.upload.application.three': 'Others',
+  'dataset.visualization': 'Test Results Visualization',
+  'dataset.visualization.rule': 'Select three models and visualize the range of test scores from the minimum to the maximum',
+  'dataset.select': 'Please select ...',
+  'dataset.confirm': 'confirm',
+  'dataset.result': 'LLM Score',
 };

@@ -1,19 +1,23 @@
 <script setup lang="ts">
   import axios from "axios";
   import apiCat from "@/api/main";
-  import {nextTick, onMounted, ref} from "vue";
+  import {defineEmits, nextTick, onMounted, ref} from "vue";
+  import {updateDatasetTags} from "@/api/dataset";
 
   const props = defineProps(['datasetID']);
   const description = ref('');
   const author = ref('');
   const domain = ref('');
-  const tag = ref('');
+  const tag = ref<string[]>([]);
   const license = ref('');
-  console.log("5555", props)
+
+  const emit = defineEmits<{
+    (event: 'changeTag'): void;
+  }>();
+
   onMounted(async () => {
     try {
-      // const response = await axios.get(apiCat(`/dataset/retrieve/${props.datasetID}`));
-      const response = await axios.get(apiCat(`/dataset/retrieve/1`));
+      const response = await axios.get(apiCat(`/dataset/retrieve/${props.datasetID}`));
       const responseJson = response.data;
       description.value = responseJson.description;
       author.value = responseJson.author;
@@ -25,7 +29,6 @@
     }
   });
 
-  const tags = ref(['Tag 1', 'Tag 2', 'Tag 3']);
   const inputRef = ref(null);
   const showInput = ref(false);
   const inputVal = ref('');
@@ -35,21 +38,21 @@
 
     nextTick(() => {
       if (inputRef.value) {
-        // inputRef.value.focus();
+        inputRef.value.focus();
       }
     });
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (inputVal.value) {
-      tags.value.push(inputVal.value);
+      if (!tag.value.includes(inputVal.value)) {
+        tag.value.push(inputVal.value);
+        await updateDatasetTags(props.datasetID, tag.value);
+        emit('changeTag');
+      }
       inputVal.value = '';
     }
     showInput.value = false;
-  };
-
-  const handleRemove = (key: string) => {
-    tags.value = tags.value.filter((tagg) => tagg !== key);
   };
 
 </script>
@@ -79,12 +82,12 @@
           <a-card :title="$t('dataset.tag')" :bordered="false">
             <a-space wrap>
               <a-tag
-                  v-for="(tag, index) of tags"
-                  :key="tag"
-                  :closable="index !== 0"
-                  @close="handleRemove(tag)"
+                  v-for="tagItem of tag"
+                  :key="tagItem"
+                  color="arcoblue"
+                  class="tags"
               >
-                {{ tag }}
+                {{ tagItem }}
               </a-tag>
 
               <a-input
@@ -109,7 +112,7 @@
                 <template #icon>
                   <icon-plus />
                 </template>
-                Add Tag
+                {{ $t('searchDataset.tags.addTag') }}
               </a-tag>
             </a-space>
           </a-card>
@@ -126,7 +129,7 @@
 <style scoped lang="less">
 .container {
   display: flex;
-  height: 515px;
+  height: 460px;
 }
 
 #firstCol {
@@ -190,6 +193,12 @@
   width: 1px;
   border: 1px dashed #ccc;
   background-color: transparent;
+}
+
+.tags {
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 0 10px 10px 0;
 }
 
 </style>

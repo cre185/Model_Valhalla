@@ -96,14 +96,22 @@
 <script>
   import Typed from 'typed.js';
   import { useRouter } from 'vue-router';
+  import {isLogin} from "@/utils/auth";
 
   export default {
     setup() {
       const router = useRouter();
       const Login = () => {
-        router.push({
-          name: 'Login',
-        });
+        if (isLogin()) {
+          router.push({
+            name: 'leaderboardDetails',
+          });
+        }
+        else {
+          router.push({
+            name: 'Login',
+          });
+        }
       };
       return { Login };
     },
