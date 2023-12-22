@@ -9,7 +9,7 @@
   const domain = ref('');
   const tag = ref('');
   const license = ref('');
-
+  console.log("5555", props)
   onMounted(async () => {
     try {
       // const response = await axios.get(apiCat(`/dataset/retrieve/${props.datasetID}`));

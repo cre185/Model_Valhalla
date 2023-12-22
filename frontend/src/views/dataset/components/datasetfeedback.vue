@@ -1,5 +1,5 @@
 <template>
-    <a-modal :closable=false :ok-text="$t('dataset.feedback.ok.text')" @ok="handleSubmit">
+    <a-modal :closable=false :ok-text="$t('dataset.feedback.ok.text')" @ok="handleSubmit" @cancel="handleCancel">
 
         <div style="display: flex; justify-content: center; flex-direction: row;">
             <a-button @click="switchClick('feedbackForm')" size="large"
@@ -21,7 +21,7 @@
         <template v-if="currentForm === 'feedbackForm'">
             <a-form style="padding-right: 10px;">
                 <a-form-item :label="$t('dataset.feedback.dataset.name')">
-                    <a-select v-model="formModel.datasetName" :options="DatasetSelectOptions"
+                    <a-select v-model="formModel.datasetName" :options="DatasetSelectOptions" :disabled="datasetIdKnown"
                         :placeholder="$t('dataset.feedback.dataset.name.defalut')">
                     </a-select>
                 </a-form-item>
@@ -56,13 +56,17 @@
 
                     </a-textarea>
                 </a-form-item>
-                <a-form-item :label="$t('dataset.feedback.dataset.upload')">
+                <a-form-item :label="$t('dataset.upload.button.title')">
+                    <div style="display: flex; flex-direction: column; align-items: left;">
                     <a-upload   action="http://127.0.0.1:8000/dataset/test_upload"
                                :file-list="formModel.annex"
                                 @success="uploadChange"
+                                :limit = 1
                                 >
-
+                        
                     </a-upload>
+                    <span style="margin-top: 5px; font-size: smaller; color: darkgray;">{{ $t('dataset.upload.file.title.default') }}</span>
+                    </div>
                 </a-form-item>
             </a-form>
         </template>
@@ -103,27 +107,61 @@
     </a-modal>
 </template>
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { FileItem } from '@arco-design/web-vue';
 import { simplifiedQueryDatasetList, SelectedDataset, sendFeedback, sendReport} from "@/api/dataset";
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import {getToken} from "@/utils/auth";
 
-
+const props = defineProps({
+    datasetid: {
+      type: String,
+      default: '-1',
+    },
+});
+console.log(props.datasetid)
 const currentForm = ref('feedbackForm')
+const datasetIdKnown = ref(false) // datasetid是否已确定，决定是否禁用选择框
 const generateFormModel = () => {
+    if(props.datasetid === '-1')
+    {
+        return {
+            datasetName: '',
+            feedbackType: '',
+            feedbackContent: '',
+            reportReason: '',
+            reportContent: '',
+            annex: [] as FileItem[],
+            file: [] as File[] ,
+        }
+    }
+    datasetIdKnown.value = true;
     return {
-        datasetName: '',
+        datasetName: props.datasetid,
         feedbackType: '',
         feedbackContent: '',
         reportReason: '',
         reportContent: '',
         annex: [] as FileItem[],
-        file: [] as File[] ,
+        file: [] as File[] , 
     }
 };
+/* watch(
+        () => currentForm,
+    
+        async (newModelid, oldModelid) => {
+            try {
+                currentForm.value = newModelid.value;
 
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            },
+        {
+            immediate: true // 立即执行一次回调函数
+        }
+     ); */
 const feedbackColor = ref('rgb(45, 92, 246)');
 const reportColor = ref('#000000');
 const formModel = ref(generateFormModel());
@@ -145,10 +183,7 @@ const uploadChange = async (fileItem: FileItem) => {
         formModel.value.file.push(fileItem.file);
         console.log(formModel.value.file[0].name);
     }
-    // formModel.value.file = fileItem.file!;
-    // formModel.value.file=fileItem.file!;
-    // userStore.setInfo({ avatar: fileItem.url });
-    // localStorage.setItem('userStore', JSON.stringify(userStore.$state));
+    
   };
 const handleSubmit = async () => {
     if(currentForm.value === 'feedbackForm') {
@@ -170,6 +205,11 @@ const switchClick = async (formType: string) => {
         feedbackColor.value = '#000000';
         reportColor.value = 'rgb(45, 92, 246)';
     }
+}
+const handleCancel = async () => {
+    currentForm.value = 'feedbackForm';
+    formModel.value = generateFormModel();
+    switchClick(currentForm.value);
 }
 </script>
 <style scoped lang="less"></style>

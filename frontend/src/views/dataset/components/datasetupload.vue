@@ -1,5 +1,5 @@
 <template>
-    <a-modal @ok="handleUpload" :ok-text="$t('dataset.upload.button.title')" @cancel="handleCancel" :closable=false>
+    <a-modal @ok="handleUpload" :ok-text="$t('dataset.feedback.dataset.upload')" @cancel="handleCancel" :closable=false>
         <template #title>
             <div style="display: flex; align-items: center;">
                 <icon-upload style="margin-right: 5px;"></icon-upload>
@@ -48,6 +48,7 @@
                 <a-upload action="http://127.0.0.1:8000/dataset/test_upload"
                             :file-list="UploadModel.annex"
                             @success="uploadChange"
+                            :limit = 1
                             >
 
                 </a-upload>
@@ -100,6 +101,7 @@ const uploadChange = async (fileItem: FileItem) => {
     // userStore.setInfo({ avatar: fileItem.url });
     // localStorage.setItem('userStore', JSON.stringify(userStore.$state));
   };
+
 
 const handleAdd = () => {
     if (inputTag.value) {
