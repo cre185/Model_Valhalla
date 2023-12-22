@@ -310,11 +310,11 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
     // DatasetFile.append('tag', formData.datasetTags);
     // DatasetFile.append('msg_file', formData.files[0]);
     console.log(formData.files[0]);
-    // DatasetFile.append('msg_file', formData.annex[0].file);
+    DatasetFile.append('file', formData.files[0]);
     await fetch(apiCat('/dataset/create'),{
     method: 'POST',
         headers: {
-            'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'multipart/form-data',
             'Authorization': jwt,
         },
         body: DatasetFile,
