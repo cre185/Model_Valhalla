@@ -263,7 +263,6 @@ class subscribeLLMView(APIView):
             subscription.save()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except BaseException:
-            print('error')
             return Response({"message": "Invalid llmId"},
                             status=status.HTTP_400_BAD_REQUEST)
 
