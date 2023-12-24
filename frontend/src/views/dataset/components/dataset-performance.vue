@@ -154,7 +154,7 @@
   <div id="container">
     <div id="scoreTable">
       <h1>{{ $t('dataset.result') }}</h1>
-      <a-table :columns="columns" :data="data"/>
+      <a-table :columns="columns" :data="data" :pagination="false" :scroll="{y: 410}"/>
     </div>
     <div id="separator"></div>
     <div id="visualization">

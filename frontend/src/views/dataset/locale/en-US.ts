@@ -84,4 +84,8 @@ export default {
   'dataset.select': 'Please select ...',
   'dataset.confirm': 'confirm',
   'dataset.result': 'LLM Score',
+  'dataset.details.preview': 'Preview',
+  'dataset.details.question': 'Question',
+  'dataset.details.answer': 'Answer',
+  'dataset.details.prompt': 'Prompt',
 };

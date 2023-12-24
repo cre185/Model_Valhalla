@@ -85,4 +85,8 @@ export default {
   'dataset.upload.application.three': '其他',
   'dataset.confirm': '确认',
   'dataset.result': '模型得分',
+  'dataset.details.preview': '预览',
+  'dataset.details.question': '问题',
+  'dataset.details.answer': '答案',
+  'dataset.details.prompt': '引导语',
 };

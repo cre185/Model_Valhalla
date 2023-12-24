@@ -102,6 +102,10 @@ export async function downloadDataset(datasetID: number){
     return axios.get(apiCat(`/dataset/download/${datasetID}`));
 }
 
+export async function previewDataset(datasetID: number){
+    return axios.get(apiCat(`/dataset/preview/${datasetID}`));
+}
+
 export async function queryDatasetList() {
     const DatasetList: { data: any; total: number } = {data: [], total: 0};
     const response = await axios.get<DatasetListRes>(apiCat('/dataset/list'));

@@ -269,10 +269,13 @@
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
             <DatasetProfile :datasetID="currentDataset.id.toString()" @change-tag="fetchData"/>
           </a-tab-pane>
-          <a-tab-pane key="2" :title="$t('dataset.details.testScore')">
+          <a-tab-pane key="2" :title="$t('dataset.details.preview')">
+            <DatasetPreview :datasetID="currentDataset.id.toString()"/>
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('dataset.details.testScore')">
             <DatasetPerformance :datasetID="currentDataset.id.toString()" />
           </a-tab-pane>
-          <a-tab-pane key="3" :title="$t('dataset.details.discussions')">
+          <a-tab-pane key="4" :title="$t('dataset.details.discussions')">
             <DatasetDiscussionArea :comment-details="commentDetails" :dataset-id="currentDataset.id.toString()"
             @change-comment="handleChangeComment"/>
           </a-tab-pane>
@@ -297,6 +300,7 @@
   import {DatasetData, queryDatasetList, updateDatasetTags, getDatasetFile } from "@/api/dataset";
   import MyComment, {getComment, updateComment} from "@/api/comment";
   import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";
+  import DatasetPreview from "@/views/dataset/components/dataset-preview.vue";
   import DatasetPerformance from "@/views/dataset/components/dataset-performance.vue";
   import DatasetDiscussionArea from "@/views/dataset/components/dataset-discussion-area.vue";
   import {getToken} from "@/utils/auth";
