@@ -459,15 +459,12 @@ status=400
 ```
 #### update  
 **功能描述**：更新指定用户的信息。  
-**请求方式**：PUT/PATCH  
+**请求方式**：PATCH  
 **请求URL**：`/user/update/<id>`  
 **请求参数**：  
 ```python
-PUT={
+{
     # 见retrieve接口的返回结果
-}
-PATCH={
-    # 同上但均为可选参数
 }
 ```
 **额外需求**：jwt  
@@ -569,9 +566,8 @@ status=401
     # "subjective": "是否为主观题"
     # "content_size": "数据集大小",
     # "author": "作者",
-    # "data_file": "数据集文件",
     # "domain": "数据集领域",
-    # "tag": "数据集标签"，
+    # "tag": "数据集标签",
     # "file": "数据集文件"
 }
 ```
@@ -697,15 +693,12 @@ status=404
 ```
 #### update  
 **功能描述**：更新指定数据集的信息。  
-**请求方式**：PUT/PATCH  
+**请求方式**：PATCH  
 **请求URL**：`/dataset/update/<id>`  
 **请求参数**：  
 ```python
-PUT={
+{
     # 见create接口的请求参数
-}
-PATCH={
-    # 同上但均为可选参数
 }
 ```
 **额外需求**：admin_required  
@@ -1302,15 +1295,12 @@ status=200
 
 #### update  
 **功能描述**：更新指定模型测试的信息。  
-**请求方式**：PUT/PATCH  
+**请求方式**：PATCH  
 **请求URL**：`/testing/update/<id>`  
 **请求参数**：  
 ```python
-PUT={
-    # 见create接口的请求参数  
-}
-PATCH={
-    # 同上但均为可选参数
+{
+    # 见create接口的请求参数
 }
 ```
 **额外需求**：admin_required  

@@ -272,6 +272,9 @@ class listSelectedCreditView(APIView):
             credits = credits.filter(dataset_id=data['datasetId'])
         if 'llmId' in data:
             credits = credits.filter(LLM_id=data['llmId'])
+        if credits.count() == 0:
+            return Response({"message": "Invalid datasetId or llmId"},
+                            status=status.HTTP_400_BAD_REQUEST)
         data = []
         for i in credits:
             serializer = CreditSerializer(i)

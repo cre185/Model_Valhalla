@@ -1,11 +1,9 @@
-import os
 from django.test import TestCase
 from rest_framework.test import APIClient
 
 from user.models import User
 
 from .models import Dataset
-from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # Create your tests here.
 
@@ -36,6 +34,9 @@ class DatasetModelTests(TestCase):
             '/dataset/create',
             {
                 "name": "somedataset",
+                "description": "somedescription",
+                "domain": "somedomain",
+                "tag": ["tag1", "tag2"],
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -55,6 +56,83 @@ class DatasetModelTests(TestCase):
             HTTP_AUTHORIZATION=jwt,
             format="json"
         )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+
+    def test_upload(self):
+        # the correct case
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testpassword",
+            },
+            format="json"
+        )
+        jwt = response.json()['jwt']
+        response = self.client.post(
+            '/dataset/create',
+            {
+                "name": "somedataset",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(json_data['datasetId'], 1)
+        self.assertEqual(response.status_code, 201)
+        with open('user/management/commands/static/data/ceval_select.csv', 'rb') as fp:
+            response = self.client.post(
+                '/dataset/upload',
+                {
+                    "id": 1,
+                    "file": fp,
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        # request with name instead of id
+        with open('user/management/commands/static/data/ceval_select.csv', 'rb') as fp:
+            response = self.client.post(
+                '/dataset/upload',
+                {
+                    "name": "somedataset",
+                    "file": fp,
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+        json_data = response.json() 
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        # request with invalid file
+        with open('user/management/commands/static/avatar/default.jpg', 'rb') as fp:
+            response = self.client.post(
+                '/dataset/upload',
+                {
+                    "id": 1,
+                    "file": fp,
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # the dataset doesn't exist
+        with open('user/management/commands/static/data/ceval_select.csv', 'rb') as fp:
+            response = self.client.post(
+                '/dataset/upload',
+                {
+                    "id": 2,
+                    "file": fp,
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
 
@@ -156,6 +234,18 @@ class DatasetModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Dataset.objects.get(id=1).tag, ["tag1", "tag2"])
+        # the dataset doesn't exist
+        response = self.client.post(
+            '/dataset/update_tag',
+            {
+                "id": 2,
+                "tag": ["tag1", "tag2"],
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
 
     def test_retrieve(self):
         # the correct case
@@ -193,3 +283,125 @@ class DatasetModelTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 404)
+
+    def test_list(self):
+        # the correct case
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testpassword",
+            },
+            format="json"
+        )
+        jwt = response.json()['jwt']
+        response = self.client.post(
+            '/dataset/create',
+            {
+                "name": "somedataset",
+                "description": "somedescription",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response = self.client.get(
+            '/dataset/list',
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(len(json_data['data']), 1)
+        self.assertEqual(json_data['data'][0]['name'], "somedataset")
+        self.assertEqual(json_data['data'][0]['description'], "somedescription")
+        self.assertEqual(response.status_code, 200)
+
+    def test_download(self):
+        # the correct case
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testpassword",
+            },
+            format="json"
+        )
+        jwt = response.json()['jwt']
+        response = self.client.post(
+            '/dataset/create',
+            {
+                "name": "somedataset",
+                "description": "somedescription",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        with open('user/management/commands/static/data/ceval_select.csv', 'rb') as fp:
+            response = self.client.post(
+                '/dataset/upload',
+                {
+                    "id": 1,
+                    "file": fp,
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+            self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            '/dataset/download/1',
+            format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        json_data = response.json()
+        self.assertEqual(len(json_data), 201)
+        # the dataset doesn't exist
+        response = self.client.get(
+            '/dataset/download/2',
+            format="json"
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_preview(self):
+        # the correct case
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testpassword",
+            },
+            format="json"
+        )
+        jwt = response.json()['jwt']
+        response = self.client.post(
+            '/dataset/create',
+            {
+                "name": "somedataset",
+                "description": "somedescription",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        with open('user/management/commands/static/data/ceval_select.csv', 'rb') as fp:
+            response = self.client.post(
+                '/dataset/upload',
+                {
+                    "id": 1,
+                    "file": fp,
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+            self.assertEqual(response.status_code, 200)
+        response = self.client.get(
+            '/dataset/preview/1',
+            format="json"
+        )
+        self.assertEqual(response.status_code, 200)
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(len(json_data['data']), 10)
+        # the dataset doesn't exist
+        response = self.client.get(
+            '/dataset/preview/2',
+            format="json"
+        )
+        self.assertEqual(response.status_code, 400)
