@@ -3,7 +3,7 @@
     <Breadcrumb :items="['menu.user', 'menu.user.info']" />
     <UserInfoHeader />
     <div class="content">
-      <div class="content-left">
+      <!-- <div class="content-left">
         <a-grid :cols="24" :col-gap="16" :row-gap="16">
           <a-grid-item :span="24">
             <MyProject />
@@ -22,17 +22,39 @@
             <LatestNotification />
           </a-grid-item>
         </a-grid>
-      </div>
+      </div> -->
+        <a-col class="content-top" :span="24">
+          <a-grid :cols="2" :col-gap="16" :row-gap="16">
+            <a-grid-item >
+              <SubscribedModels :userID="userInfo.accountId"/>
+            </a-grid-item>
+            <a-grid-item >
+              <LatestActivity />
+            </a-grid-item>
+          </a-grid>
+        </a-col>
+        <a-col class="content-bottom" :span="24">
+          <a-grid :cols="24" :col-gap="16" :row-gap="16">
+            <a-grid-item :span="12">
+            </a-grid-item>
+            <a-grid-item :span="12">
+              <LatestActivity />
+            </a-grid-item>
+          </a-grid>
+        </a-col>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+  import {useStorage} from "@vueuse/core";
+  import { useUserStore } from '@/store';
   import UserInfoHeader from './components/user-info-header.vue';
   import LatestNotification from './components/latest-notification.vue';
-  import MyProject from './components/my-project.vue';
+  import SubscribedModels from './components/subscribed-models.vue';
   import LatestActivity from './components/latest-activity.vue';
-  import MyTeam from './components/my-team.vue';
+
+  const userInfo = useUserStore();
 </script>
 
 <script lang="ts">
@@ -47,10 +69,9 @@
   }
 
   .content {
-    display: flex;
     margin-top: 12px;
 
-    &-left {
+    /*&-left {
       flex: 1;
       margin-right: 16px;
       overflow: hidden;
@@ -63,7 +84,7 @@
 
     &-right {
       width: 332px;
-    }
+    }*/
 
     .tab-pane-wrapper {
       padding: 0 16px 16px 16px;
@@ -75,13 +96,13 @@
   .mobile {
     .content {
       display: block;
-      &-left {
+      /*&-left {
         margin-right: 0;
         margin-bottom: 16px;
       }
       &-right {
         width: 100%;
-      }
+      }*/
     }
   }
 </style>

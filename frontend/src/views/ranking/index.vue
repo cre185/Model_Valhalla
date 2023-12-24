@@ -157,17 +157,31 @@
               v-if="currentLLM !== undefined"
     >
       <template #title>
-        <header class="drawer-model-title">
+        <header class="drawer-model-title" :key="currentLLM.isSubscribed">
           <div class="drawer-model-title-text">
             <p>{{ currentLLM.name }}</p>
           </div>
           <a-button
+              v-if="currentLLM.isSubscribed"
               class="llm-details-subscribe-btn"
               type="primary"
               size="large"
+              @click="handleSubscribe"
           >
             <template #icon>
-              <icon-star :size="30"/>
+              <icon-star-fill style="margin-top: 15%" :size="30"/>
+            </template>
+            <p>{{ $t('rankings.llm.details.unsubscribe.btn') }}</p>
+          </a-button>
+          <a-button
+              v-else
+              class="llm-details-subscribe-btn"
+              type="primary"
+              size="large"
+              @click="handleSubscribe"
+          >
+            <template #icon>
+              <icon-star style="margin-top: 15%" :size="30"/>
             </template>
             <p>{{ $t('rankings.llm.details.subscribe.btn') }}</p>
           </a-button>
@@ -210,11 +224,12 @@
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
   import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
-  import {LLMRankingData, queryDatasetColumnList, queryLLMList} from "@/api/model-list";
+  import {isLLMSubscribed, LLMRankingData, queryDatasetColumnList, queryLLMList, subscribeLLM} from "@/api/model-list";
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import Sortable from 'sortablejs';
   import cloneDeep from 'lodash/cloneDeep';
+  import { useUserStore } from '@/store';
   import MyComment, {getComment, updateComment} from "@/api/comment";
   import ModelDiscussionArea from "./components/model-discussion-area.vue";
   import ModelProfile from './components/model-profile.vue';
@@ -228,6 +243,7 @@
 
   const { loading, setLoading } = useLoading(false);
   const { t } = useI18n();
+  const userInfo = useUserStore();
   const renderData = ref<LLMRankingData[]>();
   const currentColumns = ref<TableColumnData[]>();
   const cloneColumns = ref<Column[]>([]);
@@ -479,6 +495,9 @@
 
     ModelID.value=currentLLM.value!.id.toString();
     paintFirstTab.value = !paintFirstTab.value;
+    isLLMSubscribed(parseInt(userInfo.accountId!, 10), currentLLM.value!.id).then(returnValue => {
+      currentLLM.value!.isSubscribed = returnValue;
+    });
     getComment(ModelID.value!, commentDetails, jwt!);
   };
 
@@ -490,6 +509,11 @@
       commentDetails.value[index].children.push(content);
     }
   };
+
+  const handleSubscribe = () =>{
+    subscribeLLM(currentLLM.value!.id);
+    currentLLM.value!.isSubscribed = !currentLLM.value!.isSubscribed;
+  }
 
   type listenerType = (event: Event) => void;
   const scrollAnimation = (listener: listenerType | null, clicked: boolean) => {

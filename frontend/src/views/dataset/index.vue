@@ -223,7 +223,7 @@
               v-if="currentDataset !== undefined"
     >
       <template #title>
-        <header class="drawer-model-title">
+        <header class="drawer-model-title" :key="currentDataset.isSubscribed">
           <a-space direction="horizontal" style="margin-top: 8vh; margin-left: -6vw; padding: 2vh 0vw 3vh 3vw;
           border-bottom: 5px solid lightgrey ">
             <a-avatar><img :src="currentDataset.uploadUserAvatar"/></a-avatar>
@@ -252,12 +252,26 @@
               <p>{{ currentDataset.name }}</p>
             </div>
             <a-button
+                v-if="currentDataset.isSubscribed"
                 class="llm-details-subscribe-btn"
                 type="primary"
                 size="large"
+                @click="handleSubscribe"
             >
               <template #icon>
-                <icon-star :size="30"/>
+                <icon-star-fill style="margin-top: 15%" :size="30"/>
+              </template>
+              <p>{{ $t('dataset.details.unsubscribe.btn') }}</p>
+            </a-button>
+            <a-button
+                v-else
+                class="llm-details-subscribe-btn"
+                type="primary"
+                size="large"
+                @click="handleSubscribe"
+            >
+              <template #icon>
+                <icon-star style="margin-top: 15%" :size="30"/>
               </template>
               <p>{{ $t('dataset.details.subscribe.btn') }}</p>
             </a-button>
@@ -294,12 +308,20 @@
   import { Pagination } from '@/types/global';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
-  import {DatasetData, queryDatasetList, updateDatasetTags, getDatasetFile } from "@/api/dataset";
+  import {
+    DatasetData,
+    queryDatasetList,
+    updateDatasetTags,
+    getDatasetFile,
+    isDatasetSubscribed,
+    subscribeDataset
+  } from "@/api/dataset";
+  import {useUserStore} from "@/store";
+  import {getToken} from "@/utils/auth";
   import MyComment, {getComment, updateComment} from "@/api/comment";
   import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";
   import DatasetPerformance from "@/views/dataset/components/dataset-performance.vue";
   import DatasetDiscussionArea from "@/views/dataset/components/dataset-discussion-area.vue";
-  import {getToken} from "@/utils/auth";
   import DatasetFeedback from "./components/datasetfeedback.vue";
   import DatasetUpload from "./components/datasetupload.vue";
 
@@ -400,6 +422,7 @@
   const visible = ref(false);
   const currentDataset = ref<DatasetData>();
   const commentDetails = ref([] as MyComment[]);
+  const userInfo = useUserStore();
   const jwt = getToken();
   const showDatasetFeedback = ref(false);
   const showDatasetUpload = ref(false);
@@ -461,6 +484,7 @@
 
   const reset = () => {
     formModel.value = generateFormModel();
+    fetchData();
   };
 
   const search = () => {
@@ -520,9 +544,11 @@
 
   const handleAddTag = (record: DatasetData) => {
     if (record.newTag) {
-      record.tags.unshift(record.newTag)
-      updateDatasetTags(record.id, record.tags);
-      record.newTag = '';
+      if(!record.tags.includes(record.newTag)){
+        record.tags.unshift(record.newTag)
+        updateDatasetTags(record.id, record.tags);
+        record.newTag = '';
+      }
     }
     record.showInput = false;
   };
@@ -570,6 +596,11 @@
     }
   };
 
+  const handleSubscribe = () =>{
+    subscribeDataset(currentDataset.value!.id);
+    currentDataset.value!.isSubscribed = !currentDataset.value!.isSubscribed;
+  }
+
   const setDrawer = () => {
     const drawerHeader = document.querySelector('.arco-drawer-header');
     if (drawerHeader) {
@@ -614,6 +645,9 @@
       firstTab.style.margin = '0 25px 0 60px';
     }
 
+    isDatasetSubscribed(parseInt(userInfo.accountId!, 10), currentDataset.value!.id).then(returnValue => {
+      currentDataset.value!.isSubscribed = returnValue;
+    });
     getComment(currentDataset.value!.id.toString(), commentDetails, jwt!, false);
   };
 

@@ -13,6 +13,7 @@ export default {
   'rankings.llm.data.details': '详情',
   'rankings.llm.data.license': '许可',
   'rankings.llm.details.subscribe.btn': '关注',
+  'rankings.llm.details.unsubscribe.btn': '取消关注',
   'ranking.actions.setColumn': '列设置',
   'ranking.profile.ranking': '综合排名',
   'ranking.profile.info.description': '模型描述',

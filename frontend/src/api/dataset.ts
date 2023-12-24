@@ -87,6 +87,7 @@ export interface DatasetData {
     toDownload: boolean;
     uploadUserAvatar: string;
     uploadUsername: string;
+    isSubscribed: boolean;
 }
 
 export interface DatasetListRes {
@@ -253,7 +254,7 @@ interface FormDatasetData {
         },
         body: formDataObject,
      });
-} 
+}
 
 export async function sendReport(jwt: string, formData: FormDatasetData) {
     const response = await fetch(apiCat('/user/create_message_to_admin'), {
@@ -294,7 +295,7 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             name: formData.datasetName,
             domain: formData.datasetApplication,
             tag: formData.datasetTags,
-            
+
             // author: formData.datasetPublisher
         }),
     });
@@ -318,4 +319,13 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
 export async function getModelScore(datasetID: number){
     const response = await axios.post(apiCat(`/ranking/list_selected_credit`), { datasetId: datasetID });
     return response.data.data;
+}
+
+export async function subscribeDataset(datasetID: number){
+    return axios.post(apiCat('/user/subscribe_dataset'), {datasetId: datasetID});
+}
+
+export async function isDatasetSubscribed(userID:number, datasetID: number){
+    const response = await axios.get(apiCat(`/user/list_dataset_subscription/${userID}`));
+    return response.data.datasets.some((item: any) => item.id === datasetID);
 }

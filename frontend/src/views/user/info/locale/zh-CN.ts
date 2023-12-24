@@ -12,4 +12,10 @@ export default {
   'userInfo.nodata': '暂无数据',
   'userInfo.visits.unit': '人次',
   'userInfo.visits.lastMonth': '较上月',
+  'userInfo.type.admin': '管理员',
+  'userInfo.type.user':' 普通用户',
+  'userInfo.title.subscribedModels': '我关注的模型',
+  'userInfo.title.subscribedDatasets': '我关注的数据集',
+  'userInfo.subscribedModel.ranking': '当前排在第',
+  'userInfo.subscribedModel.ranking.suffix': '位',
 };

@@ -14,6 +14,7 @@ export default {
   'rankings.llm.data.details': 'Details',
   'rankings.llm.data.license': 'License',
   'rankings.llm.details.subscribe.btn': 'Subscribe',
+  'rankings.llm.details.unsubscribe.btn': 'Unsubscribe',
   'ranking.actions.setColumn': 'Column Setting',
   'ranking.profile.ranking': 'Overall Ranking',
   'ranking.profile.info.description': 'Model Description',

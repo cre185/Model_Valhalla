@@ -1,4 +1,6 @@
 import axios from 'axios';
+import apiCat from "@/api/main";
+import {queryLLMList} from "@/api/model-list";
 
 export interface MyProjectRecord {
   id: number;
@@ -13,6 +15,31 @@ export interface MyProjectRecord {
 }
 export function queryMyProjectList() {
   return axios.post('/api/user/my-project/list');
+}
+
+export interface SubscribedModelRecord{
+  id: number;
+  name: string;
+  ranking: number;
+}
+
+export async function querySubscribedModels(userId: number) {
+  const modelList: SubscribedModelRecord[] = [];
+  const response = await axios.get(apiCat(`/user/list_llm_subscription/${userId}`));
+  const modelRankings = await queryLLMList();
+  for (let i = 0; i < response.data.llms.length; i += 1) {
+    const model = response.data.llms[i] as {
+      id: number;
+      name: string;
+    }
+    modelRankings.data.forEach((item: any) => {
+        if(item.id === model.id){
+          modelList.push({id: model.id, name: model.name, ranking: item.ranking});
+        }
+    })
+  }
+  console.log(modelList);
+  return modelList;
 }
 
 export interface MyTeamRecord {

@@ -28,6 +28,7 @@ export interface LLMRankingData {
   datasetScore: number;
   eloScore: number;
   license: string;
+  isSubscribed: boolean;
   [key: string]: any;
 }
 
@@ -203,4 +204,13 @@ export async function GetModelInfo(modelID: number) {
 export async function queryLLMBattleRecords(modelID: number) {
   const res = await axios.post<BattleRecords[]>(apiCat('/testing/battle_history'), {llm: modelID});
   return res.data;
+}
+
+export async function subscribeLLM(modelID: number){
+  return axios.post(apiCat('/user/subscribe_llm'), {llmId: modelID});
+}
+
+export async function isLLMSubscribed(userID:number, modelID: number){
+  const response = await axios.get(apiCat(`/user/list_llm_subscription/${userID}`));
+  return response.data.llms.some((item: any) => item.id === modelID);
 }
