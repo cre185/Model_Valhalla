@@ -7,6 +7,7 @@ import {getAvatar, getUsername} from "@/api/user-info";
 import { FileItem } from '@arco-design/web-vue';
 import * as fs from 'fs';
 
+
 export class SubjectiveEvaluationData{
     readonly prompt: string;
 
@@ -313,6 +314,23 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
         body: DatasetFile,
      });
 
+    await fetch(apiCat('/user/create_message_to_admin'), {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        Authorization: jwt,
+        },
+        body: JSON.stringify({
+            msg_type: "Upload",
+            msg: "数据集上传",
+            msg_content: {
+                'DatasetName': formData.datasetName,
+            }
+
+        }),
+    });
+    
+    
 
 }
 

@@ -73,7 +73,7 @@
         <template v-else-if="currentForm === 'reportForm'">
             <a-form style="padding-right: 10px;">
                 <a-form-item :label="$t('dataset.feedback.dataset.name')">
-                    <a-select v-model="formModel.datasetName" :options="DatasetSelectOptions"
+                    <a-select v-model="formModel.datasetName" :options="DatasetSelectOptions" :disabled="datasetIdKnown"
                         :placeholder="$t('dataset.feedback.dataset.name.defalut')">
                     </a-select>
                 </a-form-item>

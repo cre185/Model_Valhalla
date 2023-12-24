@@ -76,7 +76,7 @@
           </a-card>
         </a-row>
       </a-col>
-      <a-col :span="1" id="middleCol"><div id="separator"></div></a-col>
+      <div id="separator"></div>
       <a-col :span="9" id="lastCol">
         <a-row  id="row4">
           <a-card :title="$t('dataset.tag')" :bordered="false">
@@ -191,8 +191,10 @@
 
 #separator {
   width: 1px;
-  border: 1px dashed #ccc;
-  background-color: transparent;
+  border-left: 1px dashed #ccc;
+  height: 500px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .tags {
