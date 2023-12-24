@@ -10,7 +10,7 @@ class Dataset(models.Model):
     data_file = models.FileField(
         upload_to='static/data',
         null=True)
-    content_size = models.IntegerField(default=200)
+    content_size = models.IntegerField(default=0)
     add_time = models.DateTimeField(auto_now_add=True)
     description = models.TextField(default='')
     subjective = models.BooleanField(default=False)

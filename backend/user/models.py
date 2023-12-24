@@ -53,7 +53,7 @@ class DatasetSubscription(models.Model):
 
 
 class Msg(models.Model):
-    msg = models.CharField(max_length=255)
+    msg = models.TextField(max_length=1000)
     msg_type = models.CharField(max_length=32)
     add_time = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(

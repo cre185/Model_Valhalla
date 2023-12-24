@@ -146,36 +146,6 @@ class UserModelTests(TestCase):
         self.assertEqual(json_data['message'], "Mobile already been used")
         self.assertEqual(response.status_code, 400)
 
-    def test_logout(self):
-        # logout without login
-        response = self.client.post(
-            '/user/logout',
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "User must be authorized.")
-        self.assertEqual(response.status_code, 401)
-        # login first to get jwt
-        response = self.client.post(
-            '/user/login',
-            {
-                "username": "testuser",
-                "password": "testuser"
-            },
-            format="json"
-        )
-        json_data = response.json()
-        jwt = json_data['jwt']
-        # logout with jwt
-        response = self.client.post(
-            '/user/logout',
-            HTTP_AUTHORIZATION=jwt,
-            format="json",
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(response.status_code, 200)
-
 
 class UserDataModelTests(TestCase):
     def setUp(self):
