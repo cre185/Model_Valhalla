@@ -10,7 +10,6 @@
 
   await previewDataset(props.datasetID)
       .then(result => {
-        console.log(result.data)
         if (result.data.subjective) {
           columns = [
             {

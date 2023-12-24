@@ -88,4 +88,8 @@ export default {
   'dataset.details.question': 'Question',
   'dataset.details.answer': 'Answer',
   'dataset.details.prompt': 'Prompt',
+  'dataset.details.modifyIntroduction': 'Edit Dataset Introduction',
+  'dataset.details.modifyAuthor': 'Edit Dataset Publisher',
+  'dataset.details.modifyDomain': 'Edit Dataset Application Domain',
+  'dataset.details.modifyLicense': 'Edit Dataset License',
 };

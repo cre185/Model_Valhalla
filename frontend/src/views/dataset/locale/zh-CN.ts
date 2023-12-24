@@ -89,4 +89,8 @@ export default {
   'dataset.details.question': '问题',
   'dataset.details.answer': '答案',
   'dataset.details.prompt': '引导语',
+  'dataset.details.modifyIntroduction': '编辑数据集简介',
+  'dataset.details.modifyAuthor': '编辑数据集发布方',
+  'dataset.details.modifyDomain': '编辑数据集应用领域',
+  'dataset.details.modifyLicense': '编辑数据集许可',
 };

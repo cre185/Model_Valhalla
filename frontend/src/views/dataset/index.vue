@@ -267,7 +267,7 @@
       <div>
         <a-tabs size="large" style="margin-top: 7vh">
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
-            <DatasetProfile :datasetID="currentDataset.id.toString()" @change-tag="fetchData"/>
+            <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="false" @change-tag="fetchData"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('dataset.details.preview')">
             <DatasetPreview :datasetID="currentDataset.id.toString()"/>
