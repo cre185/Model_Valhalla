@@ -10,7 +10,7 @@ from ranking import models as ranking
 from testing import models as testing
 from utils.admin_required import admin_required
 from utils.jwt import login_required
-from utils.verify_dataset import verify_dataset
+from utils.verify_dataset import *
 
 from .models import *
 from .serializers import *
@@ -181,6 +181,7 @@ class downloadView(APIView):
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
 class updateTagView(APIView):
     @login_required
     def post(self, request):
@@ -189,6 +190,21 @@ class updateTagView(APIView):
             target.tag = request.data['tag']
             target.save()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid dataset id"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class previewView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            target = Dataset.objects.get(id=kwargs['id'])
+            file = target.data_file
+            content = file.read().decode('utf-8')
+            data, subjective = get_first_10_rows(content)
+            response = Response({'message': 'ok', 'data': data, 'subjective': subjective},
+                                status=status.HTTP_200_OK)
+            return response
         except BaseException:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)

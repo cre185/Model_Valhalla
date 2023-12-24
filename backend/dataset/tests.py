@@ -1,9 +1,11 @@
+import os
 from django.test import TestCase
 from rest_framework.test import APIClient
 
 from user.models import User
 
 from .models import Dataset
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 # Create your tests here.
 

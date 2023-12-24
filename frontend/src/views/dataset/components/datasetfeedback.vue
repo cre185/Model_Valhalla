@@ -128,8 +128,6 @@ const props = defineProps({
 const currentForm = ref('feedbackForm')
 const datasetIdKnown = ref(false) // datasetid是否已确定，决定是否禁用选择框
 const generateFormModel = () => {
-    console.log("ID", props.datasetFeedbackID)
-    console.log("Shown", props.datasetShown)
     if(props.datasetShown === 'false')
     {
         datasetIdKnown.value = false;
