@@ -10,6 +10,7 @@
 
   await previewDataset(props.datasetID)
       .then(result => {
+        console.log(result.data)
         if (result.data.subjective) {
           columns = [
             {
@@ -19,10 +20,10 @@
             },
           ];
           data = [];
-          for (let i = 0; i < result.data.items.length; i+=1) {
+          for (let i = 0; i < result.data.data.length; i+=1) {
             data.push({
-              key: '1',
-              prompt: result.data.items[i],
+              key: i,
+              prompt: result.data.data[i],
             });
           }
         }
@@ -60,15 +61,15 @@
             },
           ];
           data = [];
-          for (let i = 0; i < result.data.items.length; i+=1) {
+          for (let i = 0; i < result.data.data.length; i+=1) {
             data.push({
-              key: '1',
-              question: result.data.items[i].question,
-              A: result.data.items[i].A,
-              B: result.data.items[i].B,
-              C: result.data.items[i].C,
-              D: result.data.items[i].D,
-              answer: result.data.items[i].answer,
+              key: i,
+              question: result.data.data[i][0],
+              A: result.data.data[i][1],
+              B: result.data.data[i][2],
+              C: result.data.data[i][3],
+              D: result.data.data[i][4],
+              answer: result.data.data[i][5],
             });
           }
         }
@@ -78,7 +79,7 @@
 
 <template>
   <div id="container">
-    <a-table :columns="columns" :data="data" :pagination="false" :scroll="{y: 460}"/>
+    <a-table :columns="columns" :data="data" :pagination="false" :scroll="{y: 410}"/>
   </div>
 </template>
 
