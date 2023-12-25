@@ -28,6 +28,8 @@ export default {
   'searchDataset.columns.operations.download': 'Download',
   'searchDataset.columns.operations.view': 'View',
   'searchDataset.operation.feedback': 'Feedback',
+  'searchDataset.operation.edit': 'Edit',
+  'searchDataset.operation.save': 'Save',
   'searchDataset.actions.refresh': 'Refresh',
   'searchDataset.form.contentSize.lowerBound': 'Enter minimum value',
   'searchDataset.form.contentSize.upperBound': 'Enter maximum value',
@@ -92,4 +94,6 @@ export default {
   'dataset.details.modifyAuthor': 'Edit Dataset Publisher',
   'dataset.details.modifyDomain': 'Edit Dataset Application Domain',
   'dataset.details.modifyLicense': 'Edit Dataset License',
+  'dataset.details.modifyName': 'Edit Dataset Name',
+  'dataset.details.changeFile.btn': 'Replace Dataset File',
 };

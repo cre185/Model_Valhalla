@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import axios from "axios";
   import apiCat from "@/api/main";
-  import {defineEmits, nextTick, onMounted, ref} from "vue";
-  import {updateDatasetTags} from "@/api/dataset";
+  import {defineEmits, nextTick, onMounted, ref, watch} from "vue";
+  import {updateDataset, updateDatasetTags} from "@/api/dataset";
 
   const props = defineProps(['datasetID', 'modify']);
   const description = ref('');
@@ -55,6 +55,19 @@
     showInput.value = false;
   };
 
+  watch(props.modify, async (newVal: boolean, oldVal: boolean) => {
+        if (!newVal && oldVal) {
+          const data = {
+            description: description.value,
+            author: author.value,
+            domain: domain.value,
+            tag: tag.value,
+            license: license.value
+          };
+          await updateDataset(props.datasetID, data);
+        }
+      }
+  );
 </script>
 
 <template>

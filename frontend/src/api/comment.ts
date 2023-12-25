@@ -126,7 +126,7 @@ class MyComment {
         newComment.content = ''
     }
 
-    async addComment(item: MyComment, newComment: MyComment, modelId:string, jwt:string, flag=false) {
+    async addComment(item: MyComment, newComment: MyComment, modelId:string, jwt:string, flag=true) {
         this.ifReply = false
         const tmp = new MyComment('', '', '', '', '', 0, false, false, false, []);
         const date = new Date();

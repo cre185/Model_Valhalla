@@ -6,6 +6,7 @@ import {LLMListRes} from "@/api/model-list";
 import {getAvatar, getUsername} from "@/api/user-info";
 import { FileItem } from '@arco-design/web-vue';
 import * as fs from 'fs';
+import {getToken} from "@/utils/auth";
 
 
 export class SubjectiveEvaluationData{
@@ -107,6 +108,25 @@ export async function previewDataset(datasetID: number){
     return axios.get(apiCat(`/dataset/preview/${datasetID}`));
 }
 
+export async function updateDataset(datasetID: number, data: any){
+    return axios.patch(apiCat(`/dataset/update/${datasetID}`), data, {
+        headers: {
+            Authorization: getToken()!,
+        },
+    });
+
+        // "name": "数据集名称",
+        // "description": "数据集描述",
+        // "subjective": "是否为主观题"
+        // "content_size": "数据集大小",
+        // "author": "作者",
+        // "data_file": "数据集文件",
+        // "domain": "数据集领域",
+        // "tag": "数据集标签"，
+        // "file": "数据集文件"
+
+}
+
 export async function queryDatasetList() {
     const DatasetList: { data: any; total: number } = {data: [], total: 0};
     const response = await axios.get<DatasetListRes>(apiCat('/dataset/list'));
@@ -151,7 +171,7 @@ export async function queryDatasetList() {
     return DatasetList;
 }
 
-export async function updateDatasetTags (datasetID: number, tags: string[]) {
+export async function updateDatasetTags (datasetID: string, tags: string[]) {
     return axios.post(apiCat(`/dataset/update_tag`), {id: datasetID, tag: tags});
 }
 export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvaluationData[]> => {
