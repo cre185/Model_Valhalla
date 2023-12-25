@@ -272,7 +272,7 @@
               <p v-else>{{ currentDataset.name }}</p>
             </div>
             <a-button
-                v-if="!modify"
+                v-if="modify"
                 class="llm-details-subscribe-btn"
                 type="primary"
                 size="large"
@@ -310,7 +310,7 @@
       <div>
         <a-tabs size="large" style="margin-top: 7vh">
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
-            <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
+            <DatasetProfile :datasetID="currentDataset.id.toString()" :update="updateFlag" :update-now="updateNow" @change-tag="fetchData" @update-modify="handleUpdateModify"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('dataset.details.preview')">
             <DatasetPreview :datasetID="currentDataset.id.toString()"/>
@@ -333,7 +333,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, reactive, nextTick } from 'vue';
+import {computed, ref, reactive, nextTick, shallowRef} from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useUserStore } from "@/store";
   import useLoading from '@/hooks/loading';
@@ -362,6 +362,8 @@
   const userStore = useUserStore();
   const modify = userStore.role === 'admin';
   const modifySign = ref(false);
+  const updateFlag = shallowRef({edit: false});
+  const updateNow = ref(false);
   const fileList = ref<FileItem[]>([]);
 
   const generateFormModel = () => {
@@ -682,10 +684,13 @@
 
   const handleEdit = () => {
     modifySign.value = true;
+    updateFlag.value.edit = true;
+    updateNow.value = true;
   }
 
   const handleSave = async () => {
     modifySign.value = false;
+    updateFlag.value.edit = false;
     const data = {name: currentDataset.value?.name};
     await updateDataset(currentDataset.value!.id, data);
     if (fileList.value.length > 0) {
@@ -703,6 +708,10 @@
 
   const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
     fileList.value = fileItemList;
+  }
+
+  const handleUpdateModify = () => {
+    updateNow.value = false;
   }
 </script>
 

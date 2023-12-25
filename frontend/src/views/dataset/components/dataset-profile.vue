@@ -4,29 +4,27 @@
   import {defineEmits, nextTick, onMounted, ref, watch} from "vue";
   import {updateDataset, updateDatasetTags} from "@/api/dataset";
 
-  const props = defineProps(['datasetID', 'modify']);
+  const props = defineProps(['datasetID', 'update', 'updateNow']);
   const description = ref('');
   const author = ref('');
   const domain = ref('');
   const tag = ref<string[]>([]);
   const license = ref('');
+  let oldFlag = false;
 
   const emit = defineEmits<{
     (event: 'changeTag'): void;
+    (event: 'updateModify'): void;
   }>();
 
   onMounted(async () => {
-    try {
-      const response = await axios.get(apiCat(`/dataset/retrieve/${props.datasetID}`));
-      const responseJson = response.data;
-      description.value = responseJson.description;
-      author.value = responseJson.author;
-      domain.value = responseJson.domain;
-      tag.value = responseJson.tag;
-      license.value = responseJson.license;
-    } catch (error) {
-      console.error(error);
-    }
+    const response = await axios.get(apiCat(`/dataset/retrieve/${props.datasetID}`));
+    const responseJson = response.data;
+    description.value = responseJson.description;
+    author.value = responseJson.author_name;
+    domain.value = responseJson.domain;
+    tag.value = responseJson.tag;
+    license.value = responseJson.license;
   });
 
   const inputRef = ref(null);
@@ -55,20 +53,23 @@
     showInput.value = false;
   };
 
-  watch(props.modify, async (newVal: boolean, oldVal: boolean) => {
-    console.log(6)
-        if (!newVal && oldVal) {
-          const data = {
-            description: description.value,
-            author: author.value,
-            domain: domain.value,
-            tag: tag.value,
-            license: license.value
-          };
-          await updateDataset(props.datasetID, data);
-        }
+  const timerId = ref();
+  timerId.value = setInterval(async () => {
+    if (oldFlag !== props.update.edit) {
+      if (oldFlag && !props.update.edit) {
+        emit('updateModify');
+        const data = {
+          description: description.value,
+          domain: domain.value,
+          tag: tag.value,
+          license: license.value
+        };
+        console.log(data)
+        const response = await updateDataset(props.datasetID, data);
       }
-  );
+      oldFlag = props.update.edit;
+    }
+  }, 500);
 </script>
 
 <template>
@@ -76,20 +77,19 @@
       <a-col :span="14" id="firstCol">
         <a-row id="row1">
           <a-card :title="$t('dataset.introduction')" :bordered="false" id="datasetIntroduction">
-            <span v-if="!props.modify">{{ description }}</span>
-            <a-input v-else :default-value="description" :placeholder="$t('dataset.details.modifyIntroduction')" allow-clear />
+            <span v-if="!props.updateNow">{{ description }}</span>
+            <a-input v-else v-model="description" :placeholder="$t('dataset.details.modifyIntroduction')" allow-clear />
           </a-card>
         </a-row>
         <a-row  id="row2">
           <a-card :title="$t('dataset.author')" :bordered="false" id="datasetAuthor">
-            <span v-if="!props.modify">{{ author }}</span>
-            <a-input v-else :default-value="author" :placeholder="$t('dataset.details.modifyAuthor')" allow-clear />
+            <span>{{ author }}</span>
           </a-card>
         </a-row>
         <a-row  id="row3">
           <a-card :title="$t('dataset.domain')" :bordered="false" id="datasetDomain">
-            <span v-if="!props.modify">{{ domain }}</span>
-            <a-input v-else :default-value="domain" :placeholder="$t('dataset.details.modifyDomain')" allow-clear />
+            <span v-if="!props.updateNow">{{ domain }}</span>
+            <a-input v-else v-model="domain" :placeholder="$t('dataset.details.modifyDomain')" allow-clear />
           </a-card>
         </a-row>
       </a-col>
@@ -101,7 +101,7 @@
               <a-tag
                   v-for="tagItem of tag"
                   :key="tagItem"
-                  :closable="props.modify"
+                  :closable="props.updateNow"
                   color="arcoblue"
                   class="tags"
               >
@@ -137,8 +137,8 @@
         </a-row>
         <a-row  id="row5">
           <a-card :title="$t('dataset.license')" :bordered="false">
-            <span v-if="!props.modify">{{ license }}</span>
-            <a-input v-else :default-value="license" :placeholder="$t('dataset.details.modifyLicense')" allow-clear />
+            <span v-if="!props.updateNow">{{ license }}</span>
+            <a-input v-else v-model="license" :placeholder="$t('dataset.details.modifyLicense')" allow-clear />
           </a-card>
         </a-row>
       </a-col>
