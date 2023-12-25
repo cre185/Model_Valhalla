@@ -1,36 +1,36 @@
 /* eslint-disable */
 import axios from 'axios';
 import apiCat from "@/api/main";
-import {getAvatar, getUsername} from "@/api/user-info";
+import { getAvatar, getUsername } from "@/api/user-info";
 
 class MyComment {
-    public author:string
+    public author: string
 
-    public toAuthor:string
+    public toAuthor: string
 
     public commentId: number = -1
 
-    public toId: undefined|number
+    public toId: undefined | number
 
-    public avatar:string
+    public avatar: string
 
-    public content:string
+    public content: string
 
-    public datetime:string
+    public datetime: string
 
-    public like:number
+    public like: number
 
-    public ifLike:boolean
+    public ifLike: boolean
 
-    public ifHate:boolean
+    public ifHate: boolean
 
-    public ifReply:boolean
+    public ifReply: boolean
 
-    public lastClicked:number
+    public lastClicked: number
 
-    public children:any[]
+    public children: any[]
 
-    constructor(author:string, toAuthor:string, avatar:string, content:string, datetime:string, like:number, ifLike:boolean, ifHate:boolean, ifReply:boolean, children:any[]) {
+    constructor(author: string, toAuthor: string, avatar: string, content: string, datetime: string, like: number, ifLike: boolean, ifHate: boolean, ifReply: boolean, children: any[]) {
         this.author = author
         this.toAuthor = toAuthor
         this.avatar = avatar
@@ -46,13 +46,13 @@ class MyComment {
 
     async increaseLike(jwt: string, toAuthorName: string) {
         this.like += 1;
-        const response = await axios.post(apiCat('/user/find_user_by_name'),{ username: toAuthorName }, {
+        const response = await axios.post(apiCat('/user/find_user_by_name'), { username: toAuthorName }, {
             headers: {
                 Authorization: jwt,
             },
         });
-        
-        await fetch(apiCat('/user/create_message'), {
+
+        await axios.post(apiCat('/user/create_message'), {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ class MyComment {
                 msg_content: {
                     'content': "为你点赞",
                 }
-    
+
             }),
         })
         console.log("dianzanchenggong", toAuthorName);
@@ -75,7 +75,7 @@ class MyComment {
         this.like -= 1
     }
 
-    async changeLikeState(jwt:string,  toAuthorName: string, flag=true) {
+    async changeLikeState(jwt: string, toAuthorName: string, flag = true) {
         this.ifLike = !this.ifLike
         if (this.ifLike) {
             this.increaseLike(jwt, toAuthorName)
@@ -105,7 +105,7 @@ class MyComment {
         }
     }
 
-    async changeHateState(jwt:string, flag=true) {
+    async changeHateState(jwt: string, flag = true) {
         this.ifHate = !this.ifHate
         if (flag) {
             await axios.post(apiCat('/ranking/like_llm_comment'), {
@@ -133,7 +133,7 @@ class MyComment {
         }
     }
 
-    changeReplyState(newComment:MyComment, whoClicked:number) {
+    changeReplyState(newComment: MyComment, whoClicked: number) {
         if (this.lastClicked === -2) {
             this.ifReply = true
             this.lastClicked = whoClicked
@@ -149,7 +149,7 @@ class MyComment {
         newComment.content = ''
     }
 
-    async addComment(item: MyComment, newComment: MyComment, modelId:string, jwt:string, flag=true) {
+    async addComment(item: MyComment, newComment: MyComment, modelId: string, jwt: string, flag = true) {
         this.ifReply = false
         const tmp = new MyComment('', '', '', '', '', 0, false, false, false, []);
         const date = new Date();
@@ -177,17 +177,21 @@ class MyComment {
 
 export default MyComment;
 
-export async function getComment(ModelID: string, commentDetails: any, jwt:string, flag=true) {
+export async function getComment(ModelID: string, commentDetails: any, jwt: string, flag = true) {
     let response;
     if (flag) {
-        response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`), {headers: {
+        response = await axios.get(apiCat(`/ranking/llm_comment/${ModelID}`), {
+            headers: {
                 Authorization: jwt,
-            },});
+            },
+        });
     }
     else {
-        response = await axios.get(apiCat(`/ranking/dataset_comment/${ModelID}`), {headers: {
+        response = await axios.get(apiCat(`/ranking/dataset_comment/${ModelID}`), {
+            headers: {
                 Authorization: jwt,
-            },});
+            },
+        });
     }
     commentDetails.value = [];
     for (const item of response.data.data) {
@@ -209,7 +213,7 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
             commentDetails.value.push(tmp);
         } else {
             let index = item.respond_to;
-            for (let i = 0; i < response.data.data.length; i+=1) {
+            for (let i = 0; i < response.data.data.length; i += 1) {
                 if (response.data.data[i].id === index) {
                     index = i;
                     break;
@@ -226,7 +230,7 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
             tmp.toId = target.commentId;
             while (target.respond_to !== null) {
                 index = target.respond_to;
-                for (let i = 0; i < response.data.data.length; i+=1) {
+                for (let i = 0; i < response.data.data.length; i += 1) {
                     if (response.data.data[i].id === index) {
                         index = i;
                         break;
@@ -234,7 +238,7 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
                 }
                 target = response.data.data[index];
             }
-            for (let i = 0; i < commentDetails.value.length; i+=1) {
+            for (let i = 0; i < commentDetails.value.length; i += 1) {
                 if (commentDetails.value[i].commentId === target.id) {
                     commentDetails.value[i].children.push(tmp);
                     break;
@@ -248,22 +252,73 @@ export async function updateComment(
     modelId: string,
     newComment: any,
     jwt: string,
-    flag=true
+    flag = true
 ) {
+    let responseTwo;
     if (flag) {
-        const response = await axios.post(apiCat('/ranking/comment'),{ llm: modelId, comment: newComment.content, respond_to: newComment.toId }, {
+        const response = await axios.post(apiCat('/ranking/comment'), { llm: modelId, comment: newComment.content, respond_to: newComment.toId }, {
             headers: {
                 Authorization: jwt,
             },
         });
         newComment.commentId = response.data.id;
+        responseTwo = await axios.get(apiCat(`/ranking/llm_comment/${modelId}`), {
+            headers: {
+                Authorization: jwt,
+            },
+        });
     }
     else {
-        const response = await axios.post(apiCat('/ranking/comment'),{ dataset: modelId, comment: newComment.content, respond_to: newComment.toId }, {
+        const response = await axios.post(apiCat('/ranking/comment'), { dataset: modelId, comment: newComment.content, respond_to: newComment.toId }, {
             headers: {
                 Authorization: jwt,
             },
         });
         newComment.commentId = response.data.id;
+        responseTwo = await axios.get(apiCat(`/ranking/dataset_comment/${modelId}`), {
+            headers: {
+                Authorization: jwt,
+            },
+        });
+    }
+    let srcCommentID;
+    let srcUserID;
+    let commentContent;
+    let userID;
+    for (let i = responseTwo.data.data.length - 1; i >= 0; i--) {
+        if (responseTwo.data.data[i].id === newComment.commentId) {
+            userID = responseTwo.data.data[i].user;
+            srcCommentID = responseTwo.data.data[i].respond_to;
+            commentContent = responseTwo.data.data[i].comment;
+            break;
+        }
+    }
+    if (srcCommentID) {
+        for (let i = 0; i < responseTwo.data.data.length; i++) {
+            if (responseTwo.data.data[i].id === srcCommentID) {
+                srcUserID = responseTwo.data.data[i].user;
+                break;
+            }
+        }
+        console.log("srcCommentID", srcCommentID);
+        console.log("srcUserID", srcUserID);
+        console.log("userID", userID);
+        await fetch(apiCat('/user/create_message'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: jwt,
+            },
+            body: JSON.stringify({
+                msg_type: "Reply",
+                msg: "11",
+                target: [srcUserID],
+                msg_content: {
+                    'content': commentContent,
+                }
+
+            }),
+        })
+
     }
 }

@@ -283,18 +283,6 @@
               </template>
               <p>{{ $t('dataset.details.unsubscribe.btn') }}</p>
             </a-button>
-            <a-button
-                v-else
-                class="llm-details-subscribe-btn"
-                type="primary"
-                size="large"
-                @click="handleSubscribe"
-            >
-              <template #icon>
-                <icon-star style="margin-top: 15%" :size="30"/>
-              </template>
-              <p>{{ $t('dataset.details.subscribe.btn') }}</p>
-            </a-button>
             <a-upload
                 v-else
                 action="http://127.0.0.1:8000/user/logout"
@@ -361,7 +349,9 @@
     updateDatasetTags,
     getDatasetFile,
     updateDataset,
-    uploadDatasetFile
+    uploadDatasetFile,
+    subscribeDataset,
+    isDatasetSubscribed,
   } from "@/api/dataset";
   import MyComment, { getComment, updateComment } from "@/api/comment";
   import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";

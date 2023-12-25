@@ -157,22 +157,6 @@ const setPopoverVisible = () => {
   });
   refBtn.value.dispatchEvent(event);
 };
-const handleLogout = () => {
-  logout();
-};
-const setDropDownVisible = () => {
-  const event = new MouseEvent('click', {
-    view: window,
-    bubbles: true,
-    cancelable: true,
-  });
-  triggerBtn.value.dispatchEvent(event);
-};
-const switchRoles = async () => {
-  const res = await userStore.switchRoles();
-  Message.success(res as string);
-};
-const toggleDrawerMenu = inject('toggleDrawerMenu') as () => void;
 
 const resizeBigAvatar = () => {
   myAvatar.value.$el.style.width = '64px';
@@ -233,13 +217,33 @@ async function fetchSourceData() {
         msg_type: item.msg_type,
         src_UserID: item.author,
         dst_DatasetID: "2",
-        msg_title: item.msg,
-        msg_content: "666",
+        msg_content: item.msg_content,
+        msg_title: "Unknown",
         add_time: item.add_time,
         read: item.read,
-        avatar: "666",
+        avatar: "Unknown",
         messageType: "0",
       };
+      if(item.msg_type === "Upload")
+      {
+        newUserToDataset.msg_title = "上传数据集";
+      }
+      else if(item.msg_type === "Reply")
+      {
+        newUserToDataset.msg_title = item.msg_content.content;
+      }
+      else if(item.msg_type === "Like")
+      {
+        newUserToDataset.msg_title = "点赞消息";
+      }
+      else if(item.msg_type === "feedback")
+      {
+        newUserToDataset.msg_title = "反馈意见";
+      }
+      else if(item.msg_type === "Report")
+      {
+        newUserToDataset.msg_title = "举报数据集";
+      }
       newUserToDataset.avatar = await getUserAvatar(getToken()!, item.author);
       messageData.messageList.push(newUserToDataset);
     });
@@ -249,11 +253,11 @@ async function fetchSourceData() {
     setLoading(false);
   }
 }
-async function readMessage(data: MessageListType) {
+async function readMessage(data: MessageListType) { // 提前msg_id设置为已读
   const ids = data.map((item) => item.msg_id);
   await setMessageStatus({ ids });
 }
-const renderList = computed(() => {
+const renderList = computed(() => { // 创建一个过滤属性，只包含messageType为message的列表
   return messageData.messageList.filter(
     (item) => messageType.value === "message"
   );
@@ -274,6 +278,7 @@ const formatUnreadLength = (type: string) => {
 };
 const handleItemClick = (items: MessageListType) => {
   if (renderList.value.length) readMessage([...items]);
+  console.log("点击");
 };
 const emptyList = () => {
   messageData.messageList = [];

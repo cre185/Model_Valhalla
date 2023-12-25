@@ -138,6 +138,7 @@
   }
 
   const handleClick = (item:MyComment, who:number, index:number, target:string, toId:number) => {
+    console.log()
     tmpComment.value.toAuthor = target;
     tmpComment.value.toId = toId;
     item.changeReplyState(tmpComment.value, who);

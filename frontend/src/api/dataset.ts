@@ -6,7 +6,7 @@ import { LLMListRes } from "@/api/model-list";
 import { getAvatar, getUsername } from "@/api/user-info";
 import { FileItem } from '@arco-design/web-vue';
 import * as fs from 'fs';
-import {getToken} from "@/utils/auth";
+import { getToken } from "@/utils/auth";
 
 
 export class SubjectiveEvaluationData {
@@ -105,11 +105,11 @@ export async function downloadDataset(datasetID: number) {
     return axios.get(apiCat(`/dataset/download/${datasetID}`));
 }
 
-export async function previewDataset(datasetID: number){
+export async function previewDataset(datasetID: number) {
     return axios.get(apiCat(`/dataset/preview/${datasetID}`));
 }
 
-export async function updateDataset(datasetID: number, data: any){
+export async function updateDataset(datasetID: number, data: any) {
     return axios.patch(apiCat(`/dataset/update/${datasetID}`), data, {
         headers: {
             Authorization: getToken()!,
@@ -219,22 +219,22 @@ interface FormDatasetData {
 
 export async function sendFeedback(jwt: string, formData: FormDatasetData) {
     if (!formData.file[0]) {
-        const response = await fetch(apiCat('/user/create_message_to_admin'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: jwt,
-            },
-            body: JSON.stringify({
-                msg: formData.feedbackType,
-                msg_type: 'feedback',
+        const response = await axios.post(apiCat('/user/create_message_to_admin'),
+            {
+                msg: "反馈意见",
+                msg_type: 'Feedback',
                 msg_content: {
                     'datasetID': formData.datasetName,
                     'feedbackType': formData.feedbackType,
                     'feedbackContent': formData.feedbackContent,
                 },
-            }),
-        });
+            },
+            {
+                headers: {
+                    Authorization: jwt,
+                },
+            }
+        );
     }
     else {
         const formDataObject = new FormData();
@@ -249,33 +249,31 @@ export async function sendFeedback(jwt: string, formData: FormDatasetData) {
 
         formDataObject.append('file', formData.file[0]);
 
-        const response = await fetch(apiCat('/user/create_message_to_admin'), {
-            method: 'POST',
+        const response = await axios.post(apiCat('/user/create_message_to_admin'), formDataObject, {
             headers: {
-                'Authorization': jwt,
-            },
-            body: formDataObject,
+                Authorization: jwt,
+            }
         });
     }
 }
 
 export async function sendReport(jwt: string, formData: FormDatasetData) {
-    const response = await fetch(apiCat('/user/create_message_to_admin'), {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: jwt,
-        },
-        body: JSON.stringify({
-            msg: formData.reportReason,
-            msg_type: 'report',
+    const response = await axios.post(apiCat('/user/create_message_to_admin'),
+        {
+            msg: "举报数据集",
+            msg_type: 'Report',
             msg_content: {
                 'datasetID': formData.datasetName,
                 'reportReason': formData.reportReason,
                 'reportContent': formData.reportContent,
             }
-        }),
-    });
+        },
+        {
+            headers: {
+                Authorization: jwt,
+            },
+        }
+    );
 }
 
 
@@ -289,43 +287,36 @@ interface FormDataset {
 }
 
 export async function sendDataset(jwt: string, formData: FormDataset) {
-    await fetch(apiCat('/dataset/create'), {
-        method: 'POST',
+    await axios.post(apiCat('/dataset/create'), {
+        name: formData.datasetName,
+        domain: formData.datasetApplication,
+        tag: formData.datasetTags,
+    }, {
         headers: {
-            'Content-Type': 'application/json',
             Authorization: jwt,
         },
-        body: JSON.stringify({
-            name: formData.datasetName,
-            domain: formData.datasetApplication,
-            tag: formData.datasetTags,
-        }),
-    });
+    }
+    );
 
     const DatasetFile = new FormData();
     DatasetFile.append('name', formData.datasetName);
     DatasetFile.append('file', formData.files[0]);
-    await fetch(apiCat('/dataset/upload'), {
-        method: 'POST',
+    await axios.post(apiCat('/dataset/upload'), DatasetFile, {
         headers: {
             'Authorization': jwt,
         },
-        body: DatasetFile,
     });
 
-    await fetch(apiCat('/user/create_message_to_admin'), {
-        method: 'POST',
+    await axios.post(apiCat('/user/create_message_to_admin'), {
+        msg_type: "Upload",
+        msg: "数据集上传",
+        msg_content: {
+            'DatasetName': formData.datasetName,
+        }
+    }, {
         headers: {
-            'Content-Type': 'application/json',
             Authorization: jwt,
         },
-        body: JSON.stringify({
-            msg_type: "Upload",
-            msg: "数据集上传",
-            msg_content: {
-                'DatasetName': formData.datasetName,
-            }
-        }),
     });
 }
 
@@ -340,4 +331,13 @@ export async function uploadDatasetFile(data: FormData) {
             Authorization: getToken()!,
         },
     });
+}
+
+export async function subscribeDataset(datasetID: number) {
+    return axios.post(apiCat('/user/subscribe_dataset'), { datasetId: datasetID });
+}
+
+export async function isDatasetSubscribed(userID: number, datasetID: number) {
+    const response = await axios.get(apiCat(`/user/list_dataset_subscription/${userID}`));
+    return response.data.datasets.some((item: any) => item.id === datasetID);
 }

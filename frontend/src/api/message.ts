@@ -7,7 +7,7 @@ export interface userToDataset {
   src_UserID: string;
   dst_DatasetID: string;
   msg_title: string;
-  msg_content: string;
+  msg_content: JSON;
   add_time: string;
   read: boolean;
   avatar?: string;
