@@ -1,7 +1,6 @@
 import datetime
 import os
 import random
-import time
 from uuid import uuid4
 
 from django.conf import settings
@@ -44,20 +43,15 @@ class login_with_verify_codeView(APIView):
     def post(self, request):
         data = request.data
         try:
-            verify_msg = VerifyMsg.objects.get(
-                mobile=data['mobile'], code=data['code'])
-            try:
-                user = User.objects.get(mobile=data['mobile'])
-            except BaseException:
-                return Response({"message": "Invalid credentials"},
-                                status=status.HTTP_401_UNAUTHORIZED)
+            VerifyMsg.objects.get(mobile=data['mobile'], code=data['code'])
+            user = User.objects.get(mobile=data['mobile'])
             jwt = generate_jwt({"user_id": user.id, "is_admin": user.is_admin})
             return Response({"jwt": jwt,
-                            "userId": user.id,
+                             "userId": user.id,
                              "username": user.username,
                              "message": "ok"}, status=status.HTTP_200_OK)
         except BaseException:
-            return Response({"message": "Invalid code"},
+            return Response({"message": "Invalid credentials"},
                             status=status.HTTP_401_UNAUTHORIZED)
 
 
@@ -103,7 +97,7 @@ class registerView(mixins.CreateModelMixin, generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
+        headers = self.get_success_headers(serializer.data) 
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED,
@@ -145,14 +139,9 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
 class retrievePasswordView(APIView):
     @login_required
     def get(self, request):
-        try:
-            user = User.objects.get(id=request.user.id)
-            return Response({"message": "ok",
-                             "password": user.password},
+        return Response({"message": "ok",
+                            "password": request.user.password},
                             status=status.HTTP_200_OK)
-        except BaseException:
-            return Response({"message": "Invalid credentials"},
-                            status=status.HTTP_401_UNAUTHORIZED)
 
 
 class updateAvatarView(APIView):
@@ -183,7 +172,7 @@ class updateAvatarView(APIView):
 
 class logoutView(APIView):
     def post(self, request):
-        return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        return Response({"message": "ok", "hint": "Surprise! Nothing happened."}, status=status.HTTP_200_OK)
 
 
 class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
@@ -313,20 +302,15 @@ class list_dataset_subscriptionView(APIView):
 class list_messageView(APIView):
     @login_required
     def get(self, request):
-        try:
-            user = User.objects.get(id=request.user.id)
-            messages = Msg.objects.filter(target=user)
-            msgs = []
-            for message in messages:
-                serializer = MsgSerializer(message)
-                msgs.append(serializer.data)
-                read = MsgTarget.objects.get(msg=message, target=user)
-                msgs[-1]['read'] = read.read
-            return Response({"message": "ok", "msgs": msgs},
-                            status=status.HTTP_200_OK)
-        except BaseException:
-            return Response({"message": "Invalid userId"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        messages = Msg.objects.filter(target=request.user)
+        msgs = []
+        for message in messages:
+            serializer = MsgSerializer(message)
+            msgs.append(serializer.data)
+            read = MsgTarget.objects.get(msg=message, target=request.user)
+            msgs[-1]['read'] = read.read
+        return Response({"message": "ok", "msgs": msgs},
+                        status=status.HTTP_200_OK)
 
 
 class create_messageView(APIView):

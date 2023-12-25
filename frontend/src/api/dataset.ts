@@ -6,6 +6,7 @@ import { LLMListRes } from "@/api/model-list";
 import { getAvatar, getUsername } from "@/api/user-info";
 import { FileItem } from '@arco-design/web-vue';
 import * as fs from 'fs';
+import {getToken} from "@/utils/auth";
 
 
 export class SubjectiveEvaluationData {
@@ -102,6 +103,18 @@ export async function getDatasetFile(datasetID: number) {
 
 export async function downloadDataset(datasetID: number) {
     return axios.get(apiCat(`/dataset/download/${datasetID}`));
+}
+
+export async function previewDataset(datasetID: number){
+    return axios.get(apiCat(`/dataset/preview/${datasetID}`));
+}
+
+export async function updateDataset(datasetID: number, data: any){
+    return axios.patch(apiCat(`/dataset/update/${datasetID}`), data, {
+        headers: {
+            Authorization: getToken()!,
+        },
+    });
 }
 
 export async function queryDatasetList() {
@@ -274,6 +287,7 @@ interface FormDataset {
     annex: FileItem[],
     files: File[],
 }
+
 export async function sendDataset(jwt: string, formData: FormDataset) {
     await fetch(apiCat('/dataset/create'), {
         method: 'POST',
@@ -285,7 +299,6 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             name: formData.datasetName,
             domain: formData.datasetApplication,
             tag: formData.datasetTags,
-            // author: formData.datasetPublisher
         }),
     });
 
@@ -295,7 +308,6 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
     await fetch(apiCat('/dataset/upload'), {
         method: 'POST',
         headers: {
-            // 'Content-Type': 'multipart/form-data',
             'Authorization': jwt,
         },
         body: DatasetFile,
@@ -313,12 +325,8 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             msg_content: {
                 'DatasetName': formData.datasetName,
             }
-
         }),
     });
-
-
-
 }
 
 export async function getModelScore(datasetID: number) {
@@ -326,11 +334,10 @@ export async function getModelScore(datasetID: number) {
     return response.data.data;
 }
 
-export async function subscribeDataset(datasetID: number) {
-    return axios.post(apiCat('/user/subscribe_dataset'), { datasetId: datasetID });
-}
-
-export async function isDatasetSubscribed(userID: number, datasetID: number) {
-    const response = await axios.get(apiCat(`/user/list_dataset_subscription/${userID}`));
-    return response.data.datasets.some((item: any) => item.id === datasetID);
+export async function uploadDatasetFile(data: FormData) {
+    return axios.post(apiCat(`/dataset/upload`), data, {
+        headers: {
+            Authorization: getToken()!,
+        },
+    });
 }

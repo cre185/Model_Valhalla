@@ -135,6 +135,19 @@ class DatasetModelTests(TestCase):
             )
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
+        # upload an invalid file
+        with open('user/management/commands/static/data/error.csv', 'rb') as fp:
+            response = self.client.post(
+                '/dataset/upload',
+                {
+                    "id": 1,
+                    "file": fp,
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
 
     def test_delete(self):
         # the correct case
@@ -222,9 +235,23 @@ class DatasetModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Dataset.objects.get(id=1).name, "somedataset2")
-        # the dataset doesn't exist
+        dataset2 = Dataset(
+            name="somedataset3"
+        )
+        dataset2.save()
         response = self.client.patch(
             '/dataset/update/2',
+            {
+                "name": "somedataset2",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # the dataset doesn't exist
+        response = self.client.patch(
+            '/dataset/update/114514',
             {
                 "name": "somedataset2",
             },
@@ -251,7 +278,7 @@ class DatasetModelTests(TestCase):
         response = self.client.post(
             '/dataset/update_tag',
             {
-                "id": 2,
+                "id": 114514,
                 "tag": ["tag1", "tag2"],
             },
             HTTP_AUTHORIZATION=jwt,

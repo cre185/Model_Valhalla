@@ -22,9 +22,6 @@ class LLMs(models.Model):
     add_time = models.DateTimeField(auto_now_add=True)
     released_time = models.CharField(max_length=255, default='')
 
-    def __str__(self):
-        return self.name
-
 
 class BattleHistory(models.Model):
     llm1 = models.ForeignKey(
@@ -40,6 +37,3 @@ class BattleHistory(models.Model):
     user_id = models.IntegerField()
     winner = models.IntegerField()
     add_time = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.llm1) + ' vs ' + str(self.llm2)
