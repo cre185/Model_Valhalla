@@ -56,15 +56,18 @@ export interface userToUser {
 };
 
 
-export async function getMessage(jwt: string, formData: userToDataset[]) {
-  console.log("66666");
-  const response = await axios.get(apiCat('/user/list_message'), {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: jwt,
-    }
-  })
-  formData = response.data;
-
+export async function getUserAvatar(jwt: string, userID: string): Promise<string | undefined> {
+  try {
+    const response = await axios.get(apiCat(`/user/retrieve/${userID}`), {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: jwt,
+      }
+    });
+    return response.data.avatar;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
 }

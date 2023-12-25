@@ -204,27 +204,6 @@ interface FormDatasetData {
     file: File[];
 }
 
-/* export async function sendFeedback(jwt: string, formData: FormDatasetData) {
-  const response = await fetch(apiCat('/user/create_message_to_admin'), {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: jwt,
-    },
-    body: JSON.stringify({
-      msg: formData.feedbackType,
-      msg_type: 'feedback',
-      msg_content : {
-        'datasetID': formData.datasetName,
-        'feedbackType': formData.feedbackType,
-        'feedbackContent': formData.feedbackContent,
-      },
-      // msg_file: formData.file,
-      // msg_file: formData.annex || [],
-    }),
-  });
-} */
-
 export async function sendFeedback(jwt: string, formData: FormDatasetData) {
     if (!formData.file[0]) {
         const response = await fetch(apiCat('/user/create_message_to_admin'), {
@@ -256,11 +235,6 @@ export async function sendFeedback(jwt: string, formData: FormDatasetData) {
         }));
 
         formDataObject.append('file', formData.file[0]);
-        // console.log(formData.file[0].stream());
-        // const request = new XMLHttpRequest();
-        // request.open("POST", "http://localhost:8000/user/create_message_to_admin");
-        // request.setRequestHeader('Authorization', jwt);
-        // request.send(formDataObject);
 
         const response = await fetch(apiCat('/user/create_message_to_admin'), {
             method: 'POST',
@@ -311,7 +285,6 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             name: formData.datasetName,
             domain: formData.datasetApplication,
             tag: formData.datasetTags,
-
             // author: formData.datasetPublisher
         }),
     });

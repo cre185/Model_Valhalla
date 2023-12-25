@@ -100,6 +100,7 @@ import {
   setMessageStatus,
   userToDataset,
   MessageListType,
+  getUserAvatar,
 } from '@/api/message';
 import useLoading from '@/hooks/loading';
 import List from './list.vue';
@@ -226,7 +227,7 @@ async function fetchSourceData() {
   try {
     const { data } = await queryMessageList(getToken()!);
     // messageData.messageList = data;
-    data.msgs.forEach(item => {
+    data.msgs.forEach(async (item) => {
       const newUserToDataset: userToDataset = {
         msg_id: item.id,
         msg_type: item.msg_type,
@@ -239,6 +240,7 @@ async function fetchSourceData() {
         avatar: "666",
         messageType: "0",
       };
+      newUserToDataset.avatar = await getUserAvatar(getToken()!, item.author);
       messageData.messageList.push(newUserToDataset);
     });
   } catch (err) {
@@ -251,7 +253,6 @@ async function readMessage(data: MessageListType) {
   const ids = data.map((item) => item.msg_id);
   await setMessageStatus({ ids });
 }
-fetchSourceData();
 const renderList = computed(() => {
   return messageData.messageList.filter(
     (item) => messageType.value === "message"
@@ -278,6 +279,7 @@ const emptyList = () => {
   messageData.messageList = [];
 };
 const showMiniMsgBox = () => {
+  fetchSourceData();
   msgVisible.value = true;
 }
 </script>
