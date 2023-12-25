@@ -5,4 +5,13 @@ export default {
   'evaluation.subjective.rules.2': '从我们的主观数据集库中选择一例作为测试数据集',
   'evaluation.subjective.rules.3': '评测模型会依据数据集中的每个问题分别给出答案，您可以从0-10中选择给出回答的分数',
   'evaluation.select.datasets': '请选择数据集',
+  'evaluation.question.type': '问题类型:',
+  'evaluation.credit': '评分:',
+  'evaluation.answer.generated': '已生成',
+  'evaluation.answer.generate': '生成答案',
+  'evaluation.question.last': '上一题',
+  'evaluation.question.next': '下一题',
+  'evaluation.credit.submit': '提交结果',
+  'evaluation.select.error.title': '错误',
+  'evaluation.select.error.content': '请选择测试模型及主观数据集',
 };

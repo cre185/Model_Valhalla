@@ -97,8 +97,8 @@ export async function queryLLMList() {
       id: model.id,
       name: model.name,
       ranking: 0,
-      datasetScore: averageScore.data.data[model.id - 1],
-      eloScore: model.elo_credit,
+      datasetScore: averageScore.data.data[model.id - 1].toFixed(2),
+      eloScore: model.elo_credit.toFixed(2),
       license: '',
     });
   }

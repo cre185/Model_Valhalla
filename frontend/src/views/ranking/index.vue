@@ -122,7 +122,7 @@
                           </a-checkbox>
                         </div>
                         <div class="title">
-                          <p>{{ item.title === '#' ? '序列号' : item.title }}</p>
+                          <p>{{ item.title === '#' ? '序列�?' : item.title }}</p>
                         </div>
                       </div>
                     </div>
@@ -378,7 +378,7 @@
   ): T => {
     const newArray = isDeep ? cloneDeep(array) : array;
     if (beforeIdx > -1 && newIdx > -1) {
-      // 先替换后面的，然后拿到替换的结果替换前面的
+      // 先替换后面的，然后拿到替换的结果替换前面�?
       newArray.splice(
           beforeIdx,
           1,
@@ -412,8 +412,8 @@
             const { oldIndex, newIndex } = e;
             if(oldIndex < cloneColumns.value.length && oldIndex < cloneColumns.value.length){
               exchangeArray(cloneColumns.value, oldIndex, newIndex);
+              exchangeArray(showColumns.value, oldIndex, newIndex);
             }
-            exchangeArray(showColumns.value, oldIndex, newIndex);
           },
         });
       });

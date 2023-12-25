@@ -33,29 +33,31 @@
         </a-card>
         <br>
         <a-card class="resultShow">
-          <a-form id="selectModel" layout="inline" style="margin-bottom: 20px">
-            <a-form-item>
-              <a-select  v-model="modelSelector" :options="ModelSelectOptions" style="width: 260px; margin-right: 10px"
-                         :placeholder="$t('evaluation.select.models')" />
-            </a-form-item>
-            <a-form-item>
-              <a-select  v-model="datasetSelector" :options="DatasetSelectOptions" style="width: 260px"
-                         :placeholder="$t('evaluation.select.datasets')" />
-            </a-form-item>
-            <a-form-item>
-              <a-button html-type="submit" type="primary" style="margin-left: 10px;" @click="handleSelect">
-                <template #icon>
-                  <icon-check/>
-                </template>
-                {{ $t('evaluation.select.models.confirm') }}
-              </a-button>
-            </a-form-item>
-          </a-form>
+          <div id="selectModel" style="margin-bottom: 20px; margin-left: 21vw; transition: margin-left 0.5s ease-out">
+            <a-form layout="inline" >
+              <a-form-item>
+                <a-select  v-model="modelSelector" :options="ModelSelectOptions" style="width: 15vw; margin-right: 10px"
+                           :placeholder="$t('evaluation.select.models')" />
+              </a-form-item>
+              <a-form-item>
+                <a-select  v-model="datasetSelector" :options="DatasetSelectOptions" style="width: 15vw"
+                           :placeholder="$t('evaluation.select.datasets')" />
+              </a-form-item>
+              <a-form-item>
+                <a-button html-type="submit" type="primary" style="margin-left: 10px;" @click="handleSelect">
+                  <template #icon>
+                    <icon-check/>
+                  </template>
+                  {{ $t('evaluation.select.models.confirm') }}
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </div>
           <a-row :gutter="16">
-            <a-col :span="12">
+            <a-col id='selectPanel' :span="12" style="margin-left: 22vw; transition: margin-left 0.5s ease-out;">
               <div class="text-box">
                 <a-space direction="vertical" :size="10" class="QAShower">
-                  <div class="box-header" v-if="currentLLMID!==undefined">
+                  <div class="box-header" v-if="currentLLMID!==undefined && currentDatasetID!==undefined">
                     <a-space>
                       <icon-message/>
                       <span style="font-size: 13px;">{{ currentLLMName }}</span>
@@ -76,44 +78,54 @@
                 </a-space>
               </div>
             </a-col>
-            <a-col span="12" v-if="currentLLMID!==undefined && subjectiveInfo!==undefined">
-                <div>
-                  问题类型:
-                </div>
-                <div style="display: flex; align-items: center; justify-content: center">
-                  <a-tag v-for="(item, index) in subjectiveInfo[currentIndex].subjects" :key="index">
-                    {{item}}
-                  </a-tag>
-                </div>
-                <div>
-                  评分:
-                </div>
-                <a-rate :count="10" style="display: flex; align-items: center; justify-content: center"
-                        :model-value="currentScore" @change="handleRate"/>
-                <div style="display: flex; align-items: center; justify-content: center" v-if="subjectiveInfo!==undefined">
-                  {{`${currentIndex + 1} / ${subjectiveInfo.length}`}}
-                </div>
-                <div style="display: flex; flex-direction: row; align-items: center; justify-content: center" v-if="subjectiveInfo!==undefined">
-                  <a-button @click="handleGenerate">
-                    <div v-if="subjectiveInfo[currentIndex].answerGenerated">
-                      已生成
-                    </div>
-                    <div v-else>
-                      生成答案
-                    </div>
-                  </a-button>
-                  <a-button @click="handlePrev">
-                    上一题
-                  </a-button>
-                  <a-button @click="handleNext">
-                    下一题
-                  </a-button>
-                  <a-button :disabled="!subjectiveInfo.every(element => element.getScored())" @click="handleSubmit">
-                    提交结果
-                  </a-button>
-                </div>
-            </a-col>
-          </a-row>
+            <transition name="fade" @before-enter="beforeEnter" @enter="enter">
+              <a-col span="12" v-if="currentLLMID!==undefined && subjectiveInfo!==undefined" key="subPanel">
+                  <div style="font-size: 2vh; font-weight: bolder;">
+                    {{$t('evaluation.question.type')}}
+                  </div>
+                  <div style="display: flex; align-items: center; justify-content: center">
+                    <a-tag v-for="(item, index) in subjectiveInfo[currentIndex].subjects" :key="index"
+                           style="margin: 6.5vh 0.5vw" color="arcoblue" size="large">
+                      {{item}}
+                    </a-tag>
+                  </div>
+                  <div style="font-size: 2vh; font-weight: bolder; margin-top: 3vh">
+                    {{ $t('evaluation.credit') }}
+                  </div>
+                  <a-rate :count="10" style="display: flex; align-items: center; justify-content: center; margin-top: 8vh"
+                          :model-value="currentScore" @change="handleRate"/>
+                  <div style="display: flex; align-items: center; justify-content: center; margin-top: 9vh;
+                            color: #1c61ff; font-size: 1.5vh; font-weight: bold"
+                       v-if="subjectiveInfo!==undefined">
+                    {{`${currentIndex + 1} / ${subjectiveInfo.length}`}}
+                  </div>
+                  <div style="display: flex; flex-direction: row; align-items: center; justify-content: center;
+                              margin-top: 2vh" v-if="subjectiveInfo!==undefined">
+                    <a-button type="outline" style="margin: auto 0.5vw" @click="handleGenerate"
+                              :disabled="subjectiveInfo[currentIndex].answerGenerated">
+                      <div v-if="subjectiveInfo[currentIndex].answerGenerated">
+                        {{ $t('evaluation.answer.generated') }}
+                      </div>
+                      <div v-else>
+                        {{ $t('evaluation.answer.generate') }}
+                      </div>
+                    </a-button>
+                    <a-button type="outline" style="margin: auto 0.5vw"
+                              :disabled="currentIndex===0" @click="handlePrev">
+                      {{ $t('evaluation.question.last') }}
+                    </a-button>
+                    <a-button type="outline" style="margin: auto 0.5vw"
+                              :disabled="currentIndex===subjectiveInfo.length - 1" @click="handleNext">
+                      {{ $t('evaluation.question.next') }}
+                    </a-button>
+                    <a-button type="outline" style="margin: auto 0.5vw"
+                              :disabled="!subjectiveInfo.every(element => element.getScored())" @click="handleSubmit">
+                      {{ $t('evaluation.credit.submit') }}
+                    </a-button>
+                  </div>
+              </a-col>
+            </transition>
+          </a-row>>
         </a-card>
       </a-col>
     </a-row>
@@ -122,13 +134,16 @@
 
 <script lang="ts" setup>
   import { computed, ref, reactive, watch, nextTick } from 'vue';
+  import { Modal } from '@arco-design/web-vue';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import {queryLLMevaluateList, queryDatasetEvaluateList, SelectedModel, getStreamResponse, updateSubjetiveRecord} from "@/api/evaluate";
   import {SubjectiveEvaluationData, generateSubEvalData} from "@/api/dataset";
   import {getLLMName} from "@/api/evaluate";
   import {getToken} from "@/utils/auth";
   import element from "zrender/src/Element";
+  import {useI18n} from "vue-i18n";
 
+  const { t } = useI18n();
   const SelectedModelInfo = ref<SelectedModel[]>();
   const SelectedDatasetInfo = ref<SelectedModel[]>();
   const subjectiveInfo = ref<SubjectiveEvaluationData[]>();
@@ -156,14 +171,25 @@
   });
 
   const handleSelect = () => {
+    if(modelSelector.value === undefined || datasetSelector.value === undefined){
+      Modal.error({
+        title: t('evaluation.select.error.title'),
+        content: t('evaluation.select.error.content')
+      });
+      return;
+    }
+    document.getElementById('selectPanel')!.style.marginLeft = '0';
+    document.getElementById('selectModel')!.style.marginLeft = '0';
     currentLLMID.value = modelSelector.value;
     currentDatasetID.value = datasetSelector.value;
-    generateSubEvalData(currentDatasetID.value!).then(returnValue => {
-      subjectiveInfo.value = returnValue;
-    });
-    getLLMName(currentLLMID.value!.toString()).then(returnValue => {
-      currentLLMName.value = returnValue;
-    });
+    setInterval(()=>{
+      generateSubEvalData(currentDatasetID.value!).then(returnValue => {
+        subjectiveInfo.value = returnValue;
+      });
+      getLLMName(currentLLMID.value!.toString()).then(returnValue => {
+        currentLLMName.value = returnValue;
+      });
+    }, 500);
   };
 
   const handlePrev = () => {
@@ -199,6 +225,18 @@
     score /= subjectiveInfo.value!.length;
     updateSubjetiveRecord({llmId: currentLLMID.value, datasetId: currentDatasetID.value, credit: score});
   }
+
+  const beforeEnter = (el: any) => {
+    el.style.opacity = 0;
+  };
+
+  const enter = (el: any, done: any) => {
+    requestAnimationFrame(() => {
+      el.style.transition = 'opacity 0.5s ease';
+      el.style.opacity = 1;
+      done();
+    });
+  };
 </script>
 
 <style scoped lang="less">
@@ -242,15 +280,6 @@
     border-radius: 10px;
     height: 500px;
     padding-bottom: 2%;
-  }
-
-  #selectModel {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    width: 45%;
-    height: 50px;
-    margin-bottom: 20px;
   }
 
   .QAShower
