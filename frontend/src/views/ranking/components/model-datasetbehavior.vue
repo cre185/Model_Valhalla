@@ -146,7 +146,7 @@
                     {{ record.createdTime }}
                 </template>
                 <template #score="{ record }">
-                    {{ record.score }}
+                    {{ Number(record.score).toFixed(2) }}
                 </template>
             </a-table>
         </a-card>
@@ -158,8 +158,6 @@
     import { IconSearch } from '@arco-design/web-vue/es/icon';
     import useLoading from '@/hooks/loading';
     import { useI18n } from 'vue-i18n';
-    import { Pagination } from '@/types/global';
-    import { queryDatasetList, DatasetRecord, DatasetParams } from '@/api/list';
     import type {TableColumnData } from '@arco-design/web-vue/es/table/interface';
     import { DatasetRankingData, queryDatasetbehaviorList} from "@/api/model-list";
     import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
@@ -177,8 +175,6 @@
     const { proxy } = getCurrentInstance();
     const {loading, setLoading} = useLoading(false);
     const showColumns = ref<Column[]>([]);
-    // const originData = ref<DatasetRankingData[]>(await queryDatasetbehaviorList(props.modelid!).then(response => response.data));
-    // const renderData = ref<DatasetRankingData[]>(await queryDatasetbehaviorList(props.modelid!).then(response => response.data));
     const originData = ref<DatasetRankingData[]>();
     const renderData = ref<DatasetRankingData[]>();
 
@@ -198,35 +194,7 @@
             immediate: true // 立即执行一次回调函数
         }
      );
-    // const originData = ref<DatasetRankingData[]>();
-    // originData.value = data;
-
-    // const renderData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
-                                               // {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
-                                               // {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
-                                               // {num: 4, name: 'MNIST', contentType: "混合题", contentSize: 284, createdTime: "2019-05-21", score: 100},
-                                               // {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
-                                               // {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
-                                               // {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
-                                                
-                                            // ]);
-    // const originData = ref<DatasetRankingData[]>([{num: 1, name: 'BookCorpus', contentType: "主观题", contentSize: 283, createdTime: "2021-02-28", score: 98},
-                                                // {num: 2, name: 'LVIS', contentType: "混合题", contentSize: 253, createdTime: "2022-10-11", score: 98},
-                                                // {num: 3, name: 'Crowd Segmentation', contentType: "客观题", contentSize: 895, createdTime: "2022-09-11", score: 96},
-                                                // {num: 4, name: 'MNIST', contentType: "混合题", contentSize: 284, createdTime: "2019-05-21", score: 100},
-                                                // {num: 5, name: 'Kaggle', contentType: "客观题", contentSize: 442, createdTime: "2023-11-19", score: 98},
-                                                // {num: 6, name: 'LVIS-II', contentType: "主观题", contentSize: 666, createdTime: "2019-12-25", score: 60},
-                                                // {num: 7, name: 'LVIS-III', contentType: "主观题", contentSize: 359, createdTime: "2022-01-01", score: 99},
-                                            // ]);
-                                            
     const cloneColumns = ref<Column[]>([]);
-    // const basePagination: Pagination = {
-    //    current: 1,
-    //    pageSize: 20,
-    // };
-    // const pagination = reactive({
-    //    ...basePagination,
-    // });
 
     const generateSearchFormModel = () => {
         return {
@@ -424,12 +392,9 @@
         },
     ]);
     const filterData = async (
-        // params: DatasetParams = { current: 1, pageSize: 20 }
     ) => {
     setLoading(true);
     try {
-        // data = await queryDatasetList(params);
-        // renderData.value = data.evaluate;
         const filteredData = computed(() => {
             let result = originData.value;
             if(SearchFormModel.value.num !== '')
@@ -478,24 +443,13 @@
             return result;
         });
         renderData.value = filteredData.value;
-        // pagination.current = params.current;
-        // pagination.total = 1;
-    } catch (err) {
-        // you can report use errorHandler or other
     } finally {
         setLoading(false);
     }
     };
-    // const filteredData = computed(() => {
-        // 根据输入框的内容进行筛选
-    // return renderData.value.filter(item => item.num.toString() === SearchFormModel.value.num);
-    // });
+
     const search = () => {
-        filterData(// {
-        // ...basePagination,
-        // ...SearchFormModel.value,
-        // } as unknown as DatasetParams
-        );
+        filterData()
     };
     watch(
         () => columns.value,
