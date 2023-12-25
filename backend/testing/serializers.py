@@ -16,22 +16,10 @@ class LLMsSerializer(serializers.ModelSerializer):
     def validate_name(self, name):
         # if the name has already been used
         if LLMs.objects.filter(name=name).exists():
+            if self.context['request'].method == 'PATCH' and str(self.context['request'].path).split('/')[-1] == str(LLMs.objects.get(name=name).id):
+                return name
             raise ValidationErrorWithMsg('The name has already been used.')
         return name
-
-    def validate_api_headers(self, api_headers):
-        try:
-            json.loads(api_headers)
-        except BaseException:
-            raise ValidationErrorWithMsg('Invalid JSON format in headers.')
-        return api_headers
-
-    def validate_api_data(self, api_data):
-        try:
-            json.loads(api_data)
-        except BaseException:
-            raise ValidationErrorWithMsg('Invalid JSON format in data.')
-        return api_data
 
     def validate_api_RPM(self, api_RPM):
         if api_RPM < 1:

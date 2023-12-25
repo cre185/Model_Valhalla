@@ -151,6 +151,18 @@ class CreditModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "Invalid credit")
         self.assertEqual(response.status_code, 400)
+        response = self.client.post(
+            '/ranking/update',
+            {
+                "datasetId": dataset_id,
+                "llmId": llm_id,
+                "credit": "error",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
         # update with invalid datasetId
         response = self.client.post(
             '/ranking/update',
@@ -267,6 +279,93 @@ class CreditModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(json_data['data'][0]['credit'], 60)
 
+    def test_retrieve(self):
+        # the correct case
+        jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
+        response = self.client.post(
+            '/ranking/update',
+            {
+                "datasetId": dataset_id,
+                "llmId": llm_id,
+                "credit": 60,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response = self.client.post(
+            '/ranking/retrieve',
+            {
+                "datasetId": dataset_id,
+                "llmId": llm_id,
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(json_data['credit'], 60)
+        self.assertEqual(response.status_code, 200)
+        # test retrieve with invalid datasetId
+        response = self.client.post(
+            '/ranking/retrieve',
+            {
+                "datasetId": 114514,
+                "llmId": llm_id,
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+
+    def test_clear(self):
+        jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
+        # update credits
+        response = self.client.post(
+            '/ranking/update',
+            {
+                "datasetId": dataset_id,
+                "llmId": llm_id,
+                "credit": 60,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response = self.client.post(
+            '/ranking/update',
+            {
+                "datasetId": dataset_id2,
+                "llmId": llm_id2,
+                "credit": 40,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        # clear credits again
+        response = self.client.post(
+            '/ranking/clear',
+            {
+                "datasetId": dataset_id,
+                "llmId": llm_id,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Credit.objects.get(dataset_id=dataset_id,LLM_id=llm_id).credit, None)
+        # test clear with invalid datasetId
+        response = self.client.post(
+            '/ranking/clear',
+            {
+                "datasetId": 114514,
+                "llmId": llm_id,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+
     def test_average(self):
         # init credits first
         jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
@@ -326,6 +425,89 @@ class CreditModelTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
+ 
+    def testlistselected(self):
+        jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
+        # update credits
+        response = self.client.post(
+            '/ranking/update',
+            {
+                "datasetId": dataset_id,
+                "llmId": llm_id,
+                "credit": 60,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        response = self.client.post(
+            '/ranking/update',
+            {
+                "datasetId": dataset_id2,
+                "llmId": llm_id2,
+                "credit": 40,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        # list selected credits
+        response = self.client.post(
+            '/ranking/list_selected_credit',
+            {
+                "datasetId": dataset_id,
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(len(json_data['data']), 2)
+        self.assertEqual(json_data['data'][0]['credit'], 60)
+        self.assertEqual(json_data['data'][1]['credit'], None)
+        response = self.client.post(
+            '/ranking/list_selected_credit',
+            {
+                "llmId": llm_id2,
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(len(json_data['data']), 2)
+        self.assertEqual(json_data['data'][0]['credit'], None)
+        self.assertEqual(json_data['data'][1]['credit'], 40)
+        response = self.client.post(
+            '/ranking/list_selected_credit',
+            {
+                "datasetId": dataset_id,
+                "llmId": llm_id,
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(len(json_data['data']), 1)
+        self.assertEqual(json_data['data'][0]['credit'], 60)
+        # test list selected credit with invalid id
+        response = self.client.post(
+            '/ranking/list_selected_credit',
+            {
+                "datasetId": 114514,
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        response = self.client.post(
+            '/ranking/list_selected_credit',
+            {
+                "llmId": 114514,
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
 
 
 class CommentTests(TestCase):
@@ -372,6 +554,20 @@ class CommentTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['id'], 1)
         self.assertEqual(DatasetComment.objects.get(id=1).comment, "sometext")
+        response = self.client.post(
+            '/ranking/comment',
+            {
+                "llm": 1,
+                "comment": "sometext",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['id'], 1)
+        self.assertEqual(LLMComment.objects.get(id=1).comment, "sometext")
         # comment with empty comment
         response = self.client.post(
             '/ranking/comment',
@@ -396,20 +592,6 @@ class CommentTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
-        # comment llm
-        response = self.client.post(
-            '/ranking/comment',
-            {
-                "llm": 1,
-                "comment": "sometext",
-            },
-            HTTP_AUTHORIZATION=jwt,
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(LLMComment.objects.get(id=1).comment, "sometext")
 
     def test_listcomment(self):
         # test dataset comment
@@ -489,6 +671,13 @@ class CommentTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
+        response = self.client.get(
+            '/ranking/llm_comment/114514',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
 
     def testlikecomment(self):
         # test dataset comment
@@ -554,6 +743,62 @@ class CommentTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(DatasetLike.objects.filter(comment_id=1).count(), 0)
+        # add a dislike
+        response = self.client.post(
+            '/ranking/like_dataset_comment',
+            {
+                "id": 1,
+                "dislike": True,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(DatasetLike.objects.filter(comment_id=1).count(), 1)
+        self.assertEqual(DatasetLike.objects.get(comment_id=1).dislike, True)
+        # change it directly to like and change it back
+        response = self.client.post(
+            '/ranking/like_dataset_comment',
+            {
+                "id": 1,
+                "dislike": False,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(DatasetLike.objects.get(comment_id=1).dislike, False)
+        response = self.client.post(
+            '/ranking/like_dataset_comment',
+            {
+                "id": 1,
+                "dislike": True,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(DatasetLike.objects.get(comment_id=1).dislike, True)
+        # remove dislike
+        response = self.client.post(
+            '/ranking/like_dataset_comment',
+            {
+                "id": 1,
+                "dislike": True,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(DatasetLike.objects.filter(comment_id=1).count(), 0)
         # test llm comment
         response = self.client.post(
             '/ranking/comment',
@@ -595,47 +840,22 @@ class CommentTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['data'][0]['like'], 1)
-
-    def testdislike(self):
+        # remove like
         response = self.client.post(
-            '/user/login',
+            '/ranking/like_llm_comment',
             {
-                "username": "testuser",
-                "password": "testpassword",
+                "id": 1,
             },
-            format="json"
-        )
-        jwt = response.json()['jwt']
-        response = self.client.post(
-            '/ranking/comment',
-            {
-                "dataset": 1,
-                "comment": "sometext",
-            },
-            HTTP_AUTHORIZATION=jwt,
-            format="json"
-        )
-        response = self.client.post(
-            '/ranking/comment',
-            {
-                "dataset": 1,
-                "comment": "sometext2",
-            },
-            HTTP_AUTHORIZATION=jwt,
-            format="json"
-        )
-        self.assertEqual(DatasetComment.objects.all().count(), 2)
-        response = self.client.get(
-            '/ranking/dataset_comment/1',
             HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data = response.json()
-        self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
-        # dislike now
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(LLMLike.objects.filter(comment_id=1).count(), 0)
+        # add a dislike
         response = self.client.post(
-            '/ranking/like_dataset_comment',
+            '/ranking/like_llm_comment',
             {
                 "id": 1,
                 "dislike": True,
@@ -645,12 +865,36 @@ class CommentTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(DatasetLike.objects.filter(comment_id=1).count(), 1)
-        self.assertEqual(DatasetLike.objects.get(comment_id=1).dislike, True)
+        self.assertEqual(LLMLike.objects.filter(comment_id=1).count(), 1)
+        self.assertEqual(LLMLike.objects.get(comment_id=1).dislike, True)
+        # change it directly to like and change it back
+        response = self.client.post(
+            '/ranking/like_llm_comment',
+            {
+                "id": 1,
+                "dislike": False,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(LLMLike.objects.get(comment_id=1).dislike, False)
+        response = self.client.post(
+            '/ranking/like_llm_comment',
+            {
+                "id": 1,
+                "dislike": True,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(LLMLike.objects.get(comment_id=1).dislike, True)
         # remove dislike
         response = self.client.post(
-            '/ranking/like_dataset_comment',
+            '/ranking/like_llm_comment',
             {
                 "id": 1,
                 "dislike": True,
@@ -659,6 +903,27 @@ class CommentTests(TestCase):
             format="json"
         )
         json_data = response.json()
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(DatasetLike.objects.filter(comment_id=1).count(), 0)
+        self.assertEqual(LLMLike.objects.filter(comment_id=1).count(), 0)
+        # test like with invalid id
+        response = self.client.post(
+            '/ranking/like_llm_comment',
+            {
+                "id": 114514,
+                "dislike": True,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        response = self.client.post(
+            '/ranking/like_dataset_comment',
+            {
+                "id": 114514,
+                "dislike": True,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)

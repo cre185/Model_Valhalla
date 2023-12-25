@@ -87,4 +87,8 @@ urlpatterns = [
         "check_message",
         views.check_messageView.as_view(),
         name="check_message"),
+    path(
+        "find_user_by_name",
+        views.find_user_by_nameView.as_view(),
+        name="find_user_by_name"),
 ]
