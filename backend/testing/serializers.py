@@ -19,20 +19,6 @@ class LLMsSerializer(serializers.ModelSerializer):
             raise ValidationErrorWithMsg('The name has already been used.')
         return name
 
-    def validate_api_headers(self, api_headers):
-        try:
-            json.loads(api_headers)
-        except BaseException:
-            raise ValidationErrorWithMsg('Invalid JSON format in headers.')
-        return api_headers
-
-    def validate_api_data(self, api_data):
-        try:
-            json.loads(api_data)
-        except BaseException:
-            raise ValidationErrorWithMsg('Invalid JSON format in data.')
-        return api_data
-
     def validate_api_RPM(self, api_RPM):
         if api_RPM < 1:
             raise ValidationErrorWithMsg('Invalid RPM value.')

@@ -1,11 +1,10 @@
 import json
-import unittest
 
 from django.test import TestCase
 from rest_framework.test import APIClient
 
 from dataset.models import Dataset
-from Model_Valhalla import settings
+from Model_Valhalla.settings import DEBUG
 from ranking.models import *
 from user.models import User
 
@@ -40,6 +39,14 @@ class LLMsModelTests(TestCase):
             '/testing/create',
             {
                 "name": "sometesting",
+                "api_url": "http://test.com",
+                "model_name": "testmodel",
+                "api_RPM": 100,
+                "official_website": "http://test.com",
+                "description": "somedescription",
+                "document_name": "testdocument",
+                "document_website": "http://test.com",
+                "license": "testlicense",
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -222,6 +229,68 @@ class LLMsModelTests(TestCase):
         self.assertEqual(len(json_data['data']), 1)
         self.assertEqual(json_data['data'][0]['name'], "sometesting")
 
+    def test_upload(self):
+        # the correct case
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testpassword",
+            },
+            format="json"
+        )
+        jwt = response.json()['jwt']
+        response = self.client.post(
+            '/testing/create',
+            {
+                "name": "sometesting",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(LLMs.objects.count(), 1)
+        with open('user/management/commands/static/logo/mistral_7b.png', 'rb') as f:
+            response = self.client.post(
+                '/testing/upload',
+                {
+                    "llmId": 1,
+                    "file": f
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+            json_data = response.json()
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(json_data['message'], "ok")
+            self.assertNotEqual(LLMs.objects.get(id=1).logo, None)
+        # llm does not exist
+        with open('user/management/commands/static/logo/mistral_7b.png', 'rb') as f:
+            response = self.client.post(
+                '/testing/upload',
+                {
+                    "llmId": 2,
+                    "file": f
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+            json_data = response.json()
+            self.assertEqual(response.status_code, 400)
+        # file does not exist
+        response = self.client.post(
+            '/testing/upload',
+            {
+                "llmId": 1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+
 
 class BattleModelTests(TestCase):
     def setUp(self):
@@ -236,17 +305,10 @@ class BattleModelTests(TestCase):
             name="llm1",
         )
         llm1.save()
-        llm2 = LLMs(
-            name="llm2",
-        )
-        llm2.save()
-        llm3 = LLMs(
-            name="llm3",
-        )
-        llm3.save()
         self.client = APIClient()
 
     def test_battle(self):
+        # test battle matching
         response = self.client.post(
             '/user/login',
             {
@@ -256,6 +318,47 @@ class BattleModelTests(TestCase):
             format="json"
         )
         jwt = response.json()['jwt']
+        response = self.client.post(
+            '/testing/battle_match',
+            {
+                "llmId": 1,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "No other llms")
+        llm2 = LLMs(
+            name="llm2",
+        )
+        llm2.save()
+        llm3 = LLMs(
+            name="llm3",
+        )
+        llm3.save()
+        response = self.client.post(
+            '/testing/battle_match',
+            {
+                "llmId": 2,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        response = self.client.post(
+            '/testing/battle_match',
+            {
+                "llmId": 4,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # test battle result
         response = self.client.post(
             '/testing/battle_result',
             {
@@ -314,7 +417,7 @@ class BattleModelTests(TestCase):
             format="json")
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
-        # test battle matching
+        # now match again
         response = self.client.post(
             '/testing/battle_match',
             {
@@ -339,21 +442,8 @@ class BattleModelTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(json_data['llmId'], 3)
-
-
-class BattleHistoryTests(TestCase):
-    def setUp(self):
-        user = User(
-            username="testuser",
-            password="testpassword",
-            mobile="12345678901",
-            is_admin=True,
-        )
-        user.save()
-        llm1 = LLMs(
-            name="llm1",
-        )
-        llm1.save()
+        
+    def test_battle_history(self):
         llm2 = LLMs(
             name="llm2",
         )
@@ -362,9 +452,6 @@ class BattleHistoryTests(TestCase):
             name="llm3",
         )
         llm3.save()
-        self.client = APIClient()
-
-    def test_history(self):
         response = self.client.post(
             '/user/login',
             {
@@ -430,7 +517,7 @@ class BattleHistoryTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
 
-@unittest.skipUnless(settings.DEBUG == False, "skip ok")
+# @unittest.skipUnless(settings.DEBUG == False, "skip ok")
 class GenerateRelatedTests(TestCase):
     # Warning: the test case costs a lot of time, and will not be tested usually
     # Test carried out only when DEBUG is False
@@ -453,7 +540,7 @@ class GenerateRelatedTests(TestCase):
         llm2.save()
         dataset = Dataset(
             name="testdataset",
-            data_file="static/data/ceval_select_lite.csv",
+            data_file="user/management/commands/static/data/ceval_lite.csv",
         )
         dataset.save()
         credit = Credit(
@@ -470,7 +557,6 @@ class GenerateRelatedTests(TestCase):
 
     def test_generate(self):
         # the correct case
-        print('')
         response = self.client.post(
             '/user/login',
             {
@@ -492,7 +578,8 @@ class GenerateRelatedTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
-        print('test_generate on model mistral_7b: ', json_data['content'])
+        if DEBUG:
+            print('test_generate on model mistral_7b: ', json_data['content'])
         response = self.client.post(
             '/testing/generate',
             {
@@ -505,12 +592,11 @@ class GenerateRelatedTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
-        print('test_generate on model qwen_7b_chat: ', json_data['content'])
+        if DEBUG:
+            print('test_generate on model qwen_7b_chat: ', json_data['content'])
         # test generate related with no llm
         response = self.client.post(
             '/testing/generate',
-            {
-            },
             HTTP_AUTHORIZATION=jwt,
             format="json"
         )
@@ -518,7 +604,6 @@ class GenerateRelatedTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
     def test_test(self):
-        print('')
         response = self.client.post(
             '/user/login',
             {
@@ -528,6 +613,7 @@ class GenerateRelatedTests(TestCase):
             format="json"
         )
         jwt = response.json()['jwt']
+        # the correct case
         response = self.client.post(
             '/testing/test',
             {
@@ -540,15 +626,45 @@ class GenerateRelatedTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
-        print(
-            'credit for model mistral_7b: ',
-            Credit.objects.get(
-                LLM_id=1,
-                dataset_id=1).credit)
+        credit1 = Credit.objects.get(id=1)
+        # test with fill
+        response = self.client.post(
+            '/testing/test',
+            {
+                "style": "fill",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(Credit.objects.get(id=1).credit_list, credit1.credit_list)
+        # test on all
+        response = self.client.post(
+            '/testing/test',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "ok")
+        self.assertNotEqual(Credit.objects.get(id=1).credit_list, credit1.credit_list)
+        # test with no filter
+        response = self.client.post(
+            '/testing/test',
+            {
+                "style": "fill",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['message'], "No tests are carried out")
 
     def test_stream_generate(self):
         # the correct case
-        print('')
         response = self.client.post(
             '/user/login',
             {
@@ -570,5 +686,13 @@ class GenerateRelatedTests(TestCase):
         text = ''
         for line in response.streaming_content:
             text += line.decode('utf-8')
-            print('Line:', line.decode('utf-8'))
-        print('stream generation complete: ', text)
+        if DEBUG:
+            print('stream generation complete: ', text)
+        self.assertEqual(response.status_code, 200)
+        # test generate related with no llm
+        response = self.client.post(
+            '/testing/stream_generate',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        self.assertEqual(response.status_code, 400)

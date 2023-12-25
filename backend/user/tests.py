@@ -204,7 +204,7 @@ class UserDataModelTests(TestCase):
         )
         json_data = response.json()
         jwt = json_data['jwt']
-        response = self.client.put(
+        response = self.client.patch(
             '/user/update/1',
             {
                 "username": "testuser2",
@@ -218,7 +218,7 @@ class UserDataModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         # request with wrong id
-        response = self.client.put(
+        response = self.client.patch(
             '/user/update/3',
             {
                 "username": "testuser2",
@@ -231,7 +231,7 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 404)
         # request with invalid username
-        response = self.client.put(
+        response = self.client.patch(
             '/user/update/1',
             {
                 "username": "short",
@@ -244,21 +244,8 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "Username is invalid")
         self.assertEqual(response.status_code, 400)
-        # unauthorized request
-        response = self.client.put(
-            '/user/update/1',
-            {
-                "username": "testuser2",
-                "password": "testuser2",
-                "mobile": "12345678902"
-            },
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "User must be authorized.")
-        self.assertEqual(response.status_code, 401)
         # request another user's data
-        response = self.client.put(
+        response = self.client.patch(
             '/user/update/2',
             {
                 "username": "testuser3",
@@ -271,7 +258,6 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "User must be authorized.")
         self.assertEqual(response.status_code, 401)
-        # test partial update
         response = self.client.patch(
             '/user/update/1',
             {

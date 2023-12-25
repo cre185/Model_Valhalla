@@ -57,14 +57,6 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     lookup_field = "id"
 
     @admin_required
-    def put(self, request, *args, **kwargs):
-        result = self.update(request, *args, **kwargs)
-        data = result.data
-        data['message'] = 'ok'
-        data['add_time'] = data['add_time'].split('T')[0]
-        return Response(data, status=status.HTTP_200_OK)
-
-    @admin_required
     def patch(self, request, *args, **kwargs):
         result = self.partial_update(request, *args, **kwargs)
         data = result.data
@@ -103,9 +95,10 @@ class listView(mixins.ListModelMixin, generics.GenericAPIView):
 class uploadView(APIView):
     @login_required
     def post(self, request):
-        llm = LLMs.objects.get(id=int(request.data['llmId']))
-        if not llm:
-            return Response({"message": "Invalid dataset id"},
+        try:
+            llm = LLMs.objects.get(id=int(request.data['llmId']))
+        except BaseException:
+            return Response({"message": "Invalid llm id"},
                             status=status.HTTP_400_BAD_REQUEST)
         logo = request.FILES.get('file')
         if not logo:
