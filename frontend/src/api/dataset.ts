@@ -311,7 +311,7 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
         msg_type: "Upload",
         msg: "数据集上传",
         msg_content: {
-            'DatasetName': formData.datasetName,
+            'datasetName': formData.datasetName,
         }
     }, {
         headers: {

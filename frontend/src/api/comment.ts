@@ -53,20 +53,16 @@ class MyComment {
         });
 
         await axios.post(apiCat('/user/create_message'), {
-            method: 'POST',
+            msg_type: "Like",
+            msg: "Unknown",
+            target: [response.data.id],
+            msg_content: {
+                'likeContent': "为你点赞",
+            }
+        }, {
             headers: {
-                'Content-Type': 'application/json',
                 Authorization: jwt,
             },
-            body: JSON.stringify({
-                msg_type: "Like",
-                msg: "22",
-                target: [response.data.id],
-                msg_content: {
-                    'content': "为你点赞",
-                }
-
-            }),
         })
         console.log("dianzanchenggong", toAuthorName);
     }
@@ -300,25 +296,22 @@ export async function updateComment(
                 break;
             }
         }
-        console.log("srcCommentID", srcCommentID);
-        console.log("srcUserID", srcUserID);
-        console.log("userID", userID);
-        await fetch(apiCat('/user/create_message'), {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: jwt,
-            },
-            body: JSON.stringify({
+        await axios.post(apiCat('/user/create_message'),
+            {
                 msg_type: "Reply",
-                msg: "11",
+                msg: "Unknown",
                 target: [srcUserID],
                 msg_content: {
-                    'content': commentContent,
+                    'commentContent': commentContent,
                 }
 
-            }),
-        })
+            },
+            {
+                headers: {
+                    Authorization: jwt,
+                },
+            }
+        )
 
     }
 }
