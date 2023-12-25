@@ -79,7 +79,7 @@
               </div>
             </a-col>
             <transition name="fade" @before-enter="beforeEnter" @enter="enter">
-              <a-col span="12" v-if="currentLLMID!==undefined && subjectiveInfo!==undefined" key="subPanel">
+              <a-col :span="12" v-if="currentLLMID!==undefined && subjectiveInfo!==undefined" key="subPanel">
                   <div style="font-size: 2vh; font-weight: bolder;">
                     {{$t('evaluation.question.type')}}
                   </div>
@@ -102,8 +102,8 @@
                   <div style="display: flex; flex-direction: row; align-items: center; justify-content: center;
                               margin-top: 2vh" v-if="subjectiveInfo!==undefined">
                     <a-button type="outline" style="margin: auto 0.5vw" @click="handleGenerate"
-                              :disabled="subjectiveInfo[currentIndex].answerGenerated">
-                      <div v-if="subjectiveInfo[currentIndex].answerGenerated">
+                              :disabled="subjectiveInfo[currentIndex].getAnswerGenerated()">
+                      <div v-if="subjectiveInfo[currentIndex].getAnswerGenerated()">
                         {{ $t('evaluation.answer.generated') }}
                       </div>
                       <div v-else>
@@ -182,7 +182,7 @@
     document.getElementById('selectModel')!.style.marginLeft = '0';
     currentLLMID.value = modelSelector.value;
     currentDatasetID.value = datasetSelector.value;
-    setInterval(()=>{
+    setTimeout(()=>{
       generateSubEvalData(currentDatasetID.value!).then(returnValue => {
         subjectiveInfo.value = returnValue;
       });
@@ -206,7 +206,7 @@
     subjectiveInfo.value![currentIndex.value].setAnswerGenerated();
     subjectiveInfo.value![currentIndex.value].setAnswer('...');
     await getStreamResponse(getToken()!, subjectiveInfo.value![currentIndex.value].getPrompt(), subjectiveInfo.value![currentIndex.value],
-    currentLLMID.value!, modelResponse);
+        currentLLMID.value!, modelResponse);
   }
 
   const handleRate = (score: number)=>{
