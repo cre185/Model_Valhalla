@@ -238,7 +238,7 @@
                 {{ $t('searchDataset.columns.operations.download') }}
               </p>
             </a-button>
-            <a-button v-if="modify" shape="round" style="margin-left: 1.5vw; width: 5.5vw" @click="handleFeedback()">
+            <a-button v-if="!modify" shape="round" style="margin-left: 1.5vw; width: 5.5vw" @click="handleFeedback()">
               <template #icon>
                 <icon-exclamation/>
               </template>
@@ -272,7 +272,7 @@
               <p v-else>{{ currentDataset.name }}</p>
             </div>
             <a-button
-                v-if="modify"
+                v-if="!modify"
                 class="llm-details-subscribe-btn"
                 type="primary"
                 size="large"

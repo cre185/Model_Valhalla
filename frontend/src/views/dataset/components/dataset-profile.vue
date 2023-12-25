@@ -53,19 +53,23 @@
     showInput.value = false;
   };
 
+  const handleRemove = (key: any) => {
+    tag.value = tag.value.filter((tags) => tags !== key);
+  }
+
   const timerId = ref();
   timerId.value = setInterval(async () => {
     if (oldFlag !== props.update.edit) {
       if (oldFlag && !props.update.edit) {
-        emit('updateModify');
         const data = {
           description: description.value,
           domain: domain.value,
           tag: tag.value,
           license: license.value
         };
-        console.log(data)
-        const response = await updateDataset(props.datasetID, data);
+        await updateDataset(props.datasetID, data);
+        emit('updateModify');
+        emit('changeTag');
       }
       oldFlag = props.update.edit;
     }
@@ -104,6 +108,7 @@
                   :closable="props.updateNow"
                   color="arcoblue"
                   class="tags"
+                  @close="handleRemove(tagItem)"
               >
                 {{ tagItem }}
               </a-tag>

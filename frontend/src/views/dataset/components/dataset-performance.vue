@@ -33,6 +33,9 @@
   await getModelScore(props.datasetID)
       .then(result => {
         modelScore = result;
+        for (let i = 0; i < modelScore.length; i+=1) {
+          modelScore[i].credit = Number(modelScore[i].credit).toFixed(2);
+        }
       })
       .catch(error => {});
 
