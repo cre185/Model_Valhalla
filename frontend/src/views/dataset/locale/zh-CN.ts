@@ -36,6 +36,7 @@ export default {
   'searchDataset.tags.addTag': '添加标签',
   'searchDataset.form.domain': '应用领域',
   'dataset.details.subscribe.btn': "关注",
+  'dataset.details.unsubscribe.btn': "取消关注",
   'dataset.details.details': "详细资料",
   'dataset.details.testScore': '测试表现',
   'dataset.details.discussions': '讨论区',

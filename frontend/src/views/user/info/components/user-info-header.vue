@@ -12,19 +12,13 @@
       </a-typography-title>
       <div class="user-msg">
         <a-space :size="18">
-          <div>
+          <div v-if="userInfo.role === 'admin'">
+            <icon-customer-service />
+            <a-typography-text>{{ $t('userInfo.type.admin') }}</a-typography-text>
+          </div>
+          <div v-else>
             <icon-user />
-            <a-typography-text>{{ userInfo.jobName }}</a-typography-text>
-          </div>
-          <div>
-            <icon-home />
-            <a-typography-text>
-              {{ userInfo.organizationName }}
-            </a-typography-text>
-          </div>
-          <div>
-            <icon-location />
-            <a-typography-text>{{ userInfo.locationName }}</a-typography-text>
+            <a-typography-text>{{ $t('userInfo.type.user') }}</a-typography-text>
           </div>
         </a-space>
       </div>

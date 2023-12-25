@@ -36,6 +36,7 @@ export default {
   'searchDataset.tags.addTag': 'Add Tag',
   'searchDataset.form.domain': 'Application Domain',
   'dataset.details.subscribe.btn': "Subscribe",
+  'dataset.details.unsubscribe.btn': "Unsubscribe",
   'dataset.details.details': "Details",
   'dataset.details.testScore': 'Test Performance',
   'dataset.details.discussions': 'Discussion Forum',

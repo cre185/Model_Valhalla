@@ -89,6 +89,7 @@ export interface DatasetData {
     toDownload: boolean;
     uploadUserAvatar: string;
     uploadUsername: string;
+    isSubscribed: boolean;
 }
 
 export interface DatasetListRes {
@@ -286,7 +287,6 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
 
     const DatasetFile = new FormData();
     DatasetFile.append('name', formData.datasetName);
-    console.log(formData.files[0]);
     DatasetFile.append('file', formData.files[0]);
     await fetch(apiCat('/dataset/upload'),{
     method: 'POST',
@@ -304,7 +304,7 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
         },
         body: JSON.stringify({
             msg_type: "Upload",
-            msg: "数据集上传",
+            msg: "数据集上�?",
             msg_content: {
                 'DatasetName': formData.datasetName,
             }
@@ -323,4 +323,13 @@ export async function uploadDatasetFile(data: FormData) {
             Authorization: getToken()!,
         },
     });
+}
+
+export async function subscribeDataset(datasetID: number){
+    return axios.post(apiCat('/user/subscribe_dataset'), {datasetId: datasetID});
+}
+
+export async function isDatasetSubscribed(userID:number, datasetID: number){
+    const response = await axios.get(apiCat(`/user/list_dataset_subscription/${userID}`));
+    return response.data.datasets.some((item: any) => item.id === datasetID);
 }
