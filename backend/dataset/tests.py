@@ -209,6 +209,19 @@ class DatasetModelTests(TestCase):
             Dataset.objects.get(
                 id=1).description,
             "somedescription")
+        # patch with same name
+        response = self.client.patch(
+            '/dataset/update/1',
+            {
+                "name": "somedataset2",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Dataset.objects.get(id=1).name, "somedataset2")
         # the dataset doesn't exist
         response = self.client.patch(
             '/dataset/update/2',

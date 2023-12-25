@@ -11,6 +11,7 @@
     - [create\_message](#create_message)
     - [create\_message\_to\_admin](#create_message_to_admin)
     - [delete](#delete)
+    - [find\_user\_by\_name](#find_user_by_name)
     - [list\_message](#list_message)
     - [list\_dataset\_subscription](#list_dataset_subscription)
     - [list\_llm\_subscription](#list_llm_subscription)
@@ -155,7 +156,36 @@ status=400
     "message": "ok"
 }, 
 status=200
-``` 
+```
+#### find_user_by_name  
+**功能描述**：通过用户名查找用户。  
+**请求方式**：POST  
+**请求URL**：`/user/find_user_by_name`  
+**请求参数**:  
+```python
+{
+    "username": "用户名"
+}
+```
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "id": "用户id",
+    "username": "用户名",
+    "mobile": "手机号",
+    "avatar": "头像url",
+    "email": "邮箱",
+    "add_time": "用户注册时间",
+    "is_admin": "是否为管理员",
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 #### list_message  
 **功能描述**：列出指定用户收到的所有消息。  
 **请求方式**：GET  

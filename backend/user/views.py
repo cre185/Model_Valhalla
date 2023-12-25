@@ -401,3 +401,16 @@ class check_messageView(APIView):
         except BaseException:
             return Response({"message": "Invalid data"},
                             status=status.HTTP_400_BAD_REQUEST)
+
+class find_user_by_nameView(APIView):
+    def post(self, request):
+        try:
+            user = User.objects.get(username=request.data['username'])
+            serializer = UserSerializer(user)
+            data = serializer.data
+            data['password'] = ''
+            data['message'] = 'ok'
+            return Response(data, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid username"},
+                            status=status.HTTP_400_BAD_REQUEST)

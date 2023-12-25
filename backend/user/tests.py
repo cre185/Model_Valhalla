@@ -165,16 +165,6 @@ class UserDataModelTests(TestCase):
 
     def test_retrieve(self):
         # the correct case
-        response = self.client.post(
-            '/user/login',
-            {
-                "username": "testuser",
-                "password": "testuser"
-            },
-            format="json"
-        )
-        json_data = response.json()
-        jwt = json_data['jwt']
         response = self.client.get(
             '/user/retrieve/1',
             format="json"
@@ -186,11 +176,20 @@ class UserDataModelTests(TestCase):
         # request with wrong id
         response = self.client.get(
             '/user/retrieve/3',
-            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 404)
+        # test find user by name
+        response = self.client.post(
+            '/user/find_user_by_name',
+            {
+                "username": "testuser"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
 
     def test_update(self):
         # the correct case

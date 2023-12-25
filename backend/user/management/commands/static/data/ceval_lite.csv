@@ -1,4 +1,2 @@
 id,question,A,B,C,D,answer
 0,当采用分块查找时，数据的组织方式为____,数据分成若干块， 每块内数据有序,数据分成若干块， 每块内数据不必有序， 但块间必须有序， 每块内最大（ 或最小） 的数据组成索引块,数据分成若干块， 每块内数据有序， 但块间必须有序， 每块内最大（ 或最小） 的数据组成索引块,数据分成若干块， 每块（ 除最后一块外） 中数据个数需相同,B
-1,实现一个银行系统，包括存钱、取钱、转账等多项业务，最恰当的资源组合方式是____,继承,重载,组合,实例化,C
-2,"#include<iostream.h> class date { private: int day,month,year; public: date(){} date(int x,int y,int z){day=x;month=y,year=z;} void set(){day=1;month=10;year=2002;} void display(){cout<<day<<""/""<<month<<""/""<<year<<"""";} }; void main() { date day1; date day2(10,10,2002); day1.set(); day1.display(); day2.display(); } 上面C++程序运行的结果是____。",10/10/2002 1/10/2002,1/10/2002 10/10/2002,10/10/2002 10/10/2002,1/10/2002 1/10/2002,B

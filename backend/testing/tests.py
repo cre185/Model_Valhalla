@@ -142,6 +142,19 @@ class LLMsModelTests(TestCase):
         self.assertEqual(LLMs.objects.count(), 1)
         self.assertEqual(LLMs.objects.get(id=1).name, "sometesting2")
         self.assertEqual(LLMs.objects.get(id=1).description, "somedescription")
+        # update with same name
+        response = self.client.patch(
+            '/testing/update/1',
+            {
+                "name": "sometesting2",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(LLMs.objects.count(), 1)
+        self.assertEqual(LLMs.objects.get(id=1).name, "sometesting2")
         # llm does not exist
         response = self.client.patch(
             '/testing/update/2',
