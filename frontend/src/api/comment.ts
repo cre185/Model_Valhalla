@@ -44,18 +44,41 @@ class MyComment {
         this.children = children
     }
 
-    increaseLike() {
-        this.like += 1
+    async increaseLike(jwt: string, toAuthorName: string) {
+        this.like += 1;
+        const response = await axios.post(apiCat('/user/find_user_by_name'),{ username: toAuthorName }, {
+            headers: {
+                Authorization: jwt,
+            },
+        });
+        
+        await fetch(apiCat('/user/create_message'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: jwt,
+            },
+            body: JSON.stringify({
+                msg_type: "Like",
+                msg: "22",
+                target: [response.data.id],
+                msg_content: {
+                    'content': "为你点赞",
+                }
+    
+            }),
+        })
+        console.log("dianzanchenggong", toAuthorName);
     }
 
     decreaseLike() {
         this.like -= 1
     }
 
-    async changeLikeState(jwt:string, flag=true) {
+    async changeLikeState(jwt:string,  toAuthorName: string, flag=true) {
         this.ifLike = !this.ifLike
         if (this.ifLike) {
-            this.increaseLike()
+            this.increaseLike(jwt, toAuthorName)
         } else {
             this.decreaseLike()
         }

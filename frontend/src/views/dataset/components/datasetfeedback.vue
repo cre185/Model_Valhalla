@@ -128,8 +128,6 @@ const props = defineProps({
 const currentForm = ref('feedbackForm')
 const datasetIdKnown = ref(false) // datasetid是否已确定，决定是否禁用选择框
 const generateFormModel = () => {
-    console.log("ID", props.datasetFeedbackID)
-    console.log("Shown", props.datasetShown)
     if(props.datasetShown === 'false')
     {
         datasetIdKnown.value = false;
@@ -183,18 +181,14 @@ const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
     }));
 });
 const uploadChange = async (fileItem: FileItem) => {
-    console.log(props.datasetFeedbackID)
-    // fileItemList.push(fileItem);
     formModel.value.annex.push(fileItem);
     if(fileItem.file)
     {
         formModel.value.file.push(fileItem.file);
-        console.log(formModel.value.file[0].name);
     }
     
   };
 const handleSubmit = async () => {
-    console.log("Name", formModel.value.datasetName)
     if(currentForm.value === 'feedbackForm') {
         await sendFeedback(getToken()!, formModel.value);
     }
