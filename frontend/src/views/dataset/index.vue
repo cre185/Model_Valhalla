@@ -279,7 +279,7 @@
                 @click="handleSubscribe"
             >
               <template #icon>
-                <icon-star-fill style="margin-top: 15%" :size="30"/>
+                <icon-star-fill style="margin-top: 15%" :size="18"/>
               </template>
               <p>{{ $t('dataset.details.unsubscribe.btn') }}</p>
             </a-button>
@@ -291,7 +291,7 @@
                 @click="handleSubscribe"
             >
               <template #icon>
-                <icon-star style="margin-top: 15%" :size="30"/>
+                <icon-star style="margin-top: 15%" :size="18"/>
               </template>
               <p>{{ $t('dataset.details.subscribe.btn') }}</p>
             </a-button>
@@ -365,8 +365,6 @@ import {computed, ref, reactive, nextTick, shallowRef} from 'vue';
     isDatasetSubscribed,
     subscribeDataset
   } from "@/api/dataset";
-  import {useUserStore} from "@/store";
-  import {getToken} from "@/utils/auth";
   import MyComment, {getComment, updateComment} from "@/api/comment";
   import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";
   import DatasetPreview from "@/views/dataset/components/dataset-preview.vue";

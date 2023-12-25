@@ -22,13 +22,13 @@
             </a-avatar>
             <template #content>
               <a-space direction="vertical">
-                <a-button type="primary" class="hoverButton">
+                <a-button type="primary" class="hoverButton" @click="handleInfo">
                   <template #icon>
                     <icon-user />
                   </template>
                   <template #default>{{ $t('menu.user.info') }}</template>
                 </a-button>
-                <a-button type="primary" class="hoverButton">
+                <a-button type="primary" class="hoverButton" @click="handleSetting">
                   <template #icon>
                     <icon-settings />
                   </template>
@@ -151,6 +151,18 @@
     myAvatar.value.$el.style.height = '32px';
     myAvatar.value.$el.style.marginLeft = '0px';
     myAvatar.value.$el.style.transform = 'translate(0, 0)';
+  }
+
+  const handleInfo = async () => {
+    await router.push({
+      name: 'Info',
+    });
+  }
+
+  const handleSetting = async () => {
+    await router.push({
+      name: 'Setting',
+    });
   }
 
   const myLogout = async () => {
