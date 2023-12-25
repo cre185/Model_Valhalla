@@ -116,16 +116,6 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     lookup_field = "id"
 
     @login_required
-    def put(self, request, *args, **kwargs):
-        result = self.update(request, *args, **kwargs)
-        if request.user.id != int(kwargs['id']):
-            return Response({"message": "User must be authorized."},
-                            status=status.HTTP_401_UNAUTHORIZED)
-        data = result.data
-        data['message'] = 'ok'
-        return Response(data, status=status.HTTP_200_OK)
-
-    @login_required
     def patch(self, request, *args, **kwargs):
         result = self.partial_update(request, *args, **kwargs)
         if request.user.id != int(kwargs['id']):
@@ -410,4 +400,17 @@ class check_messageView(APIView):
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
         except BaseException:
             return Response({"message": "Invalid data"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+class find_user_by_nameView(APIView):
+    def post(self, request):
+        try:
+            user = User.objects.get(username=request.data['username'])
+            serializer = UserSerializer(user)
+            data = serializer.data
+            data['password'] = ''
+            data['message'] = 'ok'
+            return Response(data, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid username"},
                             status=status.HTTP_400_BAD_REQUEST)

@@ -16,6 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_username(self, username):
         # if username already exists
         if User.objects.filter(username=username).count():
+            if self.context['request'].method == 'PATCH' and str(self.context['request'].path).split('/')[-1] == str(User.objects.get(username=username).id):
+                return username
             raise ValidationErrorWithMsg(
                 detail={'message': 'Username already been used'})
         # if username is valid
