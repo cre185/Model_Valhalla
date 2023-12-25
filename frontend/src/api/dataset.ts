@@ -240,7 +240,7 @@ export async function sendFeedback(jwt: string, formData: FormDatasetData) {
         const formDataObject = new FormData();
 
         formDataObject.append('msg', formData.feedbackType);
-        formDataObject.append('msg_type', 'feedback');
+        formDataObject.append('msg_type', 'Feedback');
         formDataObject.append('msg_content', JSON.stringify({
             'datasetID': formData.datasetName,
             'feedbackType': formData.feedbackType,

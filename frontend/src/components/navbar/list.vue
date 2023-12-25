@@ -26,7 +26,7 @@
               <a-space :size="4">
                 <span>{{ item.msg_title }}</span>
                 <a-typography-text type="secondary">
-                  {{ item.src_UserID }}
+                  {{ item.add_time }}
                 </a-typography-text>
               </a-space>
             </template>
@@ -36,7 +36,7 @@
                   :ellipsis="{
                     rows: 1,
                   }"
-                  >{{ item.msg_type }}</a-typography-paragraph
+                  >{{ item.msg_text }}</a-typography-paragraph
                 >
                 <a-typography-text
                   v-if="item.msg_type === 'message'"

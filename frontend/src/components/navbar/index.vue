@@ -103,6 +103,8 @@ import {
   getUserAvatar,
 } from '@/api/message';
 import useLoading from '@/hooks/loading';
+import axios from 'axios';
+import apiCat from '@/api/main';
 import List from './list.vue';
 
 const router = useRouter();
@@ -216,7 +218,7 @@ async function fetchSourceData() {
         msg_id: item.id,
         msg_type: item.msg_type,
         src_UserID: item.author,
-        dst_DatasetID: "2",
+        msg_text: "Unknown",
         msg_content: item.msg_content,
         msg_title: "Unknown",
         add_time: item.add_time,
@@ -224,25 +226,65 @@ async function fetchSourceData() {
         avatar: "Unknown",
         messageType: "0",
       };
-      if(item.msg_type === "Upload")
-      {
+      const responseUser = await axios.get(apiCat(`/user/retrieve/${item.author}`), {
+        headers: {
+          Authorization: getToken()!,
+        },
+      });
+      if (item.msg_type === "Upload") {
         newUserToDataset.msg_title = "上传数据集";
+        if (currentLocale.value === "zh-CN") {
+          newUserToDataset.msg_text = `${responseUser.data.username}上传了数据集:${item.msg_content.datasetName}`;
+        }
+        else {
+          newUserToDataset.msg_text = `${responseUser.data.username} uploaded the dataset ${item.msg_content.datasetName}`;
+        }
       }
-      else if(item.msg_type === "Reply")
-      {
-        newUserToDataset.msg_title = item.msg_content.content;
+      else if (item.msg_type === "Reply") {
+        if (currentLocale.value === "zh-CN") {
+          newUserToDataset.msg_title = `${responseUser.data.username}回复了你的评论`;
+        }
+        else {
+          newUserToDataset.msg_title = `${responseUser.data.username} replied to your comment`;
+        }
+        newUserToDataset.msg_text = item.msg_content.childContent;
       }
-      else if(item.msg_type === "Like")
-      {
+      else if (item.msg_type === "Like") {
         newUserToDataset.msg_title = "点赞消息";
+        if (currentLocale.value === "zh-CN") {
+          newUserToDataset.msg_text = `${responseUser.data.username}点赞了你的评论“${item.msg_content.likeContent}”`;
+        }
+        else {
+          newUserToDataset.msg_text = `${responseUser.data.username} liked your comment "${item.msg_content.likeContent}"`;
+        }
       }
-      else if(item.msg_type === "feedback")
-      {
-        newUserToDataset.msg_title = "反馈意见";
+      else if (item.msg_type === "Feedback" || item.msg_type === "feedback") {
+        newUserToDataset.msg_title = "数据集反馈";
+        const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
+          headers: {
+            Authorization: getToken()!,
+          },
+        });
+        if (currentLocale.value === "zh-CN") {
+          newUserToDataset.msg_text = `原因:${item.msg_content.feedbackType}，具体描述:${item.msg_content.feedbackContent}`;
+        }
+        else {
+          newUserToDataset.msg_text = `Reason: ${item.msg_content.feedbackType}, Detailed description: ${item.msg_content.feedbackContent}`;
+        }
       }
-      else if(item.msg_type === "Report")
-      {
+      else if (item.msg_type === "Report") {
         newUserToDataset.msg_title = "举报数据集";
+        const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
+          headers: {
+            Authorization: getToken()!,
+          },
+        });
+        if (currentLocale.value === "zh-CN") {
+          newUserToDataset.msg_text = `原因:${item.msg_content.reportReason}，具体描述:${item.msg_content.reportContent}`;
+        }
+        else {
+          newUserToDataset.msg_text = `Reason: ${item.msg_content.reportReason}, Detailed description: ${item.msg_content.reportContent}`;
+        }
       }
       newUserToDataset.avatar = await getUserAvatar(getToken()!, item.author);
       messageData.messageList.push(newUserToDataset);
@@ -262,7 +304,6 @@ const renderList = computed(() => { // 创建一个过滤属性，只包含messa
     (item) => messageType.value === "message"
   );
 });
-console.log("computed", messageData.messageList[0]);
 const unreadCount = computed(() => {
   return renderList.value.filter((item) => !item.read).length;
 });
@@ -366,6 +407,7 @@ const showMiniMsgBox = () => {
   background: #e3e5e7;
   color: #6b6f76;
 }
+
 .message-popover {
   .arco-popover-content {
     margin-top: 0;

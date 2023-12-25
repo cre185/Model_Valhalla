@@ -195,8 +195,11 @@ class EvaluateRound {
     async sendAdvise(jwt:string, userAdvise:string)
     {
         axios.post(apiCat('/user/create_message_to_admin'), {
-            msg: userAdvise,
-            msg_type: 'advice'
+            msg: "Unknown",
+            msg_type: 'Advice',
+            msg_content: {
+                'adviceContent': userAdvise,
+            }
         }, {
             headers: {
                 Authorization: jwt,

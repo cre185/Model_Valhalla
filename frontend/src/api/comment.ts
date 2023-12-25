@@ -51,20 +51,18 @@ class MyComment {
                 Authorization: jwt,
             },
         });
-
         await axios.post(apiCat('/user/create_message'), {
             msg_type: "Like",
             msg: "Unknown",
             target: [response.data.id],
             msg_content: {
-                'likeContent': "为你点赞",
+                'likeContent': this.content,
             }
         }, {
             headers: {
                 Authorization: jwt,
             },
         })
-        console.log("dianzanchenggong", toAuthorName);
     }
 
     decreaseLike() {
@@ -279,13 +277,14 @@ export async function updateComment(
     }
     let srcCommentID;
     let srcUserID;
-    let commentContent;
+    let parentContent;
+    let childContent;
     let userID;
     for (let i = responseTwo.data.data.length - 1; i >= 0; i--) {
         if (responseTwo.data.data[i].id === newComment.commentId) {
             userID = responseTwo.data.data[i].user;
             srcCommentID = responseTwo.data.data[i].respond_to;
-            commentContent = responseTwo.data.data[i].comment;
+            childContent = responseTwo.data.data[i].comment;
             break;
         }
     }
@@ -293,6 +292,7 @@ export async function updateComment(
         for (let i = 0; i < responseTwo.data.data.length; i++) {
             if (responseTwo.data.data[i].id === srcCommentID) {
                 srcUserID = responseTwo.data.data[i].user;
+                parentContent = responseTwo.data.data[i].comment;
                 break;
             }
         }
@@ -302,7 +302,8 @@ export async function updateComment(
                 msg: "Unknown",
                 target: [srcUserID],
                 msg_content: {
-                    'commentContent': commentContent,
+                    'parentContent': parentContent,
+                    'childContent': childContent,
                 }
 
             },
