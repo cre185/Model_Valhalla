@@ -376,7 +376,6 @@
       column: Column,
       index: number
   ) => {
-    console.log(column);
     if (!checked) {
       cloneColumns.value = cloneColumns.value.filter(
           (item) => item.dataIndex !== column.dataIndex

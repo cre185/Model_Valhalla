@@ -3,6 +3,7 @@
     <template #extra>
       <a-link>{{ $t('userInfo.viewAll') }}</a-link>
     </template>
+
     <a-list :bordered="false">
       <a-list-item
         v-for="activity in activityList"

@@ -302,7 +302,6 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
 
     const DatasetFile = new FormData();
     DatasetFile.append('name', formData.datasetName);
-    console.log(formData.files[0]);
     DatasetFile.append('file', formData.files[0]);
     await fetch(apiCat('/dataset/upload'),{
     method: 'POST',

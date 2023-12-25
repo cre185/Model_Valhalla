@@ -38,8 +38,27 @@ export async function querySubscribedModels(userId: number) {
         }
     })
   }
-  console.log(modelList);
   return modelList;
+}
+
+export interface SubscribedDatasetRecord{
+  id: number;
+  name: string;
+  domain: string;
+}
+
+export async function querySubscribedDatasets(userId: number) {
+  const datasetList: SubscribedDatasetRecord[] = [];
+  const response = await axios.get(apiCat(`/user/list_dataset_subscription/${userId}`));
+  for (let i = 0; i < response.data.datasets.length; i += 1) {
+    const data = response.data.datasets[i] as {
+      id: number;
+      name: string;
+      domain: string;
+    }
+    datasetList.push({id: data.id, name: data.name, domain: data.domain});
+  }
+  return datasetList;
 }
 
 export interface MyTeamRecord {

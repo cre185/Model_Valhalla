@@ -18,4 +18,8 @@ export default {
   'userInfo.title.subscribedDatasets': '我关注的数据集',
   'userInfo.subscribedModel.ranking': '当前排在第',
   'userInfo.subscribedModel.ranking.suffix': '位',
+  'userInfo.subscription.card.subscribed.btn': '已关注',
+  'userInfo.subscription.card.subscribe.btn': '关注',
+  'userInfo.subscription.llm.input.placeholder': '请输入查询的模型名',
+  'userInfo.subscription.dataset.input.placeholder': '请输入查询的数据集名',
 };
