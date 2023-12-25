@@ -116,6 +116,7 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data = result.data
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
+        data['author_name'] = User.objects.filter(id=data['author'])[0].username
         return Response(data, status=status.HTTP_200_OK)
 
 

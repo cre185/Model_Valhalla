@@ -712,8 +712,8 @@ status=200
 * 正常返回  
 ```python
 {
-    # 见create接口的请求参数  
-    ...
+    # 见create接口的请求参数，除此之外还有以下字段：
+    "author_name": "作者名称"
 },
 status=200
 ```
