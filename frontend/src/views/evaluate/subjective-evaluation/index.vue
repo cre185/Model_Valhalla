@@ -125,7 +125,7 @@
                   </div>
               </a-col>
             </transition>
-          </a-row>>
+          </a-row>
         </a-card>
       </a-col>
     </a-row>

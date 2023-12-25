@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Message, Modal } from '@arco-design/web-vue';
 import { useUserStore } from '@/store';
-import { getToken } from '@/utils/auth';
+import {getToken, setToken} from '@/utils/auth';
 import { LoginRes } from '@/api/user';
 
 export interface HttpResponse<T = unknown> {
@@ -64,6 +64,9 @@ axios.interceptors.response.use(
         });
       }
       return Promise.reject(new Error(response.data.message || 'Error'));
+    }
+    if (response.data.jwt) {
+      setToken(response.data.jwt);
     }
     return response;
   },
