@@ -51,19 +51,10 @@
                 id="rankings"
         >
           <a-row style="margin-bottom: 16px">
-            <a-col :span="6">
-              <a-space>
-                <a-button id="upload" type="primary" style="margin-top: 20px">
-                  <template #icon>
-                    <icon-plus />
-                  </template>
-                  {{ $t('ranking.llm.upload') }}
-                </a-button>
-              </a-space>
-            </a-col>
             <a-col id="search" :span="12" style="display: flex; align-items:center; justify-content: center; margin-top: 20px">
               <a-input-search :style="{width:'600px'}" :placeholder="$t('ranking.llm.search.placeholder')" :loading="loading" @search="handleSearch" search-button/>
             </a-col>
+            <a-col :span="6"></a-col>
             <a-col
                 id="settings"
                 :span="6"
@@ -122,7 +113,7 @@
                           </a-checkbox>
                         </div>
                         <div class="title">
-                          <p>{{ item.title === '#' ? '序列�?' : item.title }}</p>
+                          <p>{{ item.title === '#' ? '序列�?' : item.title }}</p>
                         </div>
                       </div>
                     </div>
@@ -360,7 +351,6 @@
       column: Column,
       index: number
   ) => {
-    console.log(column);
     if (!checked) {
       cloneColumns.value = cloneColumns.value.filter(
           (item) => item.dataIndex !== column.dataIndex
@@ -378,7 +368,7 @@
   ): T => {
     const newArray = isDeep ? cloneDeep(array) : array;
     if (beforeIdx > -1 && newIdx > -1) {
-      // 先替换后面的，然后拿到替换的结果替换前面�?
+      // 先替换后面的，然后拿到替换的结果替换前面�?
       newArray.splice(
           beforeIdx,
           1,

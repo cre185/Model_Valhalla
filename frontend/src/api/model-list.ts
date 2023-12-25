@@ -91,8 +91,6 @@ export async function queryLLMList() {
       api_RPM: number;
       elo_credit: number;
     };
-    // LLMRankingList.data.push({id: model.id, name: model.name, ranking: 0, datasetScore: averageScore.data.data[model.id - 1], eloScore: model.elo_credit,
-    // license: '', datasetDetails: new Array(totalDatasetNum).fill(0)})
     LLMRankingList.data.push({
       id: model.id,
       name: model.name,
@@ -120,7 +118,12 @@ export async function queryLLMList() {
     };
     for (let j = 0; j < LLMRankingList.data.length; j += 1) {
       if (LLMRankingList.data[j].id === score.LLM) {
-        LLMRankingList.data[j][score.dataset] = score.credit;
+        if(score.credit !== null){
+          LLMRankingList.data[j][score.dataset] = score.credit.toFixed(2);
+        }
+        else {
+          LLMRankingList.data[j][score.dataset] = score.credit
+        }
         break;
       }
     }

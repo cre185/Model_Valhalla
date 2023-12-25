@@ -18,7 +18,7 @@ export default {
   'searchDataset.columns.name': 'Dataset Name',
   'searchDataset.columns.isSubjective': 'Subjective/Objective',
   'searchDataset.columns.domain': 'Application Domain',
-  'searchDataset.form.domain.placeholder': 'Select the main content of the dataset',
+  'searchDataset.form.domain.placeholder': 'Select the application domain of the dataset',
   'searchDataset.columns.contentSize': 'Content Size',
   'searchDataset.columns.createdTime': 'Creation Time',
   'searchDataset.columns.tags': 'Tags',
