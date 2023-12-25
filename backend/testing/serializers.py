@@ -32,11 +32,6 @@ class BattleHistorySerializer(serializers.ModelSerializer):
         model = BattleHistory
         fields = '__all__'
 
-    def validate_user_id(self, user_id):
-        if not User.objects.filter(id=user_id).exists():
-            raise ValidationErrorWithMsg('User does not exist.')
-        return user_id
-
     def validate_winner(self, winner):
         if winner != 1 and winner != 0 and winner != -1:
             raise ValidationErrorWithMsg('Invalid winner value.')

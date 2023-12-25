@@ -20,8 +20,6 @@ class DatasetCommentSerializer(serializers.ModelSerializer):
         if len(comment) > 1000:
             raise ValidationErrorWithMsg(
                 "Comment should be less than 1000 characters.")
-        elif len(comment) == 0:
-            raise ValidationErrorWithMsg("Comment should not be empty.")
         return comment
 
 
@@ -34,6 +32,4 @@ class LLMCommentSerializer(serializers.ModelSerializer):
         if len(comment) > 1000:
             raise ValidationErrorWithMsg(
                 "Comment should be less than 1000 characters.")
-        elif len(comment) == 0:
-            raise ValidationErrorWithMsg("Comment should not be empty.")
         return comment

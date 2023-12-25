@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from dataset.models import Dataset
-from Model_Valhalla.settings import DEBUG
+from Model_Valhalla.settings import DEBUG, SILENCE
 from ranking.models import *
 from user.models import User
 
@@ -62,6 +62,26 @@ class LLMsModelTests(TestCase):
             '/testing/create',
             {
                 "name": "sometesting",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(LLMs.objects.count(), 1)
+        # invalid RPM
+        response = self.client.post(
+            '/testing/create',
+            {
+                "name": "sometesting2",
+                "api_url": "http://test.com",
+                "model_name": "testmodel",
+                "api_RPM": 0,
+                "official_website": "http://test.com",
+                "description": "somedescription",
+                "document_name": "testdocument",
+                "document_website": "http://test.com",
+                "license": "testlicense",
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -155,9 +175,23 @@ class LLMsModelTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(LLMs.objects.count(), 1)
         self.assertEqual(LLMs.objects.get(id=1).name, "sometesting2")
-        # llm does not exist
+        llm2 = LLMs(
+            name="sometesting3",
+        )
+        llm2.save()
         response = self.client.patch(
             '/testing/update/2',
+            {
+                "name": "sometesting2",
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # llm does not exist
+        response = self.client.patch(
+            '/testing/update/114514',
             {
                 "name": "sometesting2",
                 "description": "somedescription",
@@ -504,6 +538,21 @@ class BattleModelTests(TestCase):
             HTTP_AUTHORIZATION=jwt,
             format="json")
         self.assertEqual(BattleHistory.objects.count(), 2)
+        # request with invalid winner
+        response = self.client.post(
+            '/testing/battle_result',
+            {
+                "llm1": 2,
+                "llm2": 3,
+                "round": 1,
+                "result": json.loads('[{"result1":"b","result2":"d","prompt":"c"}]'),
+                "winner": 2,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json")
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(BattleHistory.objects.count(), 2)
         # test battle history
         response = self.client.post(
             '/testing/battle_history',
@@ -591,8 +640,7 @@ class GenerateRelatedTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
-        if DEBUG:
-            print('test_generate on model mistral_7b: ', json_data['content'])
+        # print('test_generate on model mistral_7b: ', json_data['content'])
         response = self.client.post(
             '/testing/generate',
             {
@@ -605,8 +653,7 @@ class GenerateRelatedTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
-        if DEBUG:
-            print('test_generate on model qwen_7b_chat: ', json_data['content'])
+        # print('test_generate on model qwen_7b_chat: ', json_data['content'])
         # test generate related with no llm
         response = self.client.post(
             '/testing/generate',
@@ -663,7 +710,7 @@ class GenerateRelatedTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
         self.assertNotEqual(Credit.objects.get(id=1).credit_list, credit1.credit_list)
-        # test with no filter
+        # test with all credit filtered
         response = self.client.post(
             '/testing/test',
             {
@@ -699,9 +746,9 @@ class GenerateRelatedTests(TestCase):
         text = ''
         for line in response.streaming_content:
             text += line.decode('utf-8')
-        if DEBUG:
-            print('stream generation complete: ', text)
+        # print('stream generation complete: ', text)
         self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(text, '')
         # test generate related with no llm
         response = self.client.post(
             '/testing/stream_generate',
