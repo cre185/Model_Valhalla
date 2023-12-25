@@ -3,7 +3,7 @@ import time
 
 import requests
 
-from Model_Valhalla.settings import DEBUG
+from Model_Valhalla.settings import DEBUG, SILENCE
 
 
 class AutoTest():
@@ -75,8 +75,7 @@ class AutoTest():
                 test_count = 0
                 test_time = time.time()
             test_count += 1
-            if DEBUG:
-                print('Testing question ' + str(i))
+            # print('Testing question ' + str(i))
             if 'CHOICES' in target_column:
                 choices = data[i][target_column['CHOICES']][2:- \
                     2].replace('"", ""', '"",""').split('"",""')
@@ -93,8 +92,7 @@ class AutoTest():
                            data[i][target_column['C']],
                            data[i][target_column['D']]]
                 current_result = api(question, choices)
-            if DEBUG:
-                print('Current result: ' + str(current_result))
+            # print('Current result: ' + str(current_result))
             if not current_result:
                 continue
             for ans in ['A', 'B', 'C', 'D']:
@@ -174,8 +172,7 @@ class AutoTest():
         try:
             data = json.dumps(data_json)
         except BaseException:
-            if DEBUG:
-                print('json error')
+            # print('json error')
             return None
         response = requests.post(
             self.url,
@@ -216,8 +213,7 @@ class AutoTest():
         try:
             data = json.dumps(data_json)
         except BaseException:
-            if DEBUG:
-                print('json error')
+            # print('json error')
             return None
         response = requests.post(self.url, headers=headers, data=data)
         if response.status_code == 200:
@@ -228,9 +224,8 @@ class AutoTest():
             except BaseException:
                 return None
         else:
-            if DEBUG:
-                print(response.status_code)
-                print(response.text)
+            # print(response.status_code)
+            # print(response.text)
             return None
 
     def whole_test(self, dataPath):

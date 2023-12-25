@@ -3,9 +3,6 @@ from io import StringIO
 import json
 
 def verify_dataset(content):
-    if not content:
-        raise Exception("Empty file")
-
     content = StringIO(content)
     reader = csv.reader(content)
 
@@ -27,7 +24,6 @@ def verify_dataset(content):
             continue
         line_count += 1
         if len(line) != len(headers):
-            print(line)
             raise Exception("Invalid file")
     return subjective, line_count
 
@@ -67,11 +63,3 @@ def get_first_10_rows(content):
         if len(data) == 10:
             break
     return data, filters==['prompt']
-
-if __name__ == '__main__':
-    with open('zbench_common.csv', 'r', encoding='utf-8') as f:
-        try:
-            content = f.read()
-            print(get_first_10_rows(content))
-        except Exception as e:
-            print(e)

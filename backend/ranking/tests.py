@@ -592,6 +592,18 @@ class CommentTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
+        # comment on llm with too long comment
+        response = self.client.post(
+            '/ranking/comment',
+            {
+                "llm": 1,
+                "comment": "a" * 1001,
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
 
     def test_listcomment(self):
         # test dataset comment
