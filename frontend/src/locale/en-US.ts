@@ -54,6 +54,7 @@ export default {
   'navbar.welcome': 'Welcome back, ',
   'navbar.quit': 'Log Out',
   'logout.success': 'Logout successfully',
+  'login.expired': 'Login Expired',
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,

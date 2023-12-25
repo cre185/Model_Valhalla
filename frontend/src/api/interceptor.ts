@@ -2,8 +2,10 @@ import axios from 'axios';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Message, Modal } from '@arco-design/web-vue';
 import { useUserStore } from '@/store';
-import {getToken, setToken} from '@/utils/auth';
-import { LoginRes } from '@/api/user';
+import { getToken, setToken } from '@/utils/auth';
+import {LoginRes} from '@/api/user';
+import { useI18n } from "vue-i18n";
+import useUser from "@/hooks/user";
 
 export interface HttpResponse<T = unknown> {
   status: number;
@@ -41,19 +43,29 @@ axios.interceptors.response.use(
   (response: AxiosResponse<LoginRes>) => {
     // if the custom code is not 200, it is judged as an error.
     if (response.status !== 200 && response.status !== 201) {
-      Message.error({
-        content: response.data.message || 'Error',
-        duration: 5 * 1000,
-      });
+      if (response.status === 401) {
+        Message.error({
+          content: useI18n().t('login.expired'),
+          duration: 5 * 1000,
+        });
+        setTimeout(async () => {
+          await useUser().logout();
+        }, 5000);
+      } else {
+        Message.error({
+          content: response.data.message || 'Error',
+          duration: 5 * 1000,
+        });
+      }
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (
-        [50008, 50012, 50014].includes(response.status) &&
-        response.config.url !== '/api/user/info'
+          [50008, 50012, 50014].includes(response.status) &&
+          response.config.url !== '/api/user/info'
       ) {
         Modal.error({
           title: 'Confirm logout',
           content:
-            'You have been logged out, you can cancel to stay on this page, or log in again',
+              'You have been logged out, you can cancel to stay on this page, or log in again',
           okText: 'Re-Login',
           async onOk() {
             const userStore = useUserStore();

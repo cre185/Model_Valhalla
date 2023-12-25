@@ -53,6 +53,7 @@ export default {
   'navbar.welcome': '欢迎回来，',
   'navbar.quit': '退出登录',
   'logout.success': '登出成功',
+  'login.expired': '登录过期',
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,
