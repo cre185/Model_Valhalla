@@ -238,7 +238,7 @@
                 {{ $t('searchDataset.columns.operations.download') }}
               </p>
             </a-button>
-            <a-button v-if="!modify" shape="round" style="margin-left: 1.5vw; width: 5.5vw" @click="handleFeedback()">
+            <a-button v-if="modify" shape="round" style="margin-left: 1.5vw; width: 5.5vw" @click="handleFeedback()">
               <template #icon>
                 <icon-exclamation/>
               </template>
@@ -272,7 +272,7 @@
               <p v-else>{{ currentDataset.name }}</p>
             </div>
             <a-button
-                v-if="modify"
+                v-if="!modify"
                 class="llm-details-subscribe-btn"
                 type="primary"
                 size="large"
@@ -282,17 +282,28 @@
               </template>
               <p>{{ $t('dataset.details.subscribe.btn') }}</p>
             </a-button>
-            <a-button
+            <a-upload
                 v-else
-                class="llm-details-subscribe-btn"
-                type="primary"
-                size="large"
+                action="http://127.0.0.1:8000/user/logout"
+                accept=".csv"
+                :file-list="fileList"
+                :limit="1"
+                @change="uploadChange"
             >
-              <template #icon>
-                <icon-attachment :size="18"/>
+              <template #upload-button>
+                <a-button
+                    :disabled="!modifySign"
+                    class="llm-details-subscribe-btn"
+                    type="primary"
+                    size="large"
+                >
+                  <template #icon>
+                    <icon-attachment :size="18"/>
+                  </template>
+                  <p>{{ $t('dataset.details.changeFile.btn') }}</p>
+                </a-button>
               </template>
-              <p>{{ $t('dataset.details.changeFile.btn') }}</p>
-            </a-button>
+            </a-upload>
           </a-space>
         </header>
       </template>
@@ -324,25 +335,34 @@
 <script lang="ts" setup>
   import { computed, ref, reactive, nextTick } from 'vue';
   import { useI18n } from 'vue-i18n';
-  import {useUserStore} from "@/store";
+  import { useUserStore } from "@/store";
   import useLoading from '@/hooks/loading';
   import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
   import { Pagination } from '@/types/global';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
-  import {DatasetData, queryDatasetList, updateDatasetTags, getDatasetFile, updateDataset} from "@/api/dataset";
-  import MyComment, {getComment, updateComment} from "@/api/comment";
+  import { FileItem } from "@arco-design/web-vue/es/upload/interfaces";
+  import {
+    DatasetData,
+    queryDatasetList,
+    updateDatasetTags,
+    getDatasetFile,
+    updateDataset,
+    uploadDatasetFile
+  } from "@/api/dataset";
+  import MyComment, { getComment, updateComment } from "@/api/comment";
   import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";
   import DatasetPreview from "@/views/dataset/components/dataset-preview.vue";
   import DatasetPerformance from "@/views/dataset/components/dataset-performance.vue";
   import DatasetDiscussionArea from "@/views/dataset/components/dataset-discussion-area.vue";
-  import {getToken} from "@/utils/auth";
+  import { getToken } from "@/utils/auth";
   import DatasetFeedback from "./components/datasetfeedback.vue";
   import DatasetUpload from "./components/datasetupload.vue";
 
   const userStore = useUserStore();
   const modify = userStore.role === 'admin';
   const modifySign = ref(false);
+  const fileList = ref<FileItem[]>([]);
 
   const generateFormModel = () => {
     return {
@@ -668,10 +688,21 @@
     modifySign.value = false;
     const data = {name: currentDataset.value?.name};
     await updateDataset(currentDataset.value!.id, data);
+    if (fileList.value.length > 0) {
+      const uploadPacket = new FormData();
+      uploadPacket.append('name', currentDataset.value!.name);
+      uploadPacket.append('file', fileList.value[0].file as Blob);
+      await uploadDatasetFile(uploadPacket);
+      fileList.value = [];
+    }
   }
 
   const handleChange = (value:any) => {
     currentDataset.value!.name = value;
+  }
+
+  const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
+    fileList.value = fileItemList;
   }
 </script>
 

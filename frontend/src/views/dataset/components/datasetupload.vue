@@ -89,17 +89,11 @@ const handleEdit = () => {
 };
 
 const uploadChange = async (fileItem: FileItem) => {
-    // fileItemList.push(fileItem);
     UploadModel.value.annex.push(fileItem);
     if(fileItem.file)
     {
         UploadModel.value.files.push(fileItem.file);
-        console.log(UploadModel.value.files[0].name);
     }
-    // formModel.value.file = fileItem.file!;
-    // formModel.value.file=fileItem.file!;
-    // userStore.setInfo({ avatar: fileItem.url });
-    // localStorage.setItem('userStore', JSON.stringify(userStore.$state));
   };
 
 

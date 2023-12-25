@@ -114,17 +114,6 @@ export async function updateDataset(datasetID: number, data: any){
             Authorization: getToken()!,
         },
     });
-
-        // "name": "数据集名称",
-        // "description": "数据集描述",
-        // "subjective": "是否为主观题"
-        // "content_size": "数据集大小",
-        // "author": "作者",
-        // "data_file": "数据集文件",
-        // "domain": "数据集领域",
-        // "tag": "数据集标签"，
-        // "file": "数据集文件"
-
 }
 
 export async function queryDatasetList() {
@@ -227,30 +216,9 @@ interface FormDatasetData {
     reportContent: string;
     annex: FileItem[];
     file: File[];
-  }
+}
 
-  /* export async function sendFeedback(jwt: string, formData: FormDatasetData) {
-    const response = await fetch(apiCat('/user/create_message_to_admin'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: jwt,
-      },
-      body: JSON.stringify({
-        msg: formData.feedbackType,
-        msg_type: 'feedback',
-        msg_content : {
-          'datasetID': formData.datasetName,
-          'feedbackType': formData.feedbackType,
-          'feedbackContent': formData.feedbackContent,
-        },
-        // msg_file: formData.file,
-        // msg_file: formData.annex || [],
-      }),
-    });
-} */
-
-   export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+export async function sendFeedback(jwt: string, formData: FormDatasetData) {
 
     const formDataObject = new FormData();
 
@@ -262,14 +230,7 @@ interface FormDatasetData {
         'feedbackContent': formData.feedbackContent,
     }));
 
-    // if (formData.file) {
     formDataObject.append('file', formData.file[0]);
-    // }
-    // console.log(formData.file[0].stream());
-    // const request = new XMLHttpRequest();
-    // request.open("POST", "http://localhost:8000/user/create_message_to_admin");
-    // request.setRequestHeader('Authorization', jwt);
-    // request.send(formDataObject);
 
     const response = await fetch(apiCat('/user/create_message_to_admin'),{
     method: 'POST',
@@ -278,7 +239,7 @@ interface FormDatasetData {
         },
         body: formDataObject,
      });
-} 
+}
 
 export async function sendReport(jwt: string, formData: FormDatasetData) {
     const response = await fetch(apiCat('/user/create_message_to_admin'), {
@@ -308,6 +269,7 @@ interface FormDataset {
     annex: FileItem[],
     files: File[],
 }
+
 export async function sendDataset(jwt: string, formData: FormDataset) {
     await fetch(apiCat('/dataset/create'), {
         method: 'POST',
@@ -319,8 +281,6 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             name: formData.datasetName,
             domain: formData.datasetApplication,
             tag: formData.datasetTags,
-            
-            // author: formData.datasetPublisher
         }),
     });
 
@@ -331,7 +291,6 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
     await fetch(apiCat('/dataset/upload'),{
     method: 'POST',
         headers: {
-            // 'Content-Type': 'multipart/form-data',
             'Authorization': jwt,
         },
         body: DatasetFile,
@@ -349,15 +308,19 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             msg_content: {
                 'DatasetName': formData.datasetName,
             }
-
         }),
     });
-    
-    
-
 }
 
 export async function getModelScore(datasetID: number){
     const response = await axios.post(apiCat(`/ranking/list_selected_credit`), { datasetId: datasetID });
     return response.data.data;
+}
+
+export async function uploadDatasetFile(data: FormData) {
+    return axios.post(apiCat(`/dataset/upload`), data, {
+        headers: {
+            Authorization: getToken()!,
+        },
+    });
 }

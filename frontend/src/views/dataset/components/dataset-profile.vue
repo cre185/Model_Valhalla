@@ -56,6 +56,7 @@
   };
 
   watch(props.modify, async (newVal: boolean, oldVal: boolean) => {
+    console.log(6)
         if (!newVal && oldVal) {
           const data = {
             description: description.value,

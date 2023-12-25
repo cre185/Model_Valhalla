@@ -185,7 +185,13 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
             tmp.commentId = item.id;
             commentDetails.value.push(tmp);
         } else {
-            let index = item.respond_to - 1;
+            let index = item.respond_to;
+            for (let i = 0; i < response.data.data.length; i+=1) {
+                if (response.data.data[i].id === index) {
+                    index = i;
+                    break;
+                }
+            }
             let target = response.data.data[index];
             const targetId = target.user;
             let targetName = '';
@@ -196,10 +202,21 @@ export async function getComment(ModelID: string, commentDetails: any, jwt:strin
             tmp.commentId = item.id;
             tmp.toId = target.commentId;
             while (target.respond_to !== null) {
-                index = target.respond_to - 1;
+                index = target.respond_to;
+                for (let i = 0; i < response.data.data.length; i+=1) {
+                    if (response.data.data[i].id === index) {
+                        index = i;
+                        break;
+                    }
+                }
                 target = response.data.data[index];
             }
-            commentDetails.value[index].children.push(tmp);
+            for (let i = 0; i < commentDetails.value.length; i+=1) {
+                if (commentDetails.value[i].commentId === target.id) {
+                    commentDetails.value[i].children.push(tmp);
+                    break;
+                }
+            }
         }
     }
 }
