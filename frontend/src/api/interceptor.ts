@@ -79,12 +79,7 @@ axios.interceptors.response.use(
         content: 'Login Expired',
         duration: 5 * 1000,
       });
-      setTimeout( async () => {
-        await useUserStore().logout();
-        await useRouter().push({
-          name: 'Login',
-        });
-      }, 5000);
+      useUserStore().logout();
     }
     else {
       Message.error({
