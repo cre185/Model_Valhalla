@@ -80,6 +80,9 @@ axios.interceptors.response.use(
         duration: 5 * 1000,
       });
       useUserStore().logout();
+      useRouter().push({
+        name: 'Index',
+      });
     }
     else {
       Message.error({
