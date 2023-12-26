@@ -133,22 +133,6 @@ import {
   ]);
   const battleHistory = ref<BattleRecords[]>([]);
   const originalData = ref<BattleRecordsData[]>([]);
-  /* const originalData = ref<BattleRecordsData[]>([{id: 1, testUser: 1, testUsername: await getUsername('1'),
-    testUserAvatar: await getAvatar('1'),
-    result: 1, adversarialModel: 'test_model1', battleTime: '2023/11/27 21:17',
-    QA: [new QuestionAndAnswer('Hi', 'Fine', 'Thank you'),
-      new QuestionAndAnswer('Hi', 'I fell bad.', 'Hug me plz.')], displayRound: 0},
-    {id: 2, testUser: 1, testUsername: await getUsername('1'),
-      testUserAvatar: await getAvatar('1'),
-      result: 0, adversarialModel: 'test_model2', battleTime: '2023/11/27 21:17',
-      QA: [new QuestionAndAnswer('Hi', 'Fine', 'Thank you'),
-        new QuestionAndAnswer('Hi', 'I fell bad.', 'Hug me plz.')], displayRound: 0},
-    {id: 3, testUser: 1, testUsername: await getUsername('1'),
-      testUserAvatar: await getAvatar('1'),
-      result: -1, adversarialModel: 'test_model3', battleTime: '2023/11/27 21:17',
-      QA: [new QuestionAndAnswer('Hi', 'Fine', 'Thank you'),
-        new QuestionAndAnswer('Hi', 'I fell bad.', 'Hug me plz.')], displayRound: 0},
-  ]); */
   const renderData = ref<BattleRecordsData[]>([]);
   const buttonStatus = ref<boolean[]>([false, false, false]);
   const modelSelected = ref('');
