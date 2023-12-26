@@ -44,7 +44,7 @@ class MyComment {
         this.children = children
     }
 
-    async increaseLike(jwt: string, toAuthorName: string) {
+    async increaseLike(jwt: string, toAuthorName: string, flag: string) {
         this.like += 1;
         const response = await axios.post(apiCat('/user/find_user_by_name'), { username: toAuthorName }, {
             headers: {
@@ -57,6 +57,7 @@ class MyComment {
             target: [response.data.id],
             msg_content: {
                 'likeContent': this.content,
+                'likeFlag': flag,
             }
         }, {
             headers: {
@@ -72,7 +73,7 @@ class MyComment {
     async changeLikeState(jwt: string, toAuthorName: string, flag = true) {
         this.ifLike = !this.ifLike
         if (this.ifLike) {
-            this.increaseLike(jwt, toAuthorName)
+            this.increaseLike(jwt, toAuthorName, flag)
         } else {
             this.decreaseLike()
         }
@@ -304,6 +305,7 @@ export async function updateComment(
                 msg_content: {
                     'parentContent': parentContent,
                     'childContent': childContent,
+                    'contentFlag': flag,
                 }
 
             },

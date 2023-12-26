@@ -11,9 +11,9 @@
 
     <ul key="update" class="right-side" id="parentNode">
       <a-trigger trigger="click" :unmount-on-close="false">
-        <a-button style="background-color: white;" @click="showMiniMsgBox">
+        <a-button id="msgButton" style="background-color: white;" @click="showMiniMsgBox" shape="circle">
           <template #icon>
-            <icon-notification />
+            <icon-email />
           </template>
         </a-button>
         <template #content>
@@ -30,9 +30,6 @@
                   <List :render-list="renderList" :unread-count="unreadCount" @item-click="handleItemClick" />
                 </a-tab-pane>
                 <template #extra>
-                  <a-button type="text" @click="emptyList">
-                    {{ $t('messageBox.tab.button') }}
-                  </a-button>
                 </template>
               </a-tabs>
             </a-spin>
@@ -124,12 +121,6 @@ const { logout } = useUser();
 const { changeLocale, currentLocale } = useLocale();
 const { isFullscreen, toggle: toggleFullScreen } = useFullscreen();
 const locales = [...LOCALE_OPTIONS];
-const avatar = computed(() => {
-  return userStore.avatar;
-});
-const theme = computed(() => {
-  return appStore.theme;
-});
 const topMenu = computed(() => appStore.topMenu && appStore.menu);
 const isDark = useDark({
   selector: 'body',
@@ -210,6 +201,7 @@ const tabList: TabItem[] = [
 ];
 async function fetchSourceData() {
   setLoading(true);
+  messageData.messageList = [];
   try {
     const { data } = await queryMessageList(getToken()!);
     // messageData.messageList = data;
@@ -286,6 +278,16 @@ async function fetchSourceData() {
           newUserToDataset.msg_text = `Reason: ${item.msg_content.reportReason}, Detailed description: ${item.msg_content.reportContent}`;
         }
       }
+      else if (item.msg_type === "Advice") {
+        if (currentLocale.value === "zh-CN") {
+          newUserToDataset.msg_title = `${responseUser.data.username}提出评测建议`;
+          newUserToDataset.msg_text = `具体内容:${item.msg_content.adviceContent}`;
+        }
+        else {
+          newUserToDataset.msg_title = `${responseUser.data.username} proposed suggestions`
+          newUserToDataset.msg_text = `Detailed content: ${item.msg_content.adviceContent}`;
+        }
+      }
       newUserToDataset.avatar = await getUserAvatar(getToken()!, item.author);
       messageData.messageList.push(newUserToDataset);
     });
@@ -301,8 +303,8 @@ async function readMessage(data: MessageListType) { // 提前msg_id设置为已�
 }
 const renderList = computed(() => { // 创建一个过滤属性，只包含messageType为message的列表
   return messageData.messageList.filter(
-    (item) => messageType.value === "message"
-  );
+    (item) => !item.read
+  ).slice(0, 4);;
 });
 const unreadCount = computed(() => {
   return renderList.value.filter((item) => !item.read).length;
@@ -318,8 +320,56 @@ const formatUnreadLength = (type: string) => {
   return list.length ? `(${list.length})` : ``;
 };
 const handleItemClick = (items: MessageListType) => {
-  if (renderList.value.length) readMessage([...items]);
-  console.log("点击");
+  if (renderList.value.length) {
+    readMessage([...items]);
+  }
+  axios.post(apiCat('/user/check_message'), {id : items[0].msg_id}, { // 点击后先设置消息已读
+    headers: {
+      Authorization: getToken()!,
+    }
+  })
+  msgVisible.value = false;
+  const routerType = items[0].msg_type;
+  if (routerType === "Upload") // 设置反馈路由
+  {
+    router.push('/dataset/details');
+  }
+  else if (routerType === "Reply") // 设置回复评论路由
+  {
+    if ('contentFlag' in items[0].msg_content && !items[0].msg_content.contentFlag) {
+      router.push({
+        path: '/dataset/details',
+      });
+    }
+    else {
+      router.push({
+        path: '/leaderboard/details',
+      });
+    }
+  }
+  else if (routerType === "Like") {
+    if ('likeFlag' in items[0].msg_content && !items[0].msg_content.likeFlag) // 设置点赞信息路由
+    {
+      router.push({
+        path: '/dataset/details',
+      });
+    }
+    else {
+      router.push({
+        path: '/leaderboard/details',
+      });
+    }
+  }
+  else if (routerType === "Feedback" || routerType === "feedback") {
+    router.push({
+      name: 'Login',
+    });
+  }
+  else if (routerType === "Report") {
+    router.push({
+      name: 'Login',
+    });
+  }
 };
 const emptyList = () => {
   messageData.messageList = [];
@@ -433,5 +483,9 @@ const showMiniMsgBox = () => {
   .arco-result-subtitle {
     color: rgb(var(--gray-6));
   }
+}
+
+#msgButton :hover {
+  background-color: aliceblue
 }
 </style>
