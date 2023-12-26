@@ -171,7 +171,7 @@
       </div>
       <a-divider />
       <a-space size="medium">
-        <a-select :default-value="[]" :style="{width:'360px'}" :placeholder="$t('dataset.select')" multiple
+        <a-select :default-value="[]" :style="{width:'410px'}" :placeholder="$t('dataset.select')" multiple
                   :scrollbar="true" :limit="3" @change="handleThreeSelect">
           <a-option v-for="model in modelDetails" :key="model">{{ model.name }}</a-option>
         </a-select>
@@ -183,7 +183,7 @@
         </a-button>
       </a-space>
       <br>
-      <canvas ref="visChart" :style="{width:'400px'}" id="myChart"></canvas>
+      <canvas ref="visChart" :style="{height:'250px'}" id="myChart"></canvas>
     </div>
   </div>
 </template>

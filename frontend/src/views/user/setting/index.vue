@@ -7,11 +7,7 @@
       </a-col>
     </a-row>
     <a-row class="wrapper">
-      <a-col :span="24">
-        <a-tabs default-active-key="1" type="rounded">
-          <SecuritySettings @change-name="handleChange" />
-        </a-tabs>
-      </a-col>
+      <SecuritySettings @change-name="handleChange" />
     </a-row>
   </div>
 </template>
@@ -41,7 +37,7 @@
   }
 
   .wrapper {
-    padding: 20px 0 0 20px;
+    padding: 20px 20px 20px 20px;
     min-height: 580px;
     background-color: var(--color-bg-2);
     border-radius: 4px;

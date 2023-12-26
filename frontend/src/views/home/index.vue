@@ -1,10 +1,10 @@
 <template>
   <section class="home">
     <div class="home-content">
-      <h3>你好</h3>
-      <h1>这里是模型竞技场 Model Valhalla</h1>
-      <h3>面向<span id="multiple-text"></span></h3>
-      <p> 我们致力于搭建一个公平、可靠、直观的大模型能力众测平台 </p>
+      <h3>{{ $t('home.hello') }}</h3>
+      <h1>{{ $t('home.this') }}模型竞技场 Model Valhalla</h1>
+      <h3>{{ $t('home.face') }}<span id="multiple-text"></span></h3>
+      <p> {{ $t('home.target') }} </p>
       <a class="btn" @click="Login">Get Started</a>
     </div>
     <a-space direction="vertical" :size="40" style="display: block">
@@ -18,7 +18,7 @@
             }"
             :bordered="false"
           >
-            丰富的数据集操作
+            {{ $t('home.dataset') }}
           </a-card>
         </a-col>
         <a-col :span="2"></a-col>
@@ -31,7 +31,7 @@
             }"
             :bordered="false"
           >
-            直观的排行榜
+            {{ $t('home.ranking') }}
           </a-card>
         </a-col>
       </a-row>
@@ -45,7 +45,7 @@
             }"
             :bordered="false"
           >
-            详细的模型信息
+            {{ $t('home.info') }}
           </a-card>
         </a-col>
         <a-col :span="2"></a-col>
@@ -58,7 +58,7 @@
             }"
             :bordered="false"
           >
-            合理的测试规则
+            {{ $t('home.rule') }}
           </a-card>
         </a-col>
       </a-row>
@@ -72,7 +72,7 @@
             }"
             :bordered="false"
           >
-            自由的讨论区
+            {{ $t('home.discussion') }}
           </a-card>
         </a-col>
         <a-col :span="2"></a-col>
@@ -85,7 +85,7 @@
             }"
             :bordered="false"
           >
-            安全的用户管理
+            {{ $t('home.user') }}
           </a-card>
         </a-col>
       </a-row>
@@ -96,11 +96,17 @@
 <script>
   import Typed from 'typed.js';
   import { useRouter } from 'vue-router';
-  import {isLogin} from "@/utils/auth";
+  import { isLogin } from "@/utils/auth";
+  import { useI18n } from "vue-i18n";
+  import {onBeforeUpdate, onMounted, ref} from "vue";
+  import useLocale from "@/hooks/locale";
 
   export default {
     setup() {
+      const { t } = useI18n();
+      const typedRef = ref();
       const router = useRouter();
+      const { currentLocale } = useLocale();
       const Login = () => {
         if (isLogin()) {
           router.push({
@@ -113,16 +119,26 @@
           });
         }
       };
-      return { Login };
-    },
-    mounted() {
-      const typed = new Typed('#multiple-text', {
-        strings: ['模型开发者', '数据集提供者', '业界工程师', '科研工作者'],
-        typeSpeed: 100,
-        backSpeed: 100,
-        backDelay: 1000,
-        loop: true,
+      onBeforeUpdate(() => {
+        typedRef.value.destroy();
+        typedRef.value = new Typed('#multiple-text', {
+          strings: [`${t('home.people1')}`, `${t('home.people2')}`, `${t('home.people3')}`, `${t('home.people4')}`],
+          typeSpeed: 100,
+          backSpeed: 100,
+          backDelay: 1000,
+          loop: true,
+        });
       });
+      onMounted(() => {
+        typedRef.value = new Typed('#multiple-text', {
+          strings: [`${t('home.people1')}`, `${t('home.people2')}`, `${t('home.people3')}`, `${t('home.people4')}`],
+          typeSpeed: 100,
+          backSpeed: 100,
+          backDelay: 1000,
+          loop: true,
+        });
+      });
+      return { Login };
     },
   };
 </script>
@@ -154,7 +170,7 @@
   }
 
   .home-content h3 {
-    font-size: 50px;
+    font-size: 40px;
     font-weight: 700;
     line-height: 2em;
     opacity: 0;
@@ -325,7 +341,7 @@
     width: 250px;
     height: 150px;
     font-family: DouYin;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
   }
 

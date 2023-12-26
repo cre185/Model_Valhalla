@@ -56,7 +56,7 @@
             <icon-check-circle-fill />
           </a-col>
           <a-col :span="22">
-            <span> 密码由6-32位数字、字母或符号(_和-)组成 </span>
+            <span> {{ $t('login.form.rule') }} </span>
           </a-col>
         </a-row>
         <a-row class="row">
@@ -64,7 +64,7 @@
             <icon-check-circle-fill />
           </a-col>
           <a-col :span="22">
-            <span> 安全提示：新密码请勿与旧密码过于相似 </span>
+            <span> {{ $t('login.form.hint') }} </span>
           </a-col>
         </a-row>
       </a-space>

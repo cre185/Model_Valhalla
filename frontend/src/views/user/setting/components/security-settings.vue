@@ -2,7 +2,7 @@
   <a-list :bordered="false" class="list">
     <a-list-item>
       <a-list-item-meta>
-        <template #avatar>
+        <template #title>
           <a-typography-paragraph>
             {{ $t('userSetting.SecuritySettings.form.label.username') }}
           </a-typography-paragraph>
@@ -32,7 +32,7 @@
     </a-list-item>
     <a-list-item>
       <a-list-item-meta>
-        <template #avatar>
+        <template #title>
           <a-typography-paragraph>
             {{ $t('userSetting.SecuritySettings.form.label.password') }}
           </a-typography-paragraph>
@@ -53,7 +53,7 @@
     </a-list-item>
     <a-list-item>
       <a-list-item-meta>
-        <template #avatar>
+        <template #title>
           <a-typography-paragraph>
             {{ $t('userSetting.SecuritySettings.form.label.phone') }}
           </a-typography-paragraph>
@@ -61,7 +61,7 @@
         <template #description>
           <div class="content">
             <a-typography-paragraph v-model="maskedPhone">
-              已绑定：{{ maskedPhone }}
+              {{ $t('userSetting.certification.button.bound') + maskedPhone }}
             </a-typography-paragraph>
           </div>
           <div class="operation">
@@ -74,7 +74,7 @@
     </a-list-item>
     <a-list-item>
       <a-list-item-meta>
-        <template #avatar>
+        <template #title>
           <a-typography-paragraph>
             {{ $t('userSetting.SecuritySettings.form.label.email') }}
           </a-typography-paragraph>
@@ -164,7 +164,7 @@
 
 <style scoped lang="less">
   .list {
-    width: 50%;
+    width: 100%;
   }
   #input {
     margin-bottom: 20px;

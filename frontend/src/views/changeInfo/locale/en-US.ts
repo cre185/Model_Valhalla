@@ -1,4 +1,6 @@
 export default {
+  'login.form.rule': 'The password should consist of 6 to 32 characters, including numbers, letters, or symbols (_ and -)',
+  'login.form.hint': 'Security Tip: The new password should not be too similar to the old password',
   'change.form.title': 'Set your new password',
   'change.form.phone.placeholder': 'Please input your phone number',
   'change.form.email.placeholder': 'Please input your email address',
@@ -24,7 +26,7 @@ export default {
   'login.form.password.placeholder': 'password',
   'change.form.password.placeholder': 'Please set your new password',
   'change.form.password_again.placeholder':
-    'Please input your new password again',
+    'Please input again',
   'change.form.code.placeholder': 'Please input the auth code',
   'login.form.rememberPassword': 'Remember password',
   'login.form.forgetPassword': 'Forgot password',

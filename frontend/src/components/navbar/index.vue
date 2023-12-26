@@ -13,6 +13,29 @@
     </div>
 
     <ul :key="update" class="right-side">
+      <a-dropdown trigger="click" @select="changeLocale as any">
+        <a-button
+            class="nav-btn"
+            type="outline"
+            :shape="'circle'"
+        >
+          <template #icon>
+            <icon-language />
+          </template>
+        </a-button>
+        <template #content>
+          <a-doption
+              v-for="item in locales"
+              :key="item.value"
+              :value="item.value"
+          >
+            <template #icon>
+              <icon-check v-show="item.value === currentLocale" />
+            </template>
+            {{ item.label }}
+          </a-doption>
+        </template>
+      </a-dropdown>
       <li v-if="isLogin()">
         <a-space :size="16">
           <span>{{ $t('navbar.welcome') }}{{ userStore.username }}</span>

@@ -27,17 +27,17 @@
                   style="font-size: 60px; margin-bottom: 20px; font-weight: 900; color: #1c61ff;"
               >
                 <li class="sloganContentText" v-for="(char, index) in $t('ranking.welcome')" :key="index" :style="{'animation-delay': `${index * 100}ms`}">
-                  {{ char }}
+                  {{ char === ' ' ? '&nbsp;' : char }}
                 </li>
               </ul>
               <ul class="sloganContent" style="margin: 0 auto 0 auto; font-size: 24px; color: black; ">
                 <li class="sloganContentSubText" v-for="(char, index) in $t('ranking.slogan1')" :key="index" :style="{'animation-delay': `${index * 50}ms`}">
-                  {{ char }}
+                  {{ char === ' ' ? '&nbsp;' : char }}
                 </li>
               </ul>
               <ul class="sloganContent" style="margin: 20px auto 0 auto; font-size: 24px; color: black;">
                 <li class="sloganContentSubText" v-for="(char, index) in $t('ranking.slogan2')" :key="index" :style="{'animation-delay': `${index * 50}ms`}">
-                  {{ char }}
+                  {{ char === ' ' ? '&nbsp;' : char }}
                 </li>
               </ul>
             </div>
@@ -160,7 +160,7 @@
               @click="handleSubscribe"
           >
             <template #icon>
-              <icon-star-fill style="margin-top: 15%" :size="30"/>
+              <icon-star-fill style="margin-top: 15%" :size="18"/>
             </template>
             <p>{{ $t('rankings.llm.details.unsubscribe.btn') }}</p>
           </a-button>
@@ -172,7 +172,7 @@
               @click="handleSubscribe"
           >
             <template #icon>
-              <icon-star style="margin-top: 15%" :size="30"/>
+              <icon-star style="margin-top: 15%" :size="18"/>
             </template>
             <p>{{ $t('rankings.llm.details.subscribe.btn') }}</p>
           </a-button>

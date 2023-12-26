@@ -137,7 +137,7 @@
                     {{ record.name }}
                 </template>
                 <template #contentType="{ record }">
-                    {{ record.contentType }}
+                    {{ record.contentType === '主观题' ? $t('ranking.behaviour.contentType.subjective') : $t('ranking.behaviour.contentType.objective') }}
                 </template>
                 <template #contentSize="{ record }">
                     {{ record.contentSize }}

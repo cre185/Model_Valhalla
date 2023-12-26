@@ -3,6 +3,7 @@ import localeLogin from '@/views/login/locale/zh-CN';
 import localeRegister from '@/views/register/locale/zh-CN';
 import localeChange from '@/views/changeInfo/locale/zh-CN';
 
+import localeHome from '@/views/home/locale/zh-CN';
 import localeRanking from '@/views/ranking/locale/zh-CN';
 
 import localeDataset from '@/views/dataset/locale/zh-CN';
@@ -59,6 +60,7 @@ export default {
   ...localeLogin,
   ...localeRegister,
   ...localeChange,
+  ...localeHome,
   ...localeRanking,
   ...localeDataset,
 

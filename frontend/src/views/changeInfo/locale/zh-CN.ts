@@ -1,4 +1,6 @@
 export default {
+  'login.form.rule': '密码由6-32位数字、字母或符号(_和-)组成',
+  'login.form.hint': '安全提示：新密码请勿与旧密码过于相似',
   'change.form.title': '设置新密码',
   'change.form.phone.placeholder': '请输入手机号',
   'change.form.email.placeholder': '请输入您的邮箱',

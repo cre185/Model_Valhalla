@@ -230,7 +230,7 @@
             <p style="padding-right: 20vw">
               {{`${currentDataset.uploadUsername} · ${currentDataset.createdTime} ${$t('searchDataset.operation.create')}`}}
             </p>
-            <a-button shape="round" type="primary" style="width: 5.5vw" @click="handleDownload(currentDataset)">
+            <a-button shape="round" type="primary" style="width: 7vw" @click="handleDownload(currentDataset)">
               <template #icon>
                 <icon-download/>
               </template>
@@ -238,7 +238,7 @@
                 {{ $t('searchDataset.columns.operations.download') }}
               </p>
             </a-button>
-            <a-button v-if="!modify" shape="round" style="margin-left: 1.5vw; width: 5.5vw" @click="handleFeedback()">
+            <a-button v-if="!modify" shape="round" style="margin-left: 1.5vw; width: 7vw" @click="handleFeedback()">
               <template #icon>
                 <icon-exclamation/>
               </template>
@@ -246,7 +246,7 @@
                 {{ $t('searchDataset.operation.feedback') }}
               </p>
             </a-button>
-            <a-button v-else-if="!modifySign" shape="round" style="margin-left: 1.5vw; width: 5.5vw" @click="handleEdit()">
+            <a-button v-else-if="!modifySign" shape="round" style="margin-left: 1.5vw; width: 7vw" @click="handleEdit()">
               <template #icon>
                 <icon-pen/>
               </template>
@@ -254,7 +254,7 @@
                 {{ $t('searchDataset.operation.edit') }}
               </p>
             </a-button>
-            <a-button v-else-if="modifySign" shape="round" style="margin-left: 1.5vw; width: 5.5vw" @click="handleSave()">
+            <a-button v-else-if="modifySign" shape="round" style="margin-left: 1.5vw; width: 7vw" @click="handleSave()">
               <template #icon>
                 <icon-save/>
               </template>

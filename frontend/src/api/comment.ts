@@ -2,6 +2,8 @@
 import axios from 'axios';
 import apiCat from "@/api/main";
 import {getAvatar, getUsername} from "@/api/user-info";
+import {useI18n} from "vue-i18n";
+import useLocale from "@/hooks/locale";
 
 class MyComment {
     public author:string
@@ -139,7 +141,7 @@ class MyComment {
         if (newComment.toAuthor === '') {
             tmp.content = `${newComment.content}`;
         } else {
-            tmp.content = `回复 @ ${newComment.toAuthor} :${newComment.content}`;
+            tmp.content = `@ ${newComment.toAuthor} :${newComment.content}`;
         }
         tmp.avatar = newComment.avatar;
         tmp.author = newComment.author;

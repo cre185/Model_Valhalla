@@ -28,12 +28,12 @@
         align="right"
         layout="inline-horizontal"
         :label-style="{
-          width: '140px',
+          width: '100px',
           fontWeight: 'normal',
           color: 'rgb(var(--gray-8))',
         }"
         :value-style="{
-          width: '200px',
+          width: '300px',
           paddingLeft: '8px',
           textAlign: 'left',
         }"

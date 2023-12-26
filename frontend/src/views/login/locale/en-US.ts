@@ -13,7 +13,7 @@ export default {
   'login.form.userName.placeholder': 'username/email',
   'login.form.password.placeholder': 'password',
   'login.form.phone.placeholder': 'phone number',
-  'login.form.code.placeholder': 'please input the 6-bit code',
+  'login.form.code.placeholder': 'please input the code',
   'login.form.rememberPassword': 'Remember password',
   'login.form.forgetPassword': 'Forgot password',
   'login.form.code.buttonText1': 'Send code',

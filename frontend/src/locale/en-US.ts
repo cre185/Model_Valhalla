@@ -3,6 +3,7 @@ import localeLogin from '@/views/login/locale/en-US';
 import localeRegister from '@/views/register/locale/en-US';
 import localeChange from '@/views/changeInfo/locale/en-US';
 
+import localeHome from '@/views/home/locale/en-US';
 import localeRanking from '@/views/ranking/locale/en-US';
 
 import localeDataset from '@/views/dataset/locale/en-US';
@@ -32,11 +33,11 @@ import localeSettings from './en-US/settings';
 
 export default {
   'menu.home': 'Homepage',
-  'menu.home.profile': 'Homepage-Details',
+  'menu.home.profile': 'Homepage Details',
   'menu.ranking': 'Leaderboard',
-  'menu.ranking.profile': 'Leaderboard-Details',
+  'menu.ranking.profile': 'Leaderboard Details',
   'menu.dataset': 'Dataset',
-  'menu.dataset.details': 'Dataset-Details',
+  'menu.dataset.details': 'Dataset Details',
   'menu.server.monitor': 'Monitor-Server',
   'menu.evaluate': 'Evaluate',
   'menu.evaluate.adversarialEvaluation': 'Adversarial Evaluation',
@@ -60,6 +61,7 @@ export default {
   ...localeLogin,
   ...localeRegister,
   ...localeChange,
+  ...localeHome,
   ...localeRanking,
   ...localeDataset,
 

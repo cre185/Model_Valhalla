@@ -86,7 +86,7 @@
                   <div style="display: flex; align-items: center; justify-content: center">
                     <a-tag v-for="(item, index) in subjectiveInfo[currentIndex].subjects" :key="index"
                            style="margin: 6.5vh 0.5vw" color="arcoblue" size="large">
-                      {{item}}
+                      {{ item }}
                     </a-tag>
                   </div>
                   <div style="font-size: 2vh; font-weight: bolder; margin-top: 3vh">
@@ -294,7 +294,7 @@
     border-bottom: 1px solid #ccc;
     border-right: 1px solid #ccc;
     border-radius: 10px 0 10px 0;
-    width: 100px;
+    width: 140px;
     height: 30px;
   }
 
