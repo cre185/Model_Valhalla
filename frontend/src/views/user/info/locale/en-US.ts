@@ -2,6 +2,7 @@ export default {
   'userInfo.type.admin': 'Administrator',
   'userInfo.type.user': 'User',
   'userInfo.viewAll': 'View All',
+  'menu.user.info': 'User Info',
   'userInfo.title.subscribedModels': 'Models I Follow',
   'userInfo.title.subscribedDatasets': 'Datasets I Follow',
   'userInfo.title.adversarialRecords': 'My Adversarial Evaluation Records',

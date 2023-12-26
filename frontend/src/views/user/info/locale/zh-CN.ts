@@ -2,6 +2,7 @@ export default {
   'userInfo.type.admin': '管理员',
   'userInfo.type.user':' 普通用户',
   'userInfo.viewAll': '查看更多',
+  'menu.user.info': '用户信息',
   'userInfo.title.subscribedModels': '我关注的模型',
   'userInfo.title.subscribedDatasets': '我关注的数据集',
   'userInfo.title.adversarialRecords': '我的对抗评测记录',
