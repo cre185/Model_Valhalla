@@ -114,6 +114,11 @@ class EvaluateRound {
             llmId: this.modelA,
         });
         this.modelB = response.data.llmId;
+        if (Math.random() < 0.5) {
+            const temp = this.modelA;
+            this.modelA = this.modelB;
+            this.modelB = temp;
+        }
     }
 
     async getStreamResponse(jwt:string, RefA:any, RefB:any, sendButtonStatus: any) {
@@ -182,7 +187,6 @@ class EvaluateRound {
     }
 
     async updateEloResult() {
-        console.log(this.modelA)
         await axios.post(apiCat('/testing/battle_result'), {
             llm1: this.modelA,
             llm2: this.modelB,

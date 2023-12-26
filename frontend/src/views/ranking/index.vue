@@ -60,7 +60,7 @@
                 :span="6"
                 style="display: flex; align-items: center; justify-content: end; margin-top: 20px"
             >
-              <a-button>
+              <a-button @click="handleDownload">
                 <template #icon>
                   <icon-download />
                 </template>
@@ -637,6 +637,29 @@
         scrollAnimation(changeGalleryRadius, false);
       }
     }, { passive: false })
+  }
+
+  const handleDownload = async () => {
+    const { data } = await queryLLMList();
+    const keys = Object.keys(data[0]);
+    const csvContent = data.map((row: { [key: string]: any }) => {
+      const rowValues = keys.map(key => row[key]).join(",");
+      return rowValues;
+    }).join("\n");
+    const csvContentWithKeys = `${keys.join(",")}\n${csvContent}`;
+    const blob = new Blob([csvContentWithKeys], { type: "text/csv;charset=utf-8;" });
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      if (typeof e.target!.result === 'string') {
+        const downloadLink = document.createElement("a");
+        downloadLink.href = e.target!.result;
+        downloadLink.setAttribute("download", "leaderboard.csv");
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+      }
+    };
+    reader.readAsDataURL(blob);
   }
 
   onMounted(() => {
