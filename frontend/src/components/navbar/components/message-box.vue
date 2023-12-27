@@ -127,6 +127,7 @@
     return list.length ? `(${list.length})` : ``;
   };
   const handleItemClick = (items: MessageListType) => {
+    emit('changeShowingStatus', false);
     if (renderList.value.length) {
       readMessage([...items]);
     }
