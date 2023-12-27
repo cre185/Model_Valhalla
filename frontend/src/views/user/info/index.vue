@@ -152,6 +152,7 @@
                 :contentType="showingDataType===1 ? 'llm' : 'dataset'"
                 :ID="item.id"
                 :userID="parseInt(userInfo.accountId, 10)"
+                @click="handleClick(item)"
             />
           </div>
         </a-col>
@@ -210,11 +211,10 @@
     SubscribedDatasetRecord,
     SubscribedModelRecord
   } from "@/api/user-center";
-  import {Pagination} from "@/types/global";
+  import router from "@/router";
   import CardWrap from "./components/card-wrap.vue";
   import UserInfoHeader from './components/user-info-header.vue';
   import SubscribedList from './components/subscribed-list.vue';
-  import LatestActivity from './components/latest-activity.vue';
   import LatestNotification from "./components/latest-notification.vue";
   import AdversarialRecords from "./components/adversarial-records.vue";
 
@@ -344,6 +344,10 @@
 
   const handleCancelModal = () => {
     recordVisible.value = false;
+  }
+
+  const handleClick = (data: any) => {
+    router.push({ name: 'datasetDetails', params: { toShowDetailsID: data.id.toString()}});
   }
 </script>
 

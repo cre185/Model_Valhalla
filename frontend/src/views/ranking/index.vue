@@ -196,7 +196,7 @@
         </header>
       </template>
       <div>
-        <a-tabs size="large">
+        <a-tabs size="large" :default-active-key="props.toShowPanelIndex === '' ? 1 : parseInt(props.toShowPanelIndex, 10)">
           <a-tab-pane key="1" :title="$t('ranking.details.details')">
             <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
           </a-tab-pane>
@@ -252,6 +252,7 @@
   const currentLLM = ref<LLMRankingData>();
   const ModelID = ref('');
   const paintFirstTab = ref(false);
+  const props = defineProps(['toShowDetailsID', 'toShowPanelIndex']);
 
 
   const size = ref<SizeProps>('medium');
@@ -362,7 +363,6 @@
     }
     return false;
   }
-  fetchData();
 
   const handleSelectDensity = (
       val: string | number | Record<string, any> | undefined,
@@ -649,18 +649,43 @@
   }
 
   onMounted(() => {
-    handleRotatingGallery();
-    const startBtn = document.getElementById('startBtn');
-    document.getElementById('rankings')!.style.animation="upAndDown 3s cubic-bezier(.7,.3,.3,.7) infinite";
-    document.getElementById('rankings')!.style.marginTop="20px";
-    startBtn!.addEventListener('click', function(event: Event) {
-      scrollAnimation(null, true);
-      event.preventDefault();
-    });
-    setTimeout(() => {
-      startBtn!.style.visibility = 'visible';
-      startBtn!.style.opacity = '1';
-    }, 3000)
+    if(props.toShowDetailsID === ''){
+      fetchData();
+      handleRotatingGallery();
+      const startBtn = document.getElementById('startBtn');
+      document.getElementById('rankings')!.style.animation="upAndDown 3s cubic-bezier(.7,.3,.3,.7) infinite";
+      document.getElementById('rankings')!.style.marginTop="20px";
+      startBtn!.addEventListener('click', function(event: Event) {
+        scrollAnimation(null, true);
+        event.preventDefault();
+      });
+      setTimeout(() => {
+        startBtn!.style.visibility = 'visible';
+        startBtn!.style.opacity = '1';
+      }, 3000)
+    }
+    else {
+      const gallery = document.getElementById('llm-rotatingGallery');
+      const startBtn = document.getElementById('startBtn');
+      const doubleDown = document.getElementById('doubleDown');
+      const rankings = document.getElementById('rankings');
+      startBtn!.style.display = 'none';
+      doubleDown!.style.display = 'none';
+      gallery!.style.display = 'none';
+      rankings!.style.marginTop = '10px';
+      rankings!.style.animation = '';
+      fetchData().then(() => {
+        if(props.toShowDetailsID !== undefined){
+          for(let i = 0; i < renderData.value!.length; i += 1){
+            if(renderData.value![i].id === parseInt(props.toShowDetailsID, 10)){
+              currentLLM.value = renderData.value![i];
+              visible.value = true;
+              break;
+            }
+          }
+        }
+      })
+    }
   })
 </script>
 

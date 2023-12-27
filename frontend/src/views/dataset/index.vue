@@ -309,7 +309,10 @@
         </header>
       </template>
       <div>
-        <a-tabs size="large" style="margin-top: 7vh">
+        <a-tabs size="large"
+                style="margin-top: 7vh"
+                :default-active-key="props.toShowPanelIndex === '' ? 1 : parseInt(props.toShowPanelIndex, 10)"
+        >
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
             <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
           </a-tab-pane>
@@ -334,7 +337,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed, ref, reactive, nextTick } from 'vue';
+import {computed, ref, reactive, nextTick, onMounted} from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useUserStore } from "@/store";
   import useLoading from '@/hooks/loading';
@@ -366,6 +369,7 @@
   const modify = userStore.role === 'admin';
   const modifySign = ref(false);
   const fileList = ref<FileItem[]>([]);
+  const props = defineProps(['toShowDetailsID', 'toShowPanelIndex']);
 
   const generateFormModel = () => {
     return {
@@ -693,8 +697,6 @@
     getComment(currentDataset.value!.id.toString(), commentDetails, jwt!, false);
   };
 
-  fetchData();
-
   const handleEdit = () => {
     modifySign.value = true;
   }
@@ -719,6 +721,21 @@
   const uploadChange = (fileItemList: FileItem[], fileItem: FileItem) => {
     fileList.value = fileItemList;
   }
+
+  onMounted(() => {
+    fetchData().then(() => {
+      if(props.toShowDetailsID !== undefined){
+        for(let i = 0; i < renderData.value!.length; i += 1){
+          if(renderData.value![i].id === parseInt(props.toShowDetailsID, 10)){
+            currentDataset.value = renderData.value![i];
+            console.log(currentDataset.value);
+            visible.value = true;
+            break;
+          }
+        }
+      }
+    })
+  });
 </script>
 
 <style scoped lang="less">

@@ -140,7 +140,6 @@ import {
   const dateRange = ref<Date[]>([]);
   const pagination = reactive({
     total: renderData.value.length,
-    current: 1,
     showTotal: true,
     showJumper: true,
     showPageSize: true,

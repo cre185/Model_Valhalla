@@ -53,6 +53,7 @@
     querySubscribedDatasets
   } from "@/api/user-center";
   import {defineEmits} from "vue/dist/vue";
+  import router from "@/router";
 
   const props = defineProps(['userID', 'subscriptionType']);
   const emit = defineEmits<{
