@@ -108,7 +108,7 @@ class MyComment {
         }
         if (this.ifLike) {
             this.ifLike = false;
-            this.decreaseLike()
+            this.decreaseLike();
         }
     }
 
