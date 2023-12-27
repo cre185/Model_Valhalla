@@ -611,13 +611,17 @@ import {computed, ref, reactive, nextTick, shallowRef} from 'vue';
 
   const handleDownload = (record: DatasetData) => {
     const downloadLink = document.createElement('a');
-    getDatasetFile(record.id).then(returnValue => {
-      downloadLink.href = returnValue.data.data_file;
-      downloadLink.download = `${record.name}.csv`;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-    });
-  }
+      getDatasetFile(record.id).then(returnValue => {
+        downloadLink.href = returnValue.data.data_file;
+        downloadLink.download = `${record.name}.csv`;
+        const container = document.createElement('div');
+        container.appendChild(downloadLink);
+        document.body.appendChild(container);
+        downloadLink.click();
+        document.body.removeChild(container);
+      });
+  };
+
   const handleFeedback = () => {
     showDatasetFeedback.value = true;
 
@@ -627,12 +631,8 @@ import {computed, ref, reactive, nextTick, shallowRef} from 'vue';
   }
 
   const handleBatchDownload = () => {
-    for(let i = 0; i < renderData.value!.length; i += 1) {
-      if(renderData.value![i].toDownload){
-        handleDownload(renderData.value![i]);
-      }
-    }
-  }
+    renderData.value!.filter(item => item.toDownload).map(item => handleDownload(item));
+  };
 
   const handleCancel = () => {
     visible.value = false;

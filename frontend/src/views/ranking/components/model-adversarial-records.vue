@@ -60,8 +60,8 @@
     </template>
     <template #result="{ record }">
       <icon-check v-if="record.result === 1"/>
-      <icon-minus v-if="record.result === -1"/>
-      <icon-close v-if="record.result === 0"/>
+      <icon-minus v-if="record.result === 0"/>
+      <icon-close v-if="record.result === -1"/>
     </template>
   </a-table>
 </template>
@@ -218,14 +218,15 @@ import {
     }
     battleHistory.value = await queryLLMBattleRecords(id);
     originalData.value = [];
+    console.log(battleHistory.value);
 
     originalData.value = battleHistory.value.data.map(async (data) => {
       const adversarialModel =
-          (data.llm1 === props.modelID)
+          (data.llm1 === parseInt(id, 10))
               ? (await GetModelInfo(data.llm2)).name
               : (await GetModelInfo(data.llm1)).name;
 
-      const QA = (data.llm1 === props.modelID) ?
+      const QA = (data.llm1 === parseInt(id, 10)) ?
           data.result : data.result.map(async (qa: QuestionAndAnswer) => {
             const { answerA, answerB, ...rest } = data;
             const newItem = {
@@ -244,7 +245,7 @@ import {
         testUserAvatar: await getAvatar(data.user_id),
         adversarialModel,
         battleTime: data.add_time,
-        result: data.winner,
+        result: (data.llm1 === parseInt(id, 10)) ? data.winner : -data.winner,
         QA: data.result,
         displayRound: data.result.length > 0 ? 0 : -1,
       };
