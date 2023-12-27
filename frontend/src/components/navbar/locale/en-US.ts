@@ -4,7 +4,7 @@ export default {
     'messageBox.tab.title.todo': 'Todo',
     'messageBox.tab.button': 'empty',
     'messageBox.allRead': 'All Read',
-    'messageBox.viewMore': 'View More',
+    'messageBox.viewMore': 'More',
     'messageBox.noContent': 'No Content',
     'messageBox.switchRoles': 'Switch Roles',
     'messageBox.userCenter': 'User Center',
@@ -14,5 +14,8 @@ export default {
     'messageBox.like.title': 'Like your comment',
     'messageBox.feedback.title': 'Dataset feedback',
     'messageBox.report.title': 'Report about dataset',
+    'messageBox.tab.title.one': 'Received likes',
+    'messageBox.tab.title.two': 'Replies to my posts',
+    'messageBox.tab.title.three': 'System messages',
   };
   

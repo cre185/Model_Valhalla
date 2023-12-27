@@ -47,20 +47,6 @@
           </a-list-item-meta>
         </div>
       </a-list-item>
-      <template #footer>
-        <a-space
-          fill
-          :size="0"
-          :class="{ 'add-border-top': renderList.length < showMax }"
-        >
-          <div class="footer-wrap">
-            <a-link @click="allRead">{{ $t('messageBox.allRead') }}</a-link>
-          </div>
-          <div class="footer-wrap">
-            <a-link>{{ $t('messageBox.viewMore') }}</a-link>
-          </div>
-        </a-space>
-      </template>
       <div
         v-if="renderList.length && renderList.length < 3"
         :style="{ height: (showMax - renderList.length) * 86 + 'px' }"
@@ -71,6 +57,7 @@
   <script lang="ts" setup>
     import { PropType } from 'vue';
     import { userToDataset, MessageListType } from '@/api/message';
+    import router from '@/router';
   
     const props = defineProps({
       renderList: {
@@ -86,7 +73,6 @@
     const allRead = () => {
       emit('itemClick', [...props.renderList]);
     };
-  
     const onItemClick = (item: userToDataset) => {
       if (!item.read) {
         emit('itemClick', [item]);

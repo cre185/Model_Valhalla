@@ -4,7 +4,7 @@ export default {
     'messageBox.tab.title.todo': '待办',
     'messageBox.tab.button': '清空',
     'messageBox.allRead': '全部已读',
-    'messageBox.viewMore': '查看更多',
+    'messageBox.viewMore': '更多',
     'messageBox.noContent': '暂无内容',
     'messageBox.switchRoles': '切换角色',
     'messageBox.userCenter': '用户中心',
@@ -14,7 +14,8 @@ export default {
     'messageBox.like.title': '点赞消息',
     'messageBox.feedback.title': '数据集反馈',
     'messageBox.report.title': '举报数据集',
-    
-
+    'messageBox.tab.title.one': '收到的赞',
+    'messageBox.tab.title.two': '回复我的',
+    'messageBox.tab.title.three': '系统消息',
   };
   

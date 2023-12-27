@@ -24,7 +24,7 @@
       :datetime="item.datetime"
   >
     <template #actions>
-      <span class="action" key="heart" @click="item.changeLikeState(jwt, item.author, true)">
+      <span class="action" key="heart" @click="item.changeLikeState(jwt, item.author, props.modelId, true)">
         <a-space size="mini">
           <span v-if="item.ifLike">
           <IconThumbUpFill :style="{ color: '#1c61ff' }" />
@@ -58,7 +58,7 @@
       :datetime="child.datetime"
     >
       <template #actions>
-        <span class="action" key="heart" @click="child.changeLikeState(jwt, child.author, true)">
+        <span class="action" key="heart" @click="child.changeLikeState(jwt, child.author, props.modelId, true)">
           <a-space size="mini">
             <span v-if="child.ifLike">
             <IconThumbUpFill :style="{ color: '#1c61ff' }" />
@@ -90,7 +90,7 @@
         :avatar="userStore.avatar"
     >
       <template #actions>
-        <a-button key="0" type="primary" @click="item.addComment(item, tmpComment, props.modelId, jwt)"> {{ $t('ranking.profile.discussion.submit') }} </a-button>
+        <a-button key="0" type="primary" @click="item.addComment(item, tmpComment, props.modelId!, jwt, true)"> {{ $t('ranking.profile.discussion.submit') }} </a-button>
       </template>
       <template #content>
         <a-input :placeholder="$t('ranking.profile.discussion.replyEmbed.placeholder')+(item.lastClicked == -1 ? item.author : item.children[item.lastClicked].author)" v-model="tmpComment.content" />

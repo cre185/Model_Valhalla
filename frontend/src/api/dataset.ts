@@ -287,7 +287,7 @@ interface FormDataset {
 }
 
 export async function sendDataset(jwt: string, formData: FormDataset) {
-    await axios.post(apiCat('/dataset/create'), {
+    const response = await axios.post(apiCat('/dataset/create'), {
         name: formData.datasetName,
         domain: formData.datasetApplication,
         tag: formData.datasetTags,
@@ -306,12 +306,12 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
             'Authorization': jwt,
         },
     });
-
     await axios.post(apiCat('/user/create_message_to_admin'), {
         msg_type: "Upload",
         msg: "数据集上传",
         msg_content: {
             'datasetName': formData.datasetName,
+            'targetID': response.data.datasetId,
         }
     }, {
         headers: {
