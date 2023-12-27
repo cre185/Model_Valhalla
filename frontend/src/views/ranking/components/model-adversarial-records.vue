@@ -1,6 +1,6 @@
 <template>
   <a-row style="justify-content:center; align-items: center">
-    <a-col span="6">
+    <a-col :span="6">
         <a-space direction="horizontal">
           <p style="margin-left: 10px">{{ $t('ranking.adversarial.selector.model')}}</p>
           <a-select :style="{width:'150px'}" :placeholder="$t('ranking.adversarial.selector.model.placeholder')"

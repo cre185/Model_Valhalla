@@ -143,7 +143,7 @@
         <a-col
             v-for="item in subscribedDataList"
             :key="item.id"
-            span="12"
+            :span="12"
             class="list-col"
         >
           <div class="card-wrap">
@@ -346,12 +346,12 @@
     recordVisible.value = false;
   }
 
-  const handleClick = (data: any) => {
+  const handleClick = async (data: any) => {
     if(showingDataType.value === 1){
-      router.push({ name: 'leaderboardDetails', params: { toShowDetailsID: data.id.toString()}});
+      await router.push({ name: 'leaderboardDetails', params: { toShowDetailsID: data.id.toString()}});
     }
     else{
-      router.push({ name: 'datasetDetails', params: { toShowDetailsID: data.id.toString()}});
+      await router.push({ name: 'datasetDetails', params: { toShowDetailsID: data.id.toString()}});
     }
   }
 </script>
