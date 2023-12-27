@@ -523,6 +523,7 @@ const evaluateClick = async () => {
   newRoundButtonDisabled.value = false;
   regenerateButtonDisabled.value = false;
   adviseButtonDisabled.value = false;
+  evaluateFourButtonsDisabled.value = false;
 };
 const handleSubmit = async () => {
   await round.sendAdvise(getToken()!, formModel.value.advise);

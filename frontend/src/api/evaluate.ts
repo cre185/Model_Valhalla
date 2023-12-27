@@ -114,6 +114,12 @@ class EvaluateRound {
             llmId: this.modelA,
         });
         this.modelB = response.data.llmId;
+        if (Math.random() < 0.5) {
+            const temp = this.modelA;
+            this.modelA = this.modelB;
+            this.modelB = temp;
+            console.log("a");
+        }
     }
 
     async getStreamResponse(jwt:string, RefA:any, RefB:any, sendButtonStatus: any) {

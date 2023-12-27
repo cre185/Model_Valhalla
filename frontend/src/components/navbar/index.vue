@@ -111,6 +111,7 @@ const Login = () => {
     name: 'Login',
   });
 };
+const { t } = useI18n();
 const jwt = getToken();
 const update = ref(false);
 const msgVisible = ref(false);
@@ -176,7 +177,6 @@ interface TabItem {
 }
 const { loading, setLoading } = useLoading(true);
 const messageType = ref('message');
-const { t } = useI18n();
 const messageData = reactive<{
   renderList: userToDataset[];
   messageList: userToDataset[];
@@ -224,7 +224,7 @@ async function fetchSourceData() {
         },
       });
       if (item.msg_type === "Upload") {
-        newUserToDataset.msg_title = "上传数据集";
+        newUserToDataset.msg_title = t('messageBox.upload.title');
         if (currentLocale.value === "zh-CN") {
           newUserToDataset.msg_text = `${responseUser.data.username}上传了数据集:${item.msg_content.datasetName}`;
         }
@@ -242,7 +242,7 @@ async function fetchSourceData() {
         newUserToDataset.msg_text = item.msg_content.childContent;
       }
       else if (item.msg_type === "Like") {
-        newUserToDataset.msg_title = "点赞消息";
+        newUserToDataset.msg_title = t('messageBox.like.title');
         if (currentLocale.value === "zh-CN") {
           newUserToDataset.msg_text = `${responseUser.data.username}点赞了你的评论“${item.msg_content.likeContent}”`;
         }
@@ -251,7 +251,7 @@ async function fetchSourceData() {
         }
       }
       else if (item.msg_type === "Feedback" || item.msg_type === "feedback") {
-        newUserToDataset.msg_title = "数据集反馈";
+        newUserToDataset.msg_title = t('messageBox.feedback.title');
         const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
           headers: {
             Authorization: getToken()!,
@@ -265,7 +265,7 @@ async function fetchSourceData() {
         }
       }
       else if (item.msg_type === "Report") {
-        newUserToDataset.msg_title = "举报数据集";
+        newUserToDataset.msg_title = t('messageBox.upload.title');
         const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
           headers: {
             Authorization: getToken()!,
