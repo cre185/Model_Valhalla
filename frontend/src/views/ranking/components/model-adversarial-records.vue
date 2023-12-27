@@ -4,12 +4,12 @@
         <a-space direction="horizontal">
           <p style="margin-left: 10px">{{ $t('ranking.adversarial.selector.model')}}</p>
           <a-select :style="{width:'150px'}" :placeholder="$t('ranking.adversarial.selector.model.placeholder')"
-                    :value="modelSelected" @change="handleChange" :allow-search="{ retainInputValue: true }">
+                    v-model="modelSelected" :allow-search="{ retainInputValue: true }" @change="handleSearch">
             <a-option :value="''">
               {{$t('ranking.adversarial.selector.model.all')}}
             </a-option>
-            <a-option v-for="(item, index) in originalData" :key="index" >
-              {{item.adversarialModel}}
+            <a-option v-for="(item, index) in modelOptions" :key="index" :value="item.toString()" >
+              {{item}}
             </a-option>
           </a-select>
         </a-space>
@@ -60,8 +60,8 @@
     </template>
     <template #result="{ record }">
       <icon-check v-if="record.result === 1"/>
-      <icon-minus v-if="record.result === -1"/>
-      <icon-close v-if="record.result === 0"/>
+      <icon-minus v-if="record.result === 0"/>
+      <icon-close v-if="record.result === -1"/>
     </template>
   </a-table>
 </template>
@@ -135,8 +135,16 @@ import {
   const originalData = ref<BattleRecordsData[]>([]);
   const renderData = ref<BattleRecordsData[]>([]);
   const buttonStatus = ref<boolean[]>([false, false, false]);
+  const modelOptions = ref<string[]>([]);
   const modelSelected = ref('');
-  const dateRange = ref('');
+  const dateRange = ref<Date[]>([]);
+  const pagination = reactive({
+    total: renderData.value.length,
+    current: 1,
+    showTotal: true,
+    showJumper: true,
+    showPageSize: true,
+  });
   const expandable = reactive({
     title: t('ranking.adversarial.selector.title.details'),
     width: 150,
@@ -219,8 +227,9 @@ import {
             };
             return newItem;
           })
-
-      const options = {};
+      if(!(modelOptions.value.includes(adversarialModel))){
+        modelOptions.value.push(adversarialModel);
+      }
       const newItem = {
         id: data.id,
         testUser: data.user_id,
@@ -228,7 +237,7 @@ import {
         testUserAvatar: await getAvatar(data.user_id),
         adversarialModel,
         battleTime: data.add_time,
-        result: data.winner,
+        result: (data.llm1 === props.modelID) ? data.winner : -data.winner,
         QA: data.result,
         displayRound: data.result.length > 0 ? 0 : -1,
       };
@@ -237,10 +246,31 @@ import {
     });
     originalData.value = await Promise.all(originalData.value);
     renderData.value = cloneDeep(originalData.value);
+    pagination.total = renderData.value.length;
+  }
+
+  const handleSearch = () => {
+    renderData.value = [];
+    let selected = 3;
+    for(let i = 0; i < 3; i+= 1) {
+      if (buttonStatus.value[i] === true) {
+        selected = i;
+      }
+    }
+    for(let i = 0; i < originalData.value.length; i += 1){
+      const date = new Date(originalData.value[i].battleTime);
+      if(originalData.value[i].adversarialModel.includes(modelSelected.value) &&
+          ( (date >= dateRange.value[0] && date <= dateRange.value[1]) ||
+              dateRange.value[0] === undefined )&&
+          ( originalData.value[i].result === selected - 1 || selected === 3 )
+      ){
+        renderData.value.push(originalData.value[i]);
+      }
+    }
+    pagination.total = renderData.value.length;
   }
 
   const handleClick = (index: number) => {
-    renderData.value = [];
     if(buttonStatus.value[index] === false){
       for(let i = 0; i < 3; i += 1){
         if(i !== index){
@@ -256,50 +286,19 @@ import {
       renderData.value = cloneDeep(originalData.value);
       return;
     }
-    let selected = 3;
-    for(let i = 0; i < 3; i+= 1){
-      if(buttonStatus.value[i] === true){
-        selected = i;
-      }
-    }
-    for(let i = 0; i < originalData.value.length; i += 1){
-      if(originalData.value[i].result === selected - 1){
-        renderData.value.push(originalData.value[i]);
-      }
-    }
+    handleSearch();
   };
 
-  const handleChange = (event: string) => {
-    renderData.value = [];
-    for(let i = 0; i < originalData.value.length; i += 1){
-      if(originalData.value[i].adversarialModel.includes(event)){
-        renderData.value.push(originalData.value[i]);
-      }
-    }
-  }
-
   const handlePick = (event: any) => {
-    renderData.value = [];
+    dateRange.value = [];
     if(event === undefined){
       renderData.value = cloneDeep(originalData.value);
       return;
     }
-    const lowerBound = new Date(event[0]);
-    const upperBound = new Date(event[1]);
-    for(let i = 0; i < originalData.value.length; i += 1){
-      const date = new Date(originalData.value[i].battleTime);
-      if(date >= lowerBound && date <= upperBound){
-        renderData.value.push(originalData.value[i]);
-      }
-    }
+    dateRange.value.push(new Date(event[0]));
+    dateRange.value.push(new Date(event[1]));
+    handleSearch();
   }
-
-  const pagination = reactive({
-    total: renderData.value.length,
-    showTotal: true,
-    showJumper: true,
-    showPageSize: true,
-  })
 
   onMounted(() => {
     const tHead = document.getElementsByClassName('arco-table-th arco-table-operation');

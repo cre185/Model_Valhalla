@@ -205,7 +205,7 @@ async function fetchSourceData() {
   try {
     const { data } = await queryMessageList(getToken()!);
     // messageData.messageList = data;
-    data.msgs.forEach(async (item) => {
+    data.msgs.forEach(async (item: any) => {
       const newUserToDataset: userToDataset = {
         msg_id: item.id,
         msg_type: item.msg_type,

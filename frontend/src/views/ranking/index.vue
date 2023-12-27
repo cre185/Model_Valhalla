@@ -544,7 +544,7 @@
   }
 
   const handleRotatingGallery = () =>{
-    let radius = 360;
+    let radius = 300;
     const autoRotate = true;
     const rotateSpeed = -60;
     const imgWidth = 80;
@@ -805,7 +805,7 @@
 
   #startBtn{
     display: inline-block;
-    margin: 290px 50% auto 50%;
+    margin: 200px 50% auto 50%;
     transform: translateX(-50%);
     visibility: hidden;
     opacity: 0;
