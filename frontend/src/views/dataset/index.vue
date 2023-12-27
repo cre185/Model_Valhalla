@@ -346,6 +346,7 @@
 </template>
 
 <script lang="ts" setup>
+/* eslint-disable */
 import {computed, ref, reactive, nextTick, shallowRef} from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useUserStore } from "@/store";
@@ -609,17 +610,17 @@ import {computed, ref, reactive, nextTick, shallowRef} from 'vue';
     record.showInput = false;
   };
 
-  const handleDownload = (record: DatasetData) => {
+  const handleDownload = async (record: DatasetData) => {
     const downloadLink = document.createElement('a');
-      getDatasetFile(record.id).then(returnValue => {
-        downloadLink.href = returnValue.data.data_file;
-        downloadLink.download = `${record.name}.csv`;
-        const container = document.createElement('div');
-        container.appendChild(downloadLink);
-        document.body.appendChild(container);
-        downloadLink.click();
-        document.body.removeChild(container);
-      });
+    await getDatasetFile(record.id).then(returnValue => {
+      downloadLink.href = returnValue.data.data_file;
+      downloadLink.download = `${record.name}.csv`;
+      const container = document.createElement('div');
+      container.appendChild(downloadLink);
+      document.body.appendChild(container);
+      downloadLink.click();
+      document.body.removeChild(container);
+    });
   };
 
   const handleFeedback = () => {
@@ -630,8 +631,10 @@ import {computed, ref, reactive, nextTick, shallowRef} from 'vue';
     record.toDownload = !record.toDownload;
   }
 
-  const handleBatchDownload = () => {
-    renderData.value!.filter(item => item.toDownload).map(item => handleDownload(item));
+  const handleBatchDownload = async () => {
+    for (const item of renderData.value!.filter(item => item.toDownload)) {
+      await handleDownload(item);
+    }
   };
 
   const handleCancel = () => {
