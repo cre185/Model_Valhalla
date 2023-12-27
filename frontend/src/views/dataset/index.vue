@@ -311,7 +311,8 @@
       <div>
         <a-tabs size="large"
                 style="margin-top: 7vh"
-                :default-active-key="props.toShowPanelIndex === '' ? 1 : parseInt(props.toShowPanelIndex, 10)"
+                default-active-key="1"
+                v-if="toShowTab===1"
         >
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
             <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
@@ -325,6 +326,63 @@
           <a-tab-pane key="4" :title="$t('dataset.details.discussions')">
             <DatasetDiscussionArea :comment-details="commentDetails" :dataset-id="currentDataset.id.toString()"
             @change-comment="handleChangeComment"/>
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large"
+                style="margin-top: 7vh"
+                default-active-key="2"
+                v-else-if="toShowTab===2"
+        >
+          <a-tab-pane key="1" :title="$t('dataset.details.details')">
+            <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('dataset.details.preview')">
+            <DatasetPreview :datasetID="currentDataset.id.toString()"/>
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('dataset.details.testScore')">
+            <DatasetPerformance :datasetID="currentDataset.id.toString()" />
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('dataset.details.discussions')">
+            <DatasetDiscussionArea :comment-details="commentDetails" :dataset-id="currentDataset.id.toString()"
+                                   @change-comment="handleChangeComment"/>
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large"
+                style="margin-top: 7vh"
+                default-active-key="3"
+                v-else-if="toShowTab===3"
+        >
+          <a-tab-pane key="1" :title="$t('dataset.details.details')">
+            <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('dataset.details.preview')">
+            <DatasetPreview :datasetID="currentDataset.id.toString()"/>
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('dataset.details.testScore')">
+            <DatasetPerformance :datasetID="currentDataset.id.toString()" />
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('dataset.details.discussions')">
+            <DatasetDiscussionArea :comment-details="commentDetails" :dataset-id="currentDataset.id.toString()"
+                                   @change-comment="handleChangeComment"/>
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large"
+                style="margin-top: 7vh"
+                default-active-key="4"
+                v-else
+        >
+          <a-tab-pane key="1" :title="$t('dataset.details.details')">
+            <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('dataset.details.preview')">
+            <DatasetPreview :datasetID="currentDataset.id.toString()"/>
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('dataset.details.testScore')">
+            <DatasetPerformance :datasetID="currentDataset.id.toString()" />
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('dataset.details.discussions')">
+            <DatasetDiscussionArea :comment-details="commentDetails" :dataset-id="currentDataset.id.toString()"
+                                   @change-comment="handleChangeComment"/>
           </a-tab-pane>
         </a-tabs>
       </div>
@@ -370,6 +428,7 @@ import {computed, ref, reactive, nextTick, onMounted} from 'vue';
   const modifySign = ref(false);
   const fileList = ref<FileItem[]>([]);
   const props = defineProps(['toShowDetailsID', 'toShowPanelIndex']);
+  const toShowTab = ref(1);
 
   const generateFormModel = () => {
     return {
@@ -625,6 +684,7 @@ import {computed, ref, reactive, nextTick, onMounted} from 'vue';
   }
 
   const handleCancel = () => {
+    toShowTab.value = 1;
     visible.value = false;
   }
 
@@ -724,13 +784,15 @@ import {computed, ref, reactive, nextTick, onMounted} from 'vue';
 
   onMounted(() => {
     fetchData().then(() => {
-      if(props.toShowDetailsID !== undefined){
+      if(props.toShowDetailsID !== '' || props.toShowDetailsID === undefined){
         for(let i = 0; i < renderData.value!.length; i += 1){
           if(renderData.value![i].id === parseInt(props.toShowDetailsID, 10)){
             currentDataset.value = renderData.value![i];
-            console.log(currentDataset.value);
             visible.value = true;
             break;
+          }
+          if(props.toShowPanelIndex !== '' || props.toShowPanelIndex === undefined){
+            toShowTab.value = parseInt(props.toShowPanelIndex, 10);
           }
         }
       }

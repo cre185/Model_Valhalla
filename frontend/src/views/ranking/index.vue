@@ -196,7 +196,52 @@
         </header>
       </template>
       <div>
-        <a-tabs size="large" :default-active-key="props.toShowPanelIndex === '' ? 1 : parseInt(props.toShowPanelIndex, 10)">
+        <a-tabs size="large" v-if="toShowTab===1" default-active-key="1">
+          <a-tab-pane key="1" :title="$t('ranking.details.details')">
+            <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('ranking.details.datasetScore')">
+            <DatasetProfile :modelid="ModelID" />
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
+            <AdversarialRecords :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
+            <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
+                                 @change-comment="handleChangeComment" />
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large" v-else-if="toShowTab===2" default-active-key="2">
+          <a-tab-pane key="1" :title="$t('ranking.details.details')">
+            <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('ranking.details.datasetScore')">
+            <DatasetProfile :modelid="ModelID" />
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
+            <AdversarialRecords :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
+            <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
+                                 @change-comment="handleChangeComment" />
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large" v-else-if="toShowTab===3" default-active-key="3">
+          <a-tab-pane key="1" :title="$t('ranking.details.details')">
+            <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('ranking.details.datasetScore')">
+            <DatasetProfile :modelid="ModelID" />
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
+            <AdversarialRecords :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
+            <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
+                                 @change-comment="handleChangeComment" />
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large" v-else default-active-key="4">
           <a-tab-pane key="1" :title="$t('ranking.details.details')">
             <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
           </a-tab-pane>
@@ -253,6 +298,7 @@
   const ModelID = ref('');
   const paintFirstTab = ref(false);
   const props = defineProps(['toShowDetailsID', 'toShowPanelIndex']);
+  const toShowTab = ref(1);
 
 
   const size = ref<SizeProps>('medium');
@@ -268,6 +314,7 @@
 
   const handleCancel = () => {
     visible.value = false;
+    toShowTab.value = 1;
   }
 
   const densityList = computed(() => [
@@ -649,7 +696,7 @@
   }
 
   onMounted(() => {
-    if(props.toShowDetailsID === ''){
+    if(props.toShowDetailsID === '' || props.toShowDetailsID === undefined){
       fetchData();
       handleRotatingGallery();
       const startBtn = document.getElementById('startBtn');
@@ -675,7 +722,7 @@
       rankings!.style.marginTop = '10px';
       rankings!.style.animation = '';
       fetchData().then(() => {
-        if(props.toShowDetailsID !== undefined){
+        if(props.toShowDetailsID !== '' || props.toShowDetailsID === undefined){
           for(let i = 0; i < renderData.value!.length; i += 1){
             if(renderData.value![i].id === parseInt(props.toShowDetailsID, 10)){
               currentLLM.value = renderData.value![i];
@@ -683,6 +730,9 @@
               break;
             }
           }
+        }
+        if(props.toShowPanelIndex !== '' || props.toShowPanelIndex === undefined){
+          toShowTab.value = parseInt(props.toShowPanelIndex, 10)
         }
       })
     }

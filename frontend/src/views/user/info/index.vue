@@ -347,7 +347,12 @@
   }
 
   const handleClick = (data: any) => {
-    router.push({ name: 'datasetDetails', params: { toShowDetailsID: data.id.toString()}});
+    if(showingDataType.value === 1){
+      router.push({ name: 'leaderboardDetails', params: { toShowDetailsID: data.id.toString()}});
+    }
+    else{
+      router.push({ name: 'datasetDetails', params: { toShowDetailsID: data.id.toString()}});
+    }
   }
 </script>
 
