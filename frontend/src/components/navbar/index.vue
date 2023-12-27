@@ -30,6 +30,9 @@
                   <List :render-list="renderList" :unread-count="unreadCount" @item-click="handleItemClick" />
                 </a-tab-pane>
                 <template #extra>
+                  <a-button type="text" @click="checkMore">
+                    {{ $t('messageBox.viewMore') }}
+                  </a-button>
                 </template>
               </a-tabs>
             </a-spin>
@@ -102,6 +105,7 @@ import {
 import useLoading from '@/hooks/loading';
 import axios from 'axios';
 import apiCat from '@/api/main';
+import { Comment } from 'vue';
 import List from './list.vue';
 
 const router = useRouter();
@@ -176,7 +180,7 @@ interface TabItem {
   avatar?: string;
 }
 const { loading, setLoading } = useLoading(true);
-const messageType = ref('message');
+const messageType = ref('like');
 const messageData = reactive<{
   renderList: userToDataset[];
   messageList: userToDataset[];
@@ -187,16 +191,16 @@ const messageData = reactive<{
 toRefs(messageData);
 const tabList: TabItem[] = [
   {
-    key: 'message',
-    title: "666",
+    key: 'like',
+    title: t('messageBox.tab.title.one'),
   },
   {
-    key: 'notice',
-    title: "777",
+    key: 'comment',
+    title: t('messageBox.tab.title.two'),
   },
   {
-    key: 'todo',
-    title: "888",
+    key: 'system',
+    title: t('messageBox.tab.title.three'),
   },
 ];
 async function fetchSourceData() {
@@ -265,7 +269,7 @@ async function fetchSourceData() {
         }
       }
       else if (item.msg_type === "Report") { // 数据集举报
-        newUserToDataset.msg_title = t('messageBox.upload.title');
+        newUserToDataset.msg_title = t('messageBox.report.title');
         const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
           headers: {
             Authorization: getToken()!,
@@ -302,9 +306,19 @@ async function readMessage(data: MessageListType) { // 提前msg_id设置为已�
   await setMessageStatus({ ids });
 }
 const renderList = computed(() => { // 创建一个过滤属性，只包含未读的消息列表，并设置显示四条
+  if (messageType.value === 'like') {
+    return messageData.messageList.filter(
+      (item) => !item.read && item.msg_type === 'Like'
+    ).slice(0, 4);
+  }
+  if (messageType.value === 'comment') {
+    return messageData.messageList.filter(
+      (item) => !item.read && item.msg_type === 'Reply'
+    ).slice(0, 4);
+  }
   return messageData.messageList.filter(
-    (item) => !item.read
-  ).slice(0, 4);;
+    (item) => !item.read && item.msg_type !== 'Reply' && item.msg_type !== 'Like'
+  ).slice(0, 4);
 });
 const unreadCount = computed(() => {
   return renderList.value.filter((item) => !item.read).length;
@@ -323,7 +337,7 @@ const handleItemClick = (items: MessageListType) => {
   if (renderList.value.length) {
     readMessage([...items]);
   }
-  axios.post(apiCat('/user/check_message'), {id : items[0].msg_id}, { // 点击后先设置消息已读
+  axios.post(apiCat('/user/check_message'), { id: items[0].msg_id }, { // 点击后先设置消息已读
     headers: {
       Authorization: getToken()!,
     }
@@ -332,43 +346,72 @@ const handleItemClick = (items: MessageListType) => {
   const routerType = items[0].msg_type;
   if (routerType === "Upload") // 设置反馈路由，目前仅调转页面，后续具体参数要沟通
   {
-    router.push('/dataset/details');
+    let target;
+    if ('targetID' in items[0].msg_content) {
+      target = items[0].msg_content.targetID as string;
+    }
+    router.push({
+      path: '/dataset/details',
+      params: { toShowDetailsID: target, toShowPanelIndex: 1 },
+    });
   }
   else if (routerType === "Reply") // 设置回复评论路由
   {
+    let target;
+    if ('targetID' in items[0].msg_content) {
+      target = items[0].msg_content.targetID as string;
+    }
     if ('contentFlag' in items[0].msg_content && !items[0].msg_content.contentFlag) {
       router.push({
         path: '/dataset/details',
+        params: { toShowDetailsID: target, toShowPanelIndex: 4 },
       });
     }
     else {
       router.push({
         path: '/leaderboard/details',
+        params: { toShowDetailsID: target, toShowPanelIndex: 4 },
       });
     }
   }
   else if (routerType === "Like") {
+    let target;
+    if ('targetID' in items[0].msg_content) {
+      target = items[0].msg_content.targetID as string;
+    }
     if ('likeFlag' in items[0].msg_content && !items[0].msg_content.likeFlag) // 设置点赞信息路由
     {
       router.push({
         path: '/dataset/details',
+        params: { toShowDetailsID: target, toShowPanelIndex: 4 },
       });
     }
     else {
       router.push({
         path: '/leaderboard/details',
+        params: { toShowDetailsID: target, toShowPanelIndex: 4 },
       });
     }
   }
   else if (routerType === "Feedback") { // 设置反馈的路由
-    router.push({
-      name: 'Login',
-    });
+    if ('datasetID' in items[0].msg_content) {
+      const datasetID = items[0].msg_content.datasetID as string;
+      console.log(datasetID);
+      router.push({
+        name: '/dataset/details',
+        params: { toShowDetailsID: datasetID, toShowPanelIndex: 1 },
+      });
+    }
   }
   else if (routerType === "Report") {
-    router.push({
-      name: 'Login',
-    });
+    if ('datasetID' in items[0].msg_content) {
+      const datasetID = items[0].msg_content.datasetID as string;
+      console.log(datasetID);
+      router.push({
+        name: '/dataset/details',
+        params: { toShowDetailsID: datasetID, toShowPanelIndex: 1 },
+      });
+    }
   }
 };
 const emptyList = () => {
@@ -377,6 +420,11 @@ const emptyList = () => {
 const showMiniMsgBox = () => { // 点击后再获得消息
   fetchSourceData();
   msgVisible.value = true;
+}
+const checkMore = () => {
+  router.push({
+    path: '/user/info',
+  });
 }
 </script>
 

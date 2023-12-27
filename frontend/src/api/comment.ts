@@ -2,7 +2,9 @@
 import axios from 'axios';
 import apiCat from "@/api/main";
 import { getAvatar, getUsername } from "@/api/user-info";
+import { useUserStore } from '@/store';
 
+const userStore = useUserStore();
 class MyComment {
     public author: string
 
@@ -44,36 +46,39 @@ class MyComment {
         this.children = children
     }
 
-    async increaseLike(jwt: string, toAuthorName: string, flag: string) {
+    async increaseLike(jwt: string, toAuthorName: string, targetID: string, flag: boolean) {
         this.like += 1;
         const response = await axios.post(apiCat('/user/find_user_by_name'), { username: toAuthorName }, {
             headers: {
                 Authorization: jwt,
             },
         });
-        await axios.post(apiCat('/user/create_message'), {
-            msg_type: "Like",
-            msg: "Unknown",
-            target: [response.data.id],
-            msg_content: {
-                'likeContent': this.content,
-                'likeFlag': flag,
-            }
-        }, {
-            headers: {
-                Authorization: jwt,
-            },
-        })
+        if (userStore.accountId !== response.data.id) {
+            await axios.post(apiCat('/user/create_message'), {
+                msg_type: "Like",
+                msg: "Unknown",
+                target: [response.data.id],
+                msg_content: {
+                    'likeContent': this.content,
+                    'likeFlag': flag,
+                    'targetID': targetID,
+                }
+            }, {
+                headers: {
+                    Authorization: jwt,
+                },
+            })
+        }
     }
 
     decreaseLike() {
         this.like -= 1
     }
 
-    async changeLikeState(jwt: string, toAuthorName: string, flag = true) {
+    async changeLikeState(jwt: string, toAuthorName: string, modelId: string, flag = true) {
         this.ifLike = !this.ifLike
         if (this.ifLike) {
-            this.increaseLike(jwt, toAuthorName, flag)
+            this.increaseLike(jwt, toAuthorName, modelId, flag)
         } else {
             this.decreaseLike()
         }
@@ -249,6 +254,7 @@ export async function updateComment(
     jwt: string,
     flag = true
 ) {
+    console.log("ID", modelId);
     let responseTwo;
     if (flag) {
         const response = await axios.post(apiCat('/ranking/comment'), { llm: modelId, comment: newComment.content, respond_to: newComment.toId }, {
@@ -297,24 +303,26 @@ export async function updateComment(
                 break;
             }
         }
-        await axios.post(apiCat('/user/create_message'),
-            {
-                msg_type: "Reply",
-                msg: "Unknown",
-                target: [srcUserID],
-                msg_content: {
-                    'parentContent': parentContent,
-                    'childContent': childContent,
-                    'contentFlag': flag,
-                }
+        if (userID !== srcUserID) {
+            await axios.post(apiCat('/user/create_message'),
+                {
+                    msg_type: "Reply",
+                    msg: "Unknown",
+                    target: [srcUserID],
+                    msg_content: {
+                        'parentContent': parentContent,
+                        'childContent': childContent,
+                        'contentFlag': flag,
+                        'targetID': modelId,
+                    }
 
-            },
-            {
-                headers: {
-                    Authorization: jwt,
                 },
-            }
-        )
-
+                {
+                    headers: {
+                        Authorization: jwt,
+                    },
+                }
+            )
+        }
     }
 }
