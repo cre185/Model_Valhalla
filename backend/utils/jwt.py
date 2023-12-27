@@ -1,10 +1,8 @@
 
-import base64
 import datetime
 
 import jwt
 import pytz
-import scrypt
 from django.conf import settings
 from django.http import JsonResponse
 

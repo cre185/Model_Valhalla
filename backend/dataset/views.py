@@ -32,7 +32,7 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
             ranking.Credit.objects.create(LLM=llm, dataset=target, credit=None)
         return Response({"message": "ok",
                         "datasetId": headers.data['id']},
-                    status=status.HTTP_201_CREATED)
+                        status=status.HTTP_201_CREATED)
 
 
 class uploadView(APIView):
@@ -114,7 +114,8 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
         data = result.data
         data['message'] = 'ok'
         data['add_time'] = data['add_time'].split('T')[0]
-        data['author_name'] = User.objects.filter(id=data['author'])[0].username
+        data['author_name'] = User.objects.filter(
+            id=data['author'])[0].username
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -166,7 +167,9 @@ class previewView(APIView):
             file = target.data_file
             content = file.read().decode('utf-8')
             data, subjective = get_first_10_rows(content)
-            response = Response({'message': 'ok', 'data': data, 'subjective': subjective},
+            response = Response({'message': 'ok',
+                                 'data': data,
+                                 'subjective': subjective},
                                 status=status.HTTP_200_OK)
             return response
         except BaseException:

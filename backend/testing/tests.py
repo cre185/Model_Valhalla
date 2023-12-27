@@ -4,7 +4,6 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 
 from dataset.models import Dataset
-from Model_Valhalla.settings import DEBUG, SILENCE
 from ranking.models import *
 from user.models import User
 
@@ -489,7 +488,7 @@ class BattleModelTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(json_data['llmId'], 3)
-        
+
     def test_battle_history(self):
         llm2 = LLMs(
             name="llm2",
@@ -699,7 +698,10 @@ class GenerateRelatedTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(Credit.objects.get(id=1).credit_list, credit1.credit_list)
+        self.assertEqual(
+            Credit.objects.get(
+                id=1).credit_list,
+            credit1.credit_list)
         # test on all
         response = self.client.post(
             '/testing/test',
@@ -709,7 +711,10 @@ class GenerateRelatedTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['message'], "ok")
-        self.assertNotEqual(Credit.objects.get(id=1).credit_list, credit1.credit_list)
+        self.assertNotEqual(
+            Credit.objects.get(
+                id=1).credit_list,
+            credit1.credit_list)
         # test with all credit filtered
         response = self.client.post(
             '/testing/test',

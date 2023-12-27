@@ -3,8 +3,6 @@ import time
 
 import requests
 
-from Model_Valhalla.settings import DEBUG, SILENCE
-
 
 class AutoTest():
     def __init__(self, llm):

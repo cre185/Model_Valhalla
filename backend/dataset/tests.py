@@ -106,7 +106,7 @@ class DatasetModelTests(TestCase):
                 HTTP_AUTHORIZATION=jwt,
                 format="multipart"
             )
-        json_data = response.json() 
+        json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         # request with invalid file
@@ -352,7 +352,9 @@ class DatasetModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(len(json_data['data']), 1)
         self.assertEqual(json_data['data'][0]['name'], "somedataset")
-        self.assertEqual(json_data['data'][0]['description'], "somedescription")
+        self.assertEqual(
+            json_data['data'][0]['description'],
+            "somedescription")
         self.assertEqual(response.status_code, 200)
 
     def test_download(self):

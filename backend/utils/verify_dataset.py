@@ -1,6 +1,7 @@
 import csv
-from io import StringIO
 import json
+from io import StringIO
+
 
 def verify_dataset(content):
     content = StringIO(content)
@@ -9,7 +10,7 @@ def verify_dataset(content):
     # test if the file is valid
     headers = set(c.lower() for c in next(reader))
     obj1 = set(['question', 'choices', 'answer'])
-    obj2 = set(['question', 'a','b','c','d', 'answer'])
+    obj2 = set(['question', 'a', 'b', 'c', 'd', 'answer'])
     sub1 = set(['prompt'])
     if obj1.issubset(headers) or obj2.issubset(headers):
         subjective = False
@@ -17,7 +18,7 @@ def verify_dataset(content):
         subjective = True
     else:
         raise Exception("Invalid file")
-    
+
     line_count = 0
     for line in reader:
         if line == '':
@@ -26,6 +27,7 @@ def verify_dataset(content):
         if len(line) != len(headers):
             raise Exception("Invalid file")
     return subjective, line_count
+
 
 def get_first_10_rows(content):
     content = StringIO(content)
@@ -36,12 +38,12 @@ def get_first_10_rows(content):
         header_list[i] = header_list[i].lower()
     headers = set(header_list)
     obj1 = set(['question', 'choices', 'answer'])
-    obj2 = set(['question', 'a','b','c','d', 'answer'])
+    obj2 = set(['question', 'a', 'b', 'c', 'd', 'answer'])
     sub1 = set(['prompt'])
     if obj1.issubset(headers):
         filters = ['question', 'choices', 'answer']
     elif obj2.issubset(headers):
-        filters = ['question', 'a','b','c','d', 'answer']
+        filters = ['question', 'a', 'b', 'c', 'd', 'answer']
     elif sub1.issubset(headers):
         filters = ['prompt']
     else:
@@ -62,4 +64,4 @@ def get_first_10_rows(content):
                     data[-1].append(line[i])
         if len(data) == 10:
             break
-    return data, filters==['prompt']
+    return data, filters == ['prompt']
