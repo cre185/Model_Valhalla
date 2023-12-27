@@ -1,9 +1,7 @@
 import datetime
-import unittest
-
-import pytz
 
 import jwt as pyjwt
+import pytz
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -300,7 +298,7 @@ class UserDataModelTests(TestCase):
             {
                 "username": "testuser",
                 "password": "testuser"
-            }, 
+            },
             format="json"
         )
         json_data = response.json()
@@ -422,7 +420,7 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
         # test update avatar
-        with open ("user/management/commands/static/avatar/avatar.png", "rb") as f:
+        with open("user/management/commands/static/avatar/avatar.png", "rb") as f:
             response = self.client.post(
                 '/user/update_avatar',
                 {
@@ -462,7 +460,7 @@ class UserDataModelTests(TestCase):
         )
         json_data = response.json()
         jwt = json_data['jwt']
-        with open ("user/management/commands/static/avatar/avatar.png", "rb") as f:
+        with open("user/management/commands/static/avatar/avatar.png", "rb") as f:
             response = self.client.post(
                 '/user/update_avatar',
                 {
@@ -473,7 +471,7 @@ class UserDataModelTests(TestCase):
             )
             self.assertEqual(response.status_code, 200)
             self.assertNotEqual(User.objects.get(id=2).avatar, None)
-        
+
     def test_subscribe(self):
         # the correct case
         response = self.client.post(
@@ -744,7 +742,7 @@ class UserAdminModelTests(TestCase):
         json_data = response.json()
         jwt = json_data['jwt']
         response = self.client.delete(
-            '/user/delete/4',   
+            '/user/delete/4',
             HTTP_AUTHORIZATION=jwt,
             format="json"
         )
@@ -890,7 +888,7 @@ class VerifyModelTests(TestCase):
             mobile="12345678902",
             code="000000"
         )
-        verifymsg.add_time = datetime.datetime.now()-datetime.timedelta(minutes=10)
+        verifymsg.add_time = datetime.datetime.now() - datetime.timedelta(minutes=10)
         verifymsg.save()
         response = self.client.post(
             '/user/send_message',
@@ -902,7 +900,10 @@ class VerifyModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 201)
         self.assertEqual(VerifyMsg.objects.all().count(), 2)
-        self.assertNotEqual(VerifyMsg.objects.get(mobile="12345678902").code, "000000")
+        self.assertNotEqual(
+            VerifyMsg.objects.get(
+                mobile="12345678902").code,
+            "000000")
 
     def test_verify_email(self):
         # send a verify code first
@@ -962,11 +963,11 @@ class VerifyModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
         # test clear old code
-        verifyemail=VerifyEmail.objects.create(
+        verifyemail = VerifyEmail.objects.create(
             email="some@exp.com",
             code="000000"
         )
-        verifyemail.add_time = datetime.datetime.now()-datetime.timedelta(minutes=10)
+        verifyemail.add_time = datetime.datetime.now() - datetime.timedelta(minutes=10)
         verifyemail.save()
         response = self.client.post(
             '/user/send_email',
@@ -978,7 +979,10 @@ class VerifyModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 201)
         self.assertEqual(VerifyEmail.objects.all().count(), 2)
-        self.assertNotEqual(VerifyEmail.objects.get(email="some@exp.com").code, "000000")
+        self.assertNotEqual(
+            VerifyEmail.objects.get(
+                email="some@exp.com").code,
+            "000000")
 
 
 class JwtTests(TestCase):
@@ -1135,7 +1139,7 @@ class MsgModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json_data['msgs']), 3)
-        # list message with invalid 
+        # list message with invalid
         # test check message
         response = self.client.post(
             '/user/check_message',

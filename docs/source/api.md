@@ -1392,6 +1392,13 @@ status=401
     "jwt": "jwt字符串",
 }
 ```
+当jwt过期时，返回如下信息：  
+```python
+{
+    "message": "Token has expired."
+},
+status=408
+```
 #### admin_required  
 admin_required标签仅用于管理员专用接口，其本质为强化版的jwt，在返回之前会检验用户是否具有管理员权限，故不需要跟jwt一起使用。  
 **获取方式**：只需正常传入jwt即可。  

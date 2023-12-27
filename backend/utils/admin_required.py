@@ -11,7 +11,7 @@ def admin_required(func):
             )
         elif res == 2:
             return JsonResponse(
-                {"message": "Token has expired."}, status=401
+                {"message": "Token has expired."}, status=408
             )
         elif not request.user.is_admin:
             return JsonResponse(

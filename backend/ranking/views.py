@@ -279,8 +279,9 @@ class listSelectedCreditView(APIView):
         for i in credits:
             serializer = CreditSerializer(i)
             data.append(serializer.data)
-            data[-1]['LLM_name']=testing.LLMs.objects.get(id=i.LLM_id).name
-            data[-1]['dataset_name']=dataset.Dataset.objects.get(id=i.dataset_id).name
+            data[-1]['LLM_name'] = testing.LLMs.objects.get(id=i.LLM_id).name
+            data[-1]['dataset_name'] = dataset.Dataset.objects.get(
+                id=i.dataset_id).name
             if i.credit is not None:
                 data[-1]['max_credit'] = max(i.credit_list)
                 data[-1]['min_credit'] = min(i.credit_list)

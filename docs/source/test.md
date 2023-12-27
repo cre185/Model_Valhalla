@@ -30,9 +30,9 @@ python manage.py init_db
 当前的标准测试数据包括：  
 * 一个管理员账户，用户名为realadmin，密码为realadmin  
 * 一个普通用户账户，用户名为testuser，密码为testuser  
-* 5个标准的数据集，名称分别为dataset1-5，并分别对应一个题目库  
-* 4个标准的模型，名称分别为llm1-4，并分别对应一个模型的调用接口  
-* 20个这些模型/数据集对应的测试分数，其中客观数据集对应的测试分数已经初始化，为之前测试得到的数据  
+* 5个标准的数据集，并分别对应一个题目库  
+* 5个标准的模型，并分别对应一个模型的调用接口  
+* 这些模型/数据集对应的测试分数，其中客观数据集对应的测试分数已经初始化，为之前测试得到的数据  
 
 如需更改init_db命令的行为，请修改`user/management/commands/init_db.py`  
 ### 单元测试  
@@ -40,5 +40,9 @@ python manage.py init_db
 ```bash
 python manage.py test
 ```
-测试样例中有部分测试需要调用模型的api接口，较为费时，因此平时不会进行测试。  
-需要对这部分测试用例也进行测试时，将`settings.py`中的DEBUG设为False，再运行单元测试即可。  
+使用coverage工具进行了测试覆盖率的统计，使用下列命令即可在进行测试的同时查看单元测试覆盖率：  
+```bash
+coverage run manage.py test
+coverage report
+```
+目前项目的单元测试覆盖率已经达到97%，较为令人满意。  
