@@ -91,7 +91,7 @@
   import useUser from '@/hooks/user';
   import { useRouter } from 'vue-router';
   import { getToken, isLogin } from '@/utils/auth';
-  import {useI18n} from "vue-i18n";
+  import eventBus from '@/api/event-bus';
 
   const router = useRouter();
   const myAvatar = ref();
@@ -192,6 +192,12 @@
     await logout();
     update.value = !update.value;
   }
+
+  onMounted(() => {
+    eventBus.on('updateNavbar', () => {
+      update.value = !update.value;
+    });
+  });
 </script>
 
 <style scoped lang="less">

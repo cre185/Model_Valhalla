@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import ArcoVue from '@arco-design/web-vue';
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import globalComponents from '@/components';
+import axiosInterceptor from '@/api/interceptor';
 import router from './router';
 import store from './store';
 import i18n from './locale';
@@ -27,3 +28,5 @@ app.use(globalComponents);
 app.use(directive);
 
 app.mount('#app');
+
+axiosInterceptor(router);

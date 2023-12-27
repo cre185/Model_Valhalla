@@ -225,6 +225,7 @@
   const goBack = () => {
     router.back();
   };
+
   onMounted(async () => {
     if (userStore.accountId !== undefined)
     {

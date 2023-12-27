@@ -159,6 +159,7 @@
     getEmail,
   } from '@/api/user-info';
   import { getToken } from '@/utils/auth';
+  import {getUserInfo} from "@/api/user";
 
   const router = useRouter();
   const { t } = useI18n();
