@@ -30,11 +30,9 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
         target = Dataset.objects.get(id=headers.data['id'])
         for llm in testing.LLMs.objects.all():
             ranking.Credit.objects.create(LLM=llm, dataset=target, credit=None)
-        dataset = request.FILES.get('file')
-        if not dataset:
-            return Response({"message": "ok",
-                         "datasetId": headers.data['id']},
-                        status=status.HTTP_201_CREATED)
+        return Response({"message": "ok",
+                        "datasetId": headers.data['id']},
+                    status=status.HTTP_201_CREATED)
 
 
 class uploadView(APIView):

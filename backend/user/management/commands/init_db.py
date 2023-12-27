@@ -13,7 +13,17 @@ class Command(BaseCommand):
     help = "Initialize Database with test data"
 
     def handle(self, *args, **options):
+        # Copy the static files
+        src_dir = "user/management/commands/static"
+        dst_dir = "static"
+
+        if(os.path.exists(dst_dir)):
+            shutil.rmtree(dst_dir)
+        shutil.copytree(src_dir, dst_dir)
+        
         # Initalize the database
+        if User.objects.count() > 0:
+            return
         # Create users
         df = pd.read_csv("user/management/commands/data/user.csv")
         user = []
@@ -75,11 +85,3 @@ class Command(BaseCommand):
                     if len(credit.credit_list) > 0:
                         credit.credit = sum(credit.credit_list) / len(credit.credit_list)
                 credit.save()
-
-        # Copy the static files
-        src_dir = "user/management/commands/static"
-        dst_dir = "static"
-
-        if(os.path.exists(dst_dir)):
-            shutil.rmtree(dst_dir)
-        shutil.copytree(src_dir, dst_dir)
