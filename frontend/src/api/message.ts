@@ -1,5 +1,7 @@
 import axios from 'axios';
 import apiCat from "@/api/main";
+import {getToken} from "@/utils/auth";
+import {useI18n} from "vue-i18n";
 
 export interface userToDataset {
   msg_id: number;
@@ -70,4 +72,103 @@ export async function getUserAvatar(jwt: string, userID: string): Promise<string
     console.error(error);
     return undefined;
   }
+}
+
+export async function getMessageData(lan: string, t: any){
+  const { data } = await queryMessageList(getToken()!);
+  const returnValue: userToDataset[] = [];
+  // messageData.messageList = data;
+  for (let i = 0; i < data.msgs.length; i += 1) {
+    const item: any = data.msgs[i];
+    const newUserToDataset: userToDataset = {
+      msg_id: item.id,
+      msg_type: item.msg_type,
+      src_UserID: item.author,
+      msg_text: "Unknown",
+      msg_content: item.msg_content,
+      msg_title: "Unknown",
+      add_time: item.add_time,
+      read: item.read,
+      avatar: "Unknown",
+      messageType: "0",
+    };
+
+    // eslint-disable-next-line
+    const responseUser = await axios.get(apiCat(`/user/retrieve/${item.author}`), {
+      headers: {
+        Authorization: getToken()!,
+      },
+    });
+    if (item.msg_type === "Upload") { // 上传数据集
+      newUserToDataset.msg_title = t('messageBox.upload.title');
+      if (lan === "zh-CN") {
+        newUserToDataset.msg_text = `${responseUser.data.username}上传了数据集:${item.msg_content.datasetName}`;
+      }
+      else {
+        newUserToDataset.msg_text = `${responseUser.data.username} uploaded the dataset ${item.msg_content.datasetName}`;
+      }
+    }
+    else if (item.msg_type === "Reply") { // 回复了评论
+      if (lan === "zh-CN") {
+        newUserToDataset.msg_title = `${responseUser.data.username}回复了你的评论`;
+      }
+      else {
+        newUserToDataset.msg_title = `${responseUser.data.username} replied to your comment`;
+      }
+      newUserToDataset.msg_text = item.msg_content.childContent;
+    }
+    else if (item.msg_type === "Like") { // 点赞消息
+      newUserToDataset.msg_title = t('messageBox.like.title');
+      if (lan === "zh-CN") {
+        newUserToDataset.msg_text = `${responseUser.data.username}点赞了你的评论“${item.msg_content.likeContent}”`;
+      }
+      else {
+        newUserToDataset.msg_text = `${responseUser.data.username} liked your comment "${item.msg_content.likeContent}"`;
+      }
+    }
+    else if (item.msg_type === "Feedback") { // 数据集反馈意见
+      newUserToDataset.msg_title = t('messageBox.feedback.title');
+      // eslint-disable-next-line
+      const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
+        headers: {
+          Authorization: getToken()!,
+        },
+      });
+      if (lan === "zh-CN") {
+        newUserToDataset.msg_text = `原因:${item.msg_content.feedbackType}，具体描述:${item.msg_content.feedbackContent}`;
+      }
+      else {
+        newUserToDataset.msg_text = `Reason: ${item.msg_content.feedbackType}, Detailed description: ${item.msg_content.feedbackContent}`;
+      }
+    }
+    else if (item.msg_type === "Report") { // 数据集举报
+      newUserToDataset.msg_title = t('messageBox.report.title');
+      // eslint-disable-next-line
+      const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
+        headers: {
+          Authorization: getToken()!,
+        },
+      });
+      if (lan === "zh-CN") {
+        newUserToDataset.msg_text = `原因:${item.msg_content.reportReason}，具体描述:${item.msg_content.reportContent}`;
+      }
+      else {
+        newUserToDataset.msg_text = `Reason: ${item.msg_content.reportReason}, Detailed description: ${item.msg_content.reportContent}`;
+      }
+    }
+    else if (item.msg_type === "Advice") { // 对抗评测意见
+      if (lan === "zh-CN") {
+        newUserToDataset.msg_title = `${responseUser.data.username}提出评测建议`;
+        newUserToDataset.msg_text = `具体内容:${item.msg_content.adviceContent}`;
+      }
+      else {
+        newUserToDataset.msg_title = `${responseUser.data.username} proposed suggestions`
+        newUserToDataset.msg_text = `Detailed content: ${item.msg_content.adviceContent}`;
+      }
+    }
+    // eslint-disable-next-line
+    newUserToDataset.avatar = await getUserAvatar(getToken()!, item.author);
+    returnValue.push(newUserToDataset);
+  }
+  return returnValue;
 }

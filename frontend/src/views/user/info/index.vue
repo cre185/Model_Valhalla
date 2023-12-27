@@ -14,18 +14,28 @@
           </a-grid>
         </a-col>
         <a-col class="content-bottom" :span="24" style="margin-top: 2vh">
-          <a-grid :cols="24" :col-gap="16" :row-gap="16">
-            <a-grid-item :span="18">
+          <a-grid :cols="24" :col-gap="16" :row-gap="16" style="height: 60vh">
+            <a-grid-item :span="16">
               <AdversarialRecords @showMore="handleShowMore"/>
             </a-grid-item>
-            <a-grid-item :span="6">
-              <LatestNotification/>
+            <a-grid-item :span="8">
+              <a-card class="general-card" style="height: 100%">
+                <template #title>
+                  <span style="font-weight: 900">
+                    {{ $t('userInfo.title.receivedMessages') }}
+                  </span>
+                </template>
+                <template #extra>
+                  <a-link @click="handleShowMore(4)">{{ $t('userInfo.viewAll') }}</a-link>
+                </template>
+                <MessageBox :currentLocale="getLocale()"/>
+              </a-card>
             </a-grid-item>
           </a-grid>
         </a-col>
     </div>
   </div>
-  <a-drawer :width="showingDataType===3 ? 700 : 1000"
+  <a-drawer :width="showingDataType>=3 ? 700 : 1000"
             :visible="visible"
             :footer="false"
             style="display: flex;"
@@ -41,12 +51,16 @@
         <div style="font-size: 3vh" v-else-if="showingDataType===2">
           {{ $t('userInfo.title.subscribedDatasets') }}
         </div>
-        <div style="font-size: 3vh" v-else>
+        <div style="font-size: 3vh" v-else-if="showingDataType===3">
           {{ $t('userInfo.title.adversarialRecords') }}
+        </div>
+        <div style="font-size: 3vh" v-else>
+          {{ $t('userInfo.title.receivedMessages') }}
         </div>
       </header>
     </template>
-    <a-space class="drawer-space" direction="vertical" fill v-if="showingDataType === 3">
+    <MessageBox :current-locale="getLocale()" :size="'big'" v-if="showingDataType === 4"/>
+    <a-space class="drawer-space" direction="vertical" fill v-else-if="showingDataType === 3">
       <a-row justify="center" align="center" style="margin-left: 1vw">
         <a-col :span="20">
           <a-form label-align="left">
@@ -164,6 +178,7 @@
                   :page-size="pageSize"
                   @change="handlePageChange"
                   show-jumper
+                  v-if="showingDataType !== 4"
     />
   </a-drawer>
   <a-modal v-if="showingRecord!==undefined"
@@ -202,7 +217,7 @@
 </template>
 
 <script lang="ts" setup>
-  import {ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
   import { useUserStore } from '@/store';
   import {
     BattleRecordsData, queryBattleRecordsData,
@@ -212,15 +227,20 @@
     SubscribedModelRecord
   } from "@/api/user-center";
   import router from "@/router";
+  import List from "@/components/navbar/components/list.vue";
+  import {getMessageData, userToDataset} from "@/api/message";
+  import {useI18n} from "vue-i18n";
+  import {getLocale} from "@arco-design/web-vue";
+  import MessageBox from "@/components/navbar/components/message-box.vue";
   import CardWrap from "./components/card-wrap.vue";
   import UserInfoHeader from './components/user-info-header.vue';
   import SubscribedList from './components/subscribed-list.vue';
-  import LatestNotification from "./components/latest-notification.vue";
   import AdversarialRecords from "./components/adversarial-records.vue";
 
   const userInfo = useUserStore();
   const visible = ref(false);
   const recordVisible = ref(false);
+  const t = useI18n();
   const subscribedDataList = ref<SubscribedModelRecord[] | SubscribedDatasetRecord[] | BattleRecordsData[]>([]);
   const showingDataType = ref(1);
   const toUpdate = ref(false);
@@ -232,6 +252,10 @@
   const searchModelA = ref('');
   const searchModelB = ref('');
   const searchDateRange = ref([]);
+  const messageData = ref< userToDataset[]>([]);
+  const unreadCount = computed(() => {
+    return messageData.value.filter((item) => !item.read).length;
+  });
 
   const fetchData = async ()=> {
     if(showingDataType.value === 1){
@@ -240,8 +264,11 @@
     else if (showingDataType.value === 2){
       subscribedDataList.value = await querySubscribedDatasets(parseInt(userInfo.accountId!, 10));
     }
-    else {
+    else if (showingDataType.value === 3) {
       subscribedDataList.value = await queryBattleRecordsData(parseInt(userInfo.accountId!, 10));
+    }
+    else {
+      messageData.value = await getMessageData(getLocale(), t);
     }
   }
 
@@ -254,9 +281,14 @@
       pageSize.value = 7;
     }
     fetchData().then(() => {
-      totalDataNum.value = subscribedDataList.value.length;
-      subscribedDataList.value = subscribedDataList.value.slice(0, pageSize.value);
-      searchContent.value = '';
+      if(type < 4){
+        totalDataNum.value = subscribedDataList.value.length;
+        subscribedDataList.value = subscribedDataList.value.slice(0, pageSize.value);
+        searchContent.value = '';
+      }
+      else{
+        totalDataNum.value = messageData.value.length;
+      }
       visible.value = true;
     })
   }
@@ -280,7 +312,7 @@
       drawerBody.style.justifyContent= 'center';
     }
 
-    if(showingDataType.value !== 3){
+    if(showingDataType.value < 3){
       const drawerInput = document.querySelector('.drawer-space > .arco-space-item');
       if (drawerInput) {
         drawerInput.style.display = 'flex';

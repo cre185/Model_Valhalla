@@ -17,5 +17,6 @@ export default {
     'messageBox.tab.title.one': '收到的赞',
     'messageBox.tab.title.two': '回复我的',
     'messageBox.tab.title.three': '系统消息',
+    'messageBox.message.read': '已读',
+    'messageBox.message.unread': '未读',
   };
-  

@@ -6,6 +6,7 @@ export default {
   'userInfo.title.subscribedModels': 'Models I Follow',
   'userInfo.title.subscribedDatasets': 'Datasets I Follow',
   'userInfo.title.adversarialRecords': 'My Adversarial Evaluation Records',
+  'userInfo.title.receivedMessages': 'Messages I Received',
   'userInfo.subscribedModel.ranking': 'Currently ranked at ',
   'userInfo.subscribedModel.ranking.suffix': 'th',
   'userInfo.subscription.card.subscribed.btn': 'Subscribed',

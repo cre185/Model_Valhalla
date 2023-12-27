@@ -17,5 +17,6 @@ export default {
     'messageBox.tab.title.one': 'Received likes',
     'messageBox.tab.title.two': 'Replies to my posts',
     'messageBox.tab.title.three': 'System messages',
+    'messageBox.message.read': 'Read',
+    'messageBox.message.unread': 'Unread',
   };
-  

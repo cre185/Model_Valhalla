@@ -35,7 +35,7 @@ import {defineEmits, onMounted, ref, watch} from "vue";
   const { loading, setLoading } = useLoading(true);
   const userInfo = useUserStore();
   const emit = defineEmits<{
-    (event: 'showMore', arg1: number): void;
+    (event: 'showMore', arg: number): void;
   }>();
 
   const battleRecordsData = ref<BattleRecordsData[] | any[]>([]);
@@ -45,8 +45,8 @@ import {defineEmits, onMounted, ref, watch} from "vue";
     try {
       queryBattleRecordsData(parseInt(userInfo.accountId!, 10)).then(returnValue => {
         battleRecordsData.value = returnValue;
-        if(battleRecordsData.value.length > 3){
-          battleRecordsData.value = battleRecordsData.value.slice(0 ,3);
+        if(battleRecordsData.value.length > 4){
+          battleRecordsData.value = battleRecordsData.value.slice(0 ,4);
         }
         else if(battleRecordsData.value.length === 0){
           battleRecordsData.value = [{}];

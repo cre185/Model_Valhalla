@@ -791,10 +791,11 @@ import {computed, ref, reactive, nextTick, onMounted} from 'vue';
             visible.value = true;
             break;
           }
-          if(props.toShowPanelIndex !== '' || props.toShowPanelIndex === undefined){
-            toShowTab.value = parseInt(props.toShowPanelIndex, 10);
-          }
         }
+      }
+      if(props.toShowPanelIndex !== '' || props.toShowPanelIndex === undefined){
+        toShowTab.value = parseInt(props.toShowPanelIndex, 10);
+        console.log(toShowTab.value);
       }
     })
   });

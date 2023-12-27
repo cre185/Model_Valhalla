@@ -6,6 +6,7 @@ export default {
   'userInfo.title.subscribedModels': '我关注的模型',
   'userInfo.title.subscribedDatasets': '我关注的数据集',
   'userInfo.title.adversarialRecords': '我的对抗评测记录',
+  'userInfo.title.receivedMessages': '我收到的信息',
   'userInfo.subscribedModel.ranking': '当前排在第',
   'userInfo.subscribedModel.ranking.suffix': '位',
   'userInfo.subscription.card.subscribed.btn': '已关注',

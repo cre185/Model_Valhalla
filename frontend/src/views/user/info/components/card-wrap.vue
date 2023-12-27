@@ -3,7 +3,7 @@
   alignItems: 'center', justifyContent: 'center', display: 'flex'}"
   >
     <a-card style="height: 16vh; width: 16vw;" :body-style="{display: 'flex', alignItems: 'center',
-    justifyContent: 'center', height: '100%'}"
+    justifyContent: 'center', height: '100%'}" class="clickable-card"
     >
       <a-skeleton v-if="loading" :loading="loading" :animation="true">
         <a-skeleton-line :rows="3" />
@@ -79,6 +79,10 @@
 
   .card-content{
     font-size: 1.4vh;
+  }
+
+  .clickable-card:hover{
+    background: lightgrey;
   }
 
 </style>
