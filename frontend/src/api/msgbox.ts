@@ -21,7 +21,6 @@ export interface userToDataset {
 };
 
 export async function getMessage(jwt: string, formData: userToDataset[]) {
-    console.log("66666");
     const response = await axios.get(apiCat('/user/list_message'), {
         method: 'GET',
         headers: {
@@ -29,7 +28,6 @@ export async function getMessage(jwt: string, formData: userToDataset[]) {
             Authorization: jwt,
         }
     })
-    console.log("666", response.data.msgs[0]);
     formData = response.data;
     
 }

@@ -19,8 +19,8 @@
         <template #content>
           <div class="demo-basic" style="background-color: white; width: 400px;">
             <a-spin style="display: block" :loading="loading">
-              <a-tabs v-model:activeKey="messageType" type="rounded" destroy-on-hide>
-                <a-tab-pane v-for="item in tabList" :key="item.key">
+              <a-tabs v-model:activeKey="messageType" type="rounded" destroy-on-hide size="mini">
+                <a-tab-pane v-for="item in tabList" :key="item.key" >
                   <template #title>
                     <span> {{ item.title }}{{ formatUnreadLength(item.key) }} </span>
                   </template>
@@ -209,7 +209,7 @@ async function fetchSourceData() {
   try {
     const { data } = await queryMessageList(getToken()!);
     // messageData.messageList = data;
-    data.msgs.forEach(async (item) => {
+    data.msgs.forEach(async (item: any) => {
       const newUserToDataset: userToDataset = {
         msg_id: item.id,
         msg_type: item.msg_type,
@@ -396,7 +396,6 @@ const handleItemClick = (items: MessageListType) => {
   else if (routerType === "Feedback") { // 设置反馈的路由
     if ('datasetID' in items[0].msg_content) {
       const datasetID = items[0].msg_content.datasetID as string;
-      console.log(datasetID);
       router.push({
         name: '/dataset/details',
         params: { toShowDetailsID: datasetID, toShowPanelIndex: 1 },
@@ -406,7 +405,6 @@ const handleItemClick = (items: MessageListType) => {
   else if (routerType === "Report") {
     if ('datasetID' in items[0].msg_content) {
       const datasetID = items[0].msg_content.datasetID as string;
-      console.log(datasetID);
       router.push({
         name: '/dataset/details',
         params: { toShowDetailsID: datasetID, toShowPanelIndex: 1 },
