@@ -86,7 +86,7 @@ def login_required(func):
             )
         elif res == 2:
             return JsonResponse(
-                {"message": "Token has expired."}, status=401
+                {"message": "Token has expired."}, status=408
             )
         else:
             response = func(self, request, *args, **kwargs)
