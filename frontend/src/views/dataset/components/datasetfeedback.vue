@@ -73,7 +73,7 @@
         <template v-else-if="currentForm === 'reportForm'">
             <a-form style="padding-right: 10px;">
                 <a-form-item :label="$t('dataset.feedback.dataset.name')">
-                    <a-select v-model="formModel.datasetName" :options="DatasetSelectOptions"
+                    <a-select v-model="formModel.datasetName" :options="DatasetSelectOptions" :disabled="datasetIdKnown"
                         :placeholder="$t('dataset.feedback.dataset.name.defalut')">
                     </a-select>
                 </a-form-item>
@@ -109,7 +109,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch, defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { FileItem } from '@arco-design/web-vue';
+import { FileItem, Message } from '@arco-design/web-vue';
 import { simplifiedQueryDatasetList, SelectedDataset, sendFeedback, sendReport} from "@/api/dataset";
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import {getToken} from "@/utils/auth";
@@ -128,8 +128,6 @@ const props = defineProps({
 const currentForm = ref('feedbackForm')
 const datasetIdKnown = ref(false) // datasetid是否已确定，决定是否禁用选择框
 const generateFormModel = () => {
-    console.log("ID", props.datasetFeedbackID)
-    console.log("Shown", props.datasetShown)
     if(props.datasetShown === 'false')
     {
         datasetIdKnown.value = false;
@@ -183,18 +181,14 @@ const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
     }));
 });
 const uploadChange = async (fileItem: FileItem) => {
-    console.log(props.datasetFeedbackID)
-    // fileItemList.push(fileItem);
     formModel.value.annex.push(fileItem);
     if(fileItem.file)
     {
         formModel.value.file.push(fileItem.file);
-        console.log(formModel.value.file[0].name);
     }
     
   };
 const handleSubmit = async () => {
-    console.log("Name", formModel.value.datasetName)
     if(currentForm.value === 'feedbackForm') {
         await sendFeedback(getToken()!, formModel.value);
     }
@@ -220,5 +214,6 @@ const handleCancel = async () => {
     formModel.value = generateFormModel();
     switchClick(currentForm.value);
 }
+
 </script>
 <style scoped lang="less"></style>

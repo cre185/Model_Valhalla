@@ -11,6 +11,7 @@
     - [create\_message](#create_message)
     - [create\_message\_to\_admin](#create_message_to_admin)
     - [delete](#delete)
+    - [find\_user\_by\_name](#find_user_by_name)
     - [list\_message](#list_message)
     - [list\_dataset\_subscription](#list_dataset_subscription)
     - [list\_llm\_subscription](#list_llm_subscription)
@@ -33,6 +34,7 @@
     - [delete](#delete-1)
     - [download](#download)
     - [list](#list)
+    - [preview](#preview)
     - [retrieve](#retrieve-1)
     - [update](#update-1)
     - [update\_tag](#update_tag)
@@ -99,9 +101,9 @@ status=400
 ```python
 {
     "target": "接收者id数组",
-    "msg": "消息内容",
+    "msg": "消息文本",
     "msg_type": "消息类型",
-    "msg_content": "消息内容",
+    "msg_content": "消息附加信息",
     "msg_file": "消息文件"
 }
 ```
@@ -154,7 +156,36 @@ status=400
     "message": "ok"
 }, 
 status=200
-``` 
+```
+#### find_user_by_name  
+**功能描述**：通过用户名查找用户。  
+**请求方式**：POST  
+**请求URL**：`/user/find_user_by_name`  
+**请求参数**:  
+```python
+{
+    "username": "用户名"
+}
+```
+**返回情况**：  
+* 正常返回  
+```python
+{
+    "message": "ok",
+    "id": "用户id",
+    "username": "用户名",
+    "mobile": "手机号",
+    "avatar": "头像url",
+    "email": "邮箱",
+    "add_time": "用户注册时间",
+    "is_admin": "是否为管理员",
+},
+status=200
+```
+* 参数异常  
+```python
+status=400
+```
 #### list_message  
 **功能描述**：列出指定用户收到的所有消息。  
 **请求方式**：GET  
@@ -170,8 +201,9 @@ status=200
             "id": "消息id",
             "author": "发送者id",
             "target": "接收者id数组",
-            "msg": "消息内容",
+            "msg": "消息文本",
             "msg_type": "消息类型",
+            "msg_content": "消息附加信息",
             "add_time": "添加时间",
             "read": "是否已读"
         },
@@ -190,7 +222,7 @@ status=200
 {
     "message": "ok",
     "datasets": [
-        # 详见testing部分的dataset_list接口
+        # 详见dataset部分的dataset_list接口
         ...
     ]
 },
@@ -287,11 +319,10 @@ status=401
 status=401
 ```
 #### logout  
-**功能描述**：用户登出。  
+**功能描述**：用户登出。该接口暂时仅用于测试，并无实际功能。  
 **请求方式**：POST  
 **请求URL**：`/user/logout`  
-**请求参数**：无    
-**额外需求**：jwt  
+**请求参数**：无  
 **返回情况**：  
 * 正常返回  
 ```python
@@ -458,15 +489,12 @@ status=400
 ```
 #### update  
 **功能描述**：更新指定用户的信息。  
-**请求方式**：PUT/PATCH  
+**请求方式**：PATCH  
 **请求URL**：`/user/update/<id>`  
 **请求参数**：  
 ```python
-PUT={
+{
     # 见retrieve接口的返回结果
-}
-PATCH={
-    # 同上但均为可选参数
 }
 ```
 **额外需求**：jwt  
@@ -568,9 +596,8 @@ status=401
     # "subjective": "是否为主观题"
     # "content_size": "数据集大小",
     # "author": "作者",
-    # "data_file": "数据集文件",
     # "domain": "数据集领域",
-    # "tag": "数据集标签"，
+    # "tag": "数据集标签",
     # "file": "数据集文件"
 }
 ```
@@ -637,6 +664,45 @@ status=400
 },
 status=200
 ```
+#### preview  
+**功能描述**：预览指定数据集的前10条数据(如果有)。 
+**请求方式**：GET  
+**请求URL**：`/dataset/preview/<id>`  
+**请求参数**：无  
+**返回情况**：  
+* 客观数据集  
+```python
+{
+    "message": "ok",
+    "data": [
+        [
+            "问题",
+            "A",
+            "B",
+            "C",
+            "D",
+            "答案"
+        ],
+        ...(共10条)
+    ],
+    "subjective": false
+},
+status=200
+```
+* 主观数据集  
+```python
+{
+    "message": "ok",
+    "data": [
+        [
+            "问题",
+        ],
+        ...(共10条)
+    ],
+    "subjective": true
+},
+status=200
+```
 #### retrieve  
 **功能描述**：获取指定数据集的信息。  
 **请求方式**：GET  
@@ -657,15 +723,12 @@ status=404
 ```
 #### update  
 **功能描述**：更新指定数据集的信息。  
-**请求方式**：PUT/PATCH  
+**请求方式**：PATCH  
 **请求URL**：`/dataset/update/<id>`  
 **请求参数**：  
 ```python
-PUT={
+{
     # 见create接口的请求参数
-}
-PATCH={
-    # 同上但均为可选参数
 }
 ```
 **额外需求**：admin_required  
@@ -1262,15 +1325,12 @@ status=200
 
 #### update  
 **功能描述**：更新指定模型测试的信息。  
-**请求方式**：PUT/PATCH  
+**请求方式**：PATCH  
 **请求URL**：`/testing/update/<id>`  
 **请求参数**：  
 ```python
-PUT={
-    # 见create接口的请求参数  
-}
-PATCH={
-    # 同上但均为可选参数
+{
+    # 见create接口的请求参数
 }
 ```
 **额外需求**：admin_required  

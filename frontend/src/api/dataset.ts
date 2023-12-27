@@ -1,13 +1,15 @@
 import axios from 'axios';
 import apiCat from '@/api/main';
 import * as Papa from 'papaparse';
-import {ref} from "vue";
-import {LLMListRes} from "@/api/model-list";
-import {getAvatar, getUsername} from "@/api/user-info";
+import { ref } from "vue";
+import { LLMListRes } from "@/api/model-list";
+import { getAvatar, getUsername } from "@/api/user-info";
 import { FileItem } from '@arco-design/web-vue';
 import * as fs from 'fs';
+import { getToken } from "@/utils/auth";
 
-export class SubjectiveEvaluationData{
+
+export class SubjectiveEvaluationData {
     readonly prompt: string;
 
     private subjects: string[];
@@ -29,43 +31,43 @@ export class SubjectiveEvaluationData{
         this.scored = false;
     }
 
-    appendSubject(subject: string){
+    appendSubject(subject: string) {
         this.subjects.push(subject);
     }
 
-    getPrompt(){
+    getPrompt() {
         return this.prompt;
     }
 
-    setAnswer(answer: string){
+    setAnswer(answer: string) {
         this.answer = answer;
     }
 
-    getAnswer(){
+    getAnswer() {
         return this.answer;
     }
 
-    setScore(score: number){
+    setScore(score: number) {
         this.score = score;
     }
 
-    getScore(){
+    getScore() {
         return this.score;
     }
 
-    getScored(){
+    getScored() {
         return this.scored;
     }
 
-    setScored(){
+    setScored() {
         this.scored = true;
     }
 
-    getAnswerGenerated(){
+    getAnswerGenerated() {
         return this.answerGenerated;
     }
 
-    setAnswerGenerated(){
+    setAnswerGenerated() {
         this.answerGenerated = true;
     }
 }
@@ -95,16 +97,28 @@ export interface DatasetListRes {
     data: [];
 }
 
-export async function getDatasetFile(datasetID: number){
+export async function getDatasetFile(datasetID: number) {
     return axios.get(apiCat(`/dataset/retrieve/${datasetID}`));
 }
 
-export async function downloadDataset(datasetID: number){
+export async function downloadDataset(datasetID: number) {
     return axios.get(apiCat(`/dataset/download/${datasetID}`));
 }
 
+export async function previewDataset(datasetID: number) {
+    return axios.get(apiCat(`/dataset/preview/${datasetID}`));
+}
+
+export async function updateDataset(datasetID: number, data: any) {
+    return axios.patch(apiCat(`/dataset/update/${datasetID}`), data, {
+        headers: {
+            Authorization: getToken()!,
+        },
+    });
+}
+
 export async function queryDatasetList() {
-    const DatasetList: { data: any; total: number } = {data: [], total: 0};
+    const DatasetList: { data: any; total: number } = { data: [], total: 0 };
     const response = await axios.get<DatasetListRes>(apiCat('/dataset/list'));
     DatasetList.total = response.data.data.length;
     for (let i = 0; i < response.data.data.length; i += 1) {
@@ -147,8 +161,8 @@ export async function queryDatasetList() {
     return DatasetList;
 }
 
-export async function updateDatasetTags (datasetID: number, tags: string[]) {
-    return axios.post(apiCat(`/dataset/update_tag`), {id: datasetID, tag: tags});
+export async function updateDatasetTags(datasetID: number, tags: string[]) {
+    return axios.post(apiCat(`/dataset/update_tag`), { id: datasetID, tag: tags });
 }
 export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvaluationData[]> => {
     return new Promise((resolve, reject) => {
@@ -159,13 +173,13 @@ export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvalua
                 dynamicTyping: true,
                 skipEmptyLines: true,
             })
-            for(let i = 0; i < parsedData.data.length; i += 1){
-                const data = parsedData.data[i] as {Prompt: string; subject: string}
+            for (let i = 0; i < parsedData.data.length; i += 1) {
+                const data = parsedData.data[i] as { Prompt: string; subject: string }
                 const subjects = data.subject.split('`');
                 dataList.push(new SubjectiveEvaluationData(data.Prompt, [], '', 0));
-                for(let j = 0; j < subjects.length; j+= 1){
-                    if(subjects[j] !== '' && subjects[j] !== ' ')
-                    dataList[i].appendSubject(subjects[j]);
+                for (let j = 0; j < subjects.length; j += 1) {
+                    if (subjects[j] !== '' && subjects[j] !== ' ')
+                        dataList[i].appendSubject(subjects[j]);
                 }
             }
             resolve(dataList);
@@ -173,7 +187,7 @@ export const generateSubEvalData = (datasetID: number): Promise<SubjectiveEvalua
     })
 }
 
-export async function getModelDetails(){
+export async function getModelDetails() {
     const response = await axios.get(apiCat(`/testing/list`));
     return response.data.data;
 }
@@ -183,14 +197,12 @@ export interface SelectedDataset {
     name: string;
 }
 
-export async function simplifiedQueryDatasetList()
-{
-    const LLMList: {data: any, total: number} = { data:[], total: 0};
+export async function simplifiedQueryDatasetList() {
+    const LLMList: { data: any, total: number } = { data: [], total: 0 };
     const response = await axios.get<LLMListRes>(apiCat('/dataset/list'));
-    for(let i = 0; i < response.data.data.length; i += 1)
-    {
-        const dataset = response.data.data[i] as {id: string, name: string};
-        LLMList.data.push({id: dataset.id.toString(), name: dataset.name});
+    for (let i = 0; i < response.data.data.length; i += 1) {
+        const dataset = response.data.data[i] as { id: string, name: string };
+        LLMList.data.push({ id: dataset.id.toString(), name: dataset.name });
     }
     return LLMList;
 }
@@ -203,76 +215,65 @@ interface FormDatasetData {
     reportContent: string;
     annex: FileItem[];
     file: File[];
-  }
+}
 
-  /* export async function sendFeedback(jwt: string, formData: FormDatasetData) {
-    const response = await fetch(apiCat('/user/create_message_to_admin'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: jwt,
-      },
-      body: JSON.stringify({
-        msg: formData.feedbackType,
-        msg_type: 'feedback',
-        msg_content : {
-          'datasetID': formData.datasetName,
-          'feedbackType': formData.feedbackType,
-          'feedbackContent': formData.feedbackContent,
-        },
-        // msg_file: formData.file,
-        // msg_file: formData.annex || [],
-      }),
-    });
-} */
+export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+    if (!formData.file[0]) {
+        const response = await axios.post(apiCat('/user/create_message_to_admin'),
+            {
+                msg: "反馈意见",
+                msg_type: 'Feedback',
+                msg_content: {
+                    'datasetID': formData.datasetName,
+                    'feedbackType': formData.feedbackType,
+                    'feedbackContent': formData.feedbackContent,
+                },
+            },
+            {
+                headers: {
+                    Authorization: jwt,
+                },
+            }
+        );
+    }
+    else {
+        const formDataObject = new FormData();
 
-   export async function sendFeedback(jwt: string, formData: FormDatasetData) {
+        formDataObject.append('msg', formData.feedbackType);
+        formDataObject.append('msg_type', 'Feedback');
+        formDataObject.append('msg_content', JSON.stringify({
+            'datasetID': formData.datasetName,
+            'feedbackType': formData.feedbackType,
+            'feedbackContent': formData.feedbackContent,
+        }));
 
-    const formDataObject = new FormData();
+        formDataObject.append('file', formData.file[0]);
 
-    formDataObject.append('msg', formData.feedbackType);
-    formDataObject.append('msg_type', 'feedback');
-    formDataObject.append('msg_content', JSON.stringify({
-        'datasetID': formData.datasetName,
-        'feedbackType': formData.feedbackType,
-        'feedbackContent': formData.feedbackContent,
-    }));
-
-    // if (formData.file) {
-    formDataObject.append('file', formData.file[0]);
-    // }
-    // console.log(formData.file[0].stream());
-    // const request = new XMLHttpRequest();
-    // request.open("POST", "http://localhost:8000/user/create_message_to_admin");
-    // request.setRequestHeader('Authorization', jwt);
-    // request.send(formDataObject);
-
-    const response = await fetch(apiCat('/user/create_message_to_admin'),{
-    method: 'POST',
-        headers: {
-            'Authorization': jwt,
-        },
-        body: formDataObject,
-     });
+        const response = await axios.post(apiCat('/user/create_message_to_admin'), formDataObject, {
+            headers: {
+                Authorization: jwt,
+            }
+        });
+    }
 }
 
 export async function sendReport(jwt: string, formData: FormDatasetData) {
-    const response = await fetch(apiCat('/user/create_message_to_admin'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: jwt,
-      },
-      body: JSON.stringify({
-        msg: formData.reportReason,
-        msg_type: 'report',
-        msg_content: {
-            'datasetID': formData.datasetName,
-            'reportReason': formData.reportReason,
-            'reportContent': formData.reportContent,
-          }
-      }),
-    });
+    const response = await axios.post(apiCat('/user/create_message_to_admin'),
+        {
+            msg: "举报数据集",
+            msg_type: 'Report',
+            msg_content: {
+                'datasetID': formData.datasetName,
+                'reportReason': formData.reportReason,
+                'reportContent': formData.reportContent,
+            }
+        },
+        {
+            headers: {
+                Authorization: jwt,
+            },
+        }
+    );
 }
 
 
@@ -284,47 +285,59 @@ interface FormDataset {
     annex: FileItem[],
     files: File[],
 }
+
 export async function sendDataset(jwt: string, formData: FormDataset) {
-    await fetch(apiCat('/dataset/create'), {
-        method: 'POST',
+    await axios.post(apiCat('/dataset/create'), {
+        name: formData.datasetName,
+        domain: formData.datasetApplication,
+        tag: formData.datasetTags,
+    }, {
         headers: {
-            'Content-Type': 'application/json',
             Authorization: jwt,
         },
-        body: JSON.stringify({
-            name: formData.datasetName,
-            domain: formData.datasetApplication,
-            tag: formData.datasetTags,
-
-            // author: formData.datasetPublisher
-        }),
-    });
+    }
+    );
 
     const DatasetFile = new FormData();
     DatasetFile.append('name', formData.datasetName);
     DatasetFile.append('file', formData.files[0]);
-    await fetch(apiCat('/dataset/upload'),{
-    method: 'POST',
+    await axios.post(apiCat('/dataset/upload'), DatasetFile, {
         headers: {
-            // 'Content-Type': 'multipart/form-data',
             'Authorization': jwt,
         },
-        body: DatasetFile,
-     });
+    });
 
-
+    await axios.post(apiCat('/user/create_message_to_admin'), {
+        msg_type: "Upload",
+        msg: "数据集上传",
+        msg_content: {
+            'datasetName': formData.datasetName,
+        }
+    }, {
+        headers: {
+            Authorization: jwt,
+        },
+    });
 }
 
-export async function getModelScore(datasetID: number){
+export async function getModelScore(datasetID: number) {
     const response = await axios.post(apiCat(`/ranking/list_selected_credit`), { datasetId: datasetID });
     return response.data.data;
 }
 
-export async function subscribeDataset(datasetID: number){
-    return axios.post(apiCat('/user/subscribe_dataset'), {datasetId: datasetID});
+export async function uploadDatasetFile(data: FormData) {
+    return axios.post(apiCat(`/dataset/upload`), data, {
+        headers: {
+            Authorization: getToken()!,
+        },
+    });
 }
 
-export async function isDatasetSubscribed(userID:number, datasetID: number){
+export async function subscribeDataset(datasetID: number) {
+    return axios.post(apiCat('/user/subscribe_dataset'), { datasetId: datasetID });
+}
+
+export async function isDatasetSubscribed(userID: number, datasetID: number) {
     const response = await axios.get(apiCat(`/user/list_dataset_subscription/${userID}`));
     return response.data.datasets.some((item: any) => item.id === datasetID);
 }

@@ -120,7 +120,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -162,4 +161,5 @@ cython_debug/
 # migrations
 **/migrations/*.py
 # static
-static/
+/static/*
+!/static/.gitkeep

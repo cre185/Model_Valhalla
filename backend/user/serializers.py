@@ -16,6 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_username(self, username):
         # if username already exists
         if User.objects.filter(username=username).count():
+            if self.context['request'].method == 'PATCH' and str(self.context['request'].path).split('/')[-1] == str(User.objects.get(username=username).id):
+                return username
             raise ValidationErrorWithMsg(
                 detail={'message': 'Username already been used'})
         # if username is valid
@@ -36,6 +38,8 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_mobile(self, mobile):
         # if mobile already exists
         if User.objects.filter(mobile=mobile).count():
+            if self.context['request'].method == 'PATCH' and str(self.context['request'].path).split('/')[-1] == str(User.objects.get(mobile=mobile).id):
+                return mobile
             raise ValidationErrorWithMsg(
                 detail={'message': 'Mobile already been used'})
         # if mobile is valid
@@ -48,6 +52,8 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_email(self, email):
         # if email already exists
         if User.objects.filter(email=email).count():
+            if self.context['request'].method == 'PATCH' and str(self.context['request'].path).split('/')[-1] == str(User.objects.get(email=email).id):
+                return email
             raise ValidationErrorWithMsg(
                 detail={'message': 'Email already been used'})
         # if email is valid

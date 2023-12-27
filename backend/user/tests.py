@@ -1,4 +1,7 @@
+import datetime
 import unittest
+
+import pytz
 
 import jwt as pyjwt
 from django.test import TestCase
@@ -16,6 +19,8 @@ class UserModelTests(TestCase):
         user = User(
             username="testuser",
             password="testuser",
+            mobile="12345678901",
+            email="someone@example.com"
         )
         user.save()
         self.client = APIClient()
@@ -68,7 +73,6 @@ class UserModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "Invalid credentials")
         self.assertEqual(response.status_code, 401)
-
         response = self.client.post(
             '/user/login',
             {
@@ -79,6 +83,43 @@ class UserModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "Invalid credentials")
         self.assertEqual(response.status_code, 401)
+        # test login with verify code
+        VerifyMsg1 = VerifyMsg(
+            mobile="12345678901",
+            code="123456"
+        )
+        VerifyMsg1.save()
+        response = self.client.post(
+            '/user/login_with_verify_code',
+            {
+                "mobile": "12345678901",
+                "code": "123456"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(json_data['jwt'], None)
+        # test login with wrong code
+        response = self.client.post(
+            '/user/login_with_verify_code',
+            {
+                "mobile": "12345678901",
+                "code": "114514"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 401)
+        # easter egg -- logout
+        response = self.client.post(
+            '/user/logout',
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
 
     def test_register(self):
         # the correct case
@@ -87,7 +128,7 @@ class UserModelTests(TestCase):
             {
                 "username": "testuser2",
                 "password": "testuser2",
-                "mobile": "12345678901"
+                "mobile": "12345678902"
             },
             format="json"
         )
@@ -145,36 +186,59 @@ class UserModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "Mobile already been used")
         self.assertEqual(response.status_code, 400)
-
-    def test_logout(self):
-        # logout without login
+        # request with invalid mobile
         response = self.client.post(
-            '/user/logout',
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "User must be authorized.")
-        self.assertEqual(response.status_code, 401)
-        # login first to get jwt
-        response = self.client.post(
-            '/user/login',
+            '/user/register',
             {
-                "username": "testuser",
-                "password": "testuser"
+                "username": "testuser3",
+                "password": "testuser3",
+                "mobile": "123456"
             },
             format="json"
         )
         json_data = response.json()
-        jwt = json_data['jwt']
-        # logout with jwt
+        self.assertEqual(response.status_code, 400)
+        # request with same email
         response = self.client.post(
-            '/user/logout',
-            HTTP_AUTHORIZATION=jwt,
-            format="json",
+            '/user/register',
+            {
+                "username": "testuser3",
+                "password": "testuser3",
+                "mobile": "12345678900",
+                "email": "someone@example.com"
+            },
+            format="json"
         )
         json_data = response.json()
-        self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
+        # request with invalid email
+        response = self.client.post(
+            '/user/register',
+            {
+                "username": "testuser3",
+                "password": "testuser3",
+                "mobile": "12345678900",
+                "email": "some"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # request with secret to become admin
+        response = self.client.post(
+            '/user/register',
+            {
+                "username": "testuser3",
+                "password": "testuser3",
+                "mobile": "12345678900",
+                "email": "some@exp.com",
+                "secret": "TXNKvJ#1"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(json_data['is_admin'], True)
 
 
 class UserDataModelTests(TestCase):
@@ -195,16 +259,6 @@ class UserDataModelTests(TestCase):
 
     def test_retrieve(self):
         # the correct case
-        response = self.client.post(
-            '/user/login',
-            {
-                "username": "testuser",
-                "password": "testuser"
-            },
-            format="json"
-        )
-        json_data = response.json()
-        jwt = json_data['jwt']
         response = self.client.get(
             '/user/retrieve/1',
             format="json"
@@ -216,11 +270,49 @@ class UserDataModelTests(TestCase):
         # request with wrong id
         response = self.client.get(
             '/user/retrieve/3',
-            HTTP_AUTHORIZATION=jwt,
             format="json"
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 404)
+        # test find user by name
+        response = self.client.post(
+            '/user/find_user_by_name',
+            {
+                "username": "testuser"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        # find user by wrong name
+        response = self.client.post(
+            '/user/find_user_by_name',
+            {
+                "username": "error"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # test retrieve password
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser",
+                "password": "testuser"
+            }, 
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        response = self.client.get(
+            '/user/retrieve_password',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['password'], "testuser")
 
     def test_update(self):
         # the correct case
@@ -234,12 +326,13 @@ class UserDataModelTests(TestCase):
         )
         json_data = response.json()
         jwt = json_data['jwt']
-        response = self.client.put(
+        response = self.client.patch(
             '/user/update/1',
             {
                 "username": "testuser2",
                 "password": "testuser2",
-                "mobile": "12345678902"
+                "mobile": "12345678902",
+                "email": "some@exp.com"
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -248,7 +341,7 @@ class UserDataModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         # request with wrong id
-        response = self.client.put(
+        response = self.client.patch(
             '/user/update/3',
             {
                 "username": "testuser2",
@@ -261,7 +354,7 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 404)
         # request with invalid username
-        response = self.client.put(
+        response = self.client.patch(
             '/user/update/1',
             {
                 "username": "short",
@@ -274,21 +367,8 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "Username is invalid")
         self.assertEqual(response.status_code, 400)
-        # unauthorized request
-        response = self.client.put(
-            '/user/update/1',
-            {
-                "username": "testuser2",
-                "password": "testuser2",
-                "mobile": "12345678902"
-            },
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "User must be authorized.")
-        self.assertEqual(response.status_code, 401)
         # request another user's data
-        response = self.client.put(
+        response = self.client.patch(
             '/user/update/2',
             {
                 "username": "testuser3",
@@ -301,7 +381,6 @@ class UserDataModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "User must be authorized.")
         self.assertEqual(response.status_code, 401)
-        # test partial update
         response = self.client.patch(
             '/user/update/1',
             {
@@ -315,7 +394,86 @@ class UserDataModelTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json_data['username'], "testuser4")
         self.assertEqual(json_data['mobile'], "12345678902")
-
+        # request with same information
+        response = self.client.patch(
+            '/user/update/1',
+            {
+                "username": "testuser4",
+                "mobile": "12345678902",
+                "email": "some@exp.com"
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json_data['username'], "testuser4")
+        self.assertEqual(json_data['mobile'], "12345678902")
+        # request with invalid email
+        response = self.client.patch(
+            '/user/update/1',
+            {
+                "email": "error"
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # test update avatar
+        with open ("user/management/commands/static/avatar/avatar.png", "rb") as f:
+            response = self.client.post(
+                '/user/update_avatar',
+                {
+                    "file": f
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertNotEqual(User.objects.get(id=1).avatar, None)
+        # test without file
+        response = self.client.post(
+            '/user/update_avatar',
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        self.assertEqual(response.status_code, 400)
+        # test update for a user with default avatar
+        response = self.client.post(
+            '/user/register',
+            {
+                "username": "testuser5",
+                "password": "testuser5",
+                "mobile": "12345678911"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post(
+            '/user/login',
+            {
+                "username": "testuser3",
+                "password": "testuser3"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        jwt = json_data['jwt']
+        with open ("user/management/commands/static/avatar/avatar.png", "rb") as f:
+            response = self.client.post(
+                '/user/update_avatar',
+                {
+                    "file": f
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertNotEqual(User.objects.get(id=2).avatar, None)
+        
     def test_subscribe(self):
         # the correct case
         response = self.client.post(
@@ -433,6 +591,30 @@ class UserDataModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(DatasetSubscription.objects.all().count(), 1)
+        # request with wrong dataset_id
+        response = self.client.post(
+            '/user/subscribe_dataset',
+            {
+                "datasetId": 2
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # request again to unsubscribe
+        response = self.client.post(
+            '/user/subscribe_dataset',
+            {
+                "datasetId": 1
+            },
+            HTTP_AUTHORIZATION=jwt,
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(DatasetSubscription.objects.all().count(), 0)
 
     def test_sublist(self):
         # the correct case
@@ -503,6 +685,21 @@ class UserDataModelTests(TestCase):
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(DatasetSubscription.objects.all().count(), 1)
+        response = self.client.get(
+            '/user/list_dataset_subscription/1',
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(len(json_data['datasets']), 1)
+        self.assertEqual(response.status_code, 200)
+        # request with wrong id
+        response = self.client.get(
+            '/user/list_dataset_subscription/3',
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
 
 
 class UserAdminModelTests(TestCase):
@@ -547,7 +744,7 @@ class UserAdminModelTests(TestCase):
         json_data = response.json()
         jwt = json_data['jwt']
         response = self.client.delete(
-            '/user/delete/4',
+            '/user/delete/4',   
             HTTP_AUTHORIZATION=jwt,
             format="json"
         )
@@ -621,7 +818,7 @@ class UserAdminModelTests(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
-class VerifyMsgModelTests(TestCase):
+class VerifyModelTests(TestCase):
     def setUp(self):
         user = User(
             username="testuser",
@@ -631,46 +828,8 @@ class VerifyMsgModelTests(TestCase):
         user.save()
         self.client = APIClient()
 
-    def test_verify(self):
+    def test_verify_code(self):
         # send a verify code first
-        response = self.client.post(
-            '/user/send_message',
-            {
-                "mobile": "12345678902"
-            },
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(response.status_code, 201)
-        # verify with wrong code
-        response = self.client.post(
-            '/user/verify_code',
-            {
-                "mobile": "12345678902",
-                "code": "000000"
-            },
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "Invalid code")
-        self.assertEqual(response.status_code, 401)
-        # verify with correct code
-        verify_code = VerifyMsg.objects.get(mobile="12345678902").code
-        response = self.client.post(
-            '/user/verify_code',
-            {
-                "mobile": "12345678902",
-                "code": verify_code
-            },
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(json_data['message'], "ok")
-        self.assertEqual(response.status_code, 200)
-
-    def test_login_with_verify_code(self):
-        # login with verify code
         response = self.client.post(
             '/user/send_message',
             {
@@ -681,9 +840,22 @@ class VerifyMsgModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 201)
+        # verify with wrong code
+        response = self.client.post(
+            '/user/verify_code',
+            {
+                "mobile": "12345678901",
+                "code": "000000"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "Invalid code")
+        self.assertEqual(response.status_code, 401)
+        # verify with correct code
         verify_code = VerifyMsg.objects.get(mobile="12345678901").code
         response = self.client.post(
-            '/user/login_with_verify_code',
+            '/user/verify_code',
             {
                 "mobile": "12345678901",
                 "code": verify_code
@@ -693,9 +865,122 @@ class VerifyMsgModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
+        # send again to test resend
+        response = self.client.post(
+            '/user/send_message',
+            {
+                "mobile": "12345678901"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # send with wrong mobile
+        response = self.client.post(
+            '/user/send_message',
+            {
+                "mobile": "123123123"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # test clear old code
+        verifymsg = VerifyMsg.objects.create(
+            mobile="12345678902",
+            code="000000"
+        )
+        verifymsg.add_time = datetime.datetime.now()-datetime.timedelta(minutes=10)
+        verifymsg.save()
+        response = self.client.post(
+            '/user/send_message',
+            {
+                "mobile": "12345678902"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(VerifyMsg.objects.all().count(), 2)
+        self.assertNotEqual(VerifyMsg.objects.get(mobile="12345678902").code, "000000")
+
+    def test_verify_email(self):
+        # send a verify code first
+        response = self.client.post(
+            '/user/send_email',
+            {
+                "email": "someone@example.com"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 201)
+        # verify with wrong code
+        response = self.client.post(
+            '/user/verify_email',
+            {
+                "email": "someone@example.com",
+                "code": "000000"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "Invalid code")
+        self.assertEqual(response.status_code, 401)
+        # verify with correct code
+        verify_code = VerifyEmail.objects.get(email="someone@example.com").code
+        response = self.client.post(
+            '/user/verify_email',
+            {
+                "email": "someone@example.com",
+                "code": verify_code
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(json_data['message'], "ok")
+        self.assertEqual(response.status_code, 200)
+        # send again to test resend
+        response = self.client.post(
+            '/user/send_email',
+            {
+                "email": "someone@example.com",
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # send with wrong email
+        response = self.client.post(
+            '/user/send_email',
+            {
+                "email": "someone"
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 400)
+        # test clear old code
+        verifyemail=VerifyEmail.objects.create(
+            email="some@exp.com",
+            code="000000"
+        )
+        verifyemail.add_time = datetime.datetime.now()-datetime.timedelta(minutes=10)
+        verifyemail.save()
+        response = self.client.post(
+            '/user/send_email',
+            {
+                "email": "some@exp.com",
+            },
+            format="json"
+        )
+        json_data = response.json()
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(VerifyEmail.objects.all().count(), 2)
+        self.assertNotEqual(VerifyEmail.objects.get(email="some@exp.com").code, "000000")
 
 
-@unittest.skipUnless(settings.DEBUG == False, "skip ok")
 class JwtTests(TestCase):
     def setUp(self):
         user = User(
@@ -707,34 +992,23 @@ class JwtTests(TestCase):
         self.client = APIClient()
 
     def test_jwt_expire(self):
-        # login first to get jwt
-        response = self.client.post(
-            '/user/login',
-            {
-                "username": "testuser",
-                "password": "testuser"
-            },
-            format="json"
-        )
-        json_data = response.json()
-        jwt = json_data['jwt']
+        # emulate an expired jwt
+        expiry = datetime.datetime.now(tz=pytz.timezone("Asia/Shanghai"))
+        payload = {"exp": expiry, "user_id": 1, "is_admin": False}
+        secret = settings.JWT_SECRET
+        jwt = pyjwt.encode(payload, secret, algorithm="HS256")
         # test jwt
-        import time
-        time.sleep(2)
-        response = self.client.post(
-            '/user/logout',
+        response = self.client.patch(
+            '/user/update/1',
+            {
+                "username": "testuser2",
+            },
             HTTP_AUTHORIZATION=jwt,
             format="json",
         )
         json_data = response.json()
-        self.assertEqual(response.status_code, 200)
-        new_jwt = json_data['jwt']
-        self.assertNotEqual(jwt, new_jwt)
-        # test new_jwt is newer
-        secret = settings.JWT_SECRET
-        payload = pyjwt.decode(jwt, secret, algorithms=["HS256"])
-        new_payload = pyjwt.decode(new_jwt, secret, algorithms=["HS256"])
-        self.assertGreater(new_payload['exp'], payload['exp'])
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(json_data['message'], "Token has expired.")
 
 
 class MsgModelTests(TestCase):
@@ -794,7 +1068,10 @@ class MsgModelTests(TestCase):
             {
                 "target": [1, 2],
                 "msg": "test message",
-                "msg_type": "test type"
+                "msg_type": "test type",
+                "msg_content": {
+                    "test": "test"
+                }
             },
             HTTP_AUTHORIZATION=jwt,
             format="json"
@@ -815,19 +1092,25 @@ class MsgModelTests(TestCase):
         )
         json_data = response.json()
         jwt = json_data['jwt']
-        response = self.client.post(
-            '/user/create_message',
-            {
-                "target": [1],
-                "msg": "test message",
-                "msg_type": "test type"
-            },
-            HTTP_AUTHORIZATION=jwt,
-            format="json"
-        )
-        json_data = response.json()
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(json_data['message'], "ok")
+        # send a message with file
+        with open('user/management/commands/static/avatar/default.jpg', 'rb') as f:
+            response = self.client.post(
+                '/user/create_message',
+                {
+                    "target": 1,
+                    "msg": "test message",
+                    "msg_type": "test type",
+                    "file": f
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+            json_data = response.json()
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(json_data['message'], "ok")
+            self.assertEqual(Msg.objects.all().count(), 3)
+            self.assertEqual(MsgTarget.objects.all().count(), 4)
+            self.assertNotEqual(Msg.objects.get(id=3).msg_file, None)
         response = self.client.post(
             '/user/create_message',
             {
@@ -852,6 +1135,7 @@ class MsgModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(json_data['msgs']), 3)
+        # list message with invalid 
         # test check message
         response = self.client.post(
             '/user/check_message',
@@ -962,3 +1246,21 @@ class MsgModelTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(len(json_data['msgs']), 1)
+        # send with file
+        with open('user/management/commands/static/avatar/default.jpg', 'rb') as f:
+            response = self.client.post(
+                '/user/create_message_to_admin',
+                {
+                    "msg": "test message",
+                    "msg_type": "test type",
+                    "file": f
+                },
+                HTTP_AUTHORIZATION=jwt,
+                format="multipart"
+            )
+            json_data = response.json()
+            self.assertEqual(response.status_code, 201)
+            self.assertEqual(json_data['message'], "ok")
+            self.assertEqual(Msg.objects.all().count(), 2)
+            self.assertEqual(MsgTarget.objects.all().count(), 4)
+            self.assertNotEqual(Msg.objects.get(id=2).msg_file, None)

@@ -10,7 +10,7 @@ from ranking import models as ranking
 from testing import models as testing
 from utils.admin_required import admin_required
 from utils.jwt import login_required
-from utils.verify_dataset import verify_dataset
+from utils.verify_dataset import *
 
 from .models import *
 from .serializers import *
@@ -35,32 +35,6 @@ class createView(mixins.CreateModelMixin, generics.GenericAPIView):
             return Response({"message": "ok",
                          "datasetId": headers.data['id']},
                         status=status.HTTP_201_CREATED)
-        # rename file
-        dataset_name = str(target.id) + '_' + uuid4().hex + '.csv'
-        content = dataset.read().decode('utf-8')
-        try:
-            target.subjective, target.content_size = verify_dataset(content)
-        except Exception:
-            return Response({"message": "Invalid dataset file"},
-                            status=status.HTTP_400_BAD_REQUEST)
-        with transaction.atomic():
-            # remove old file
-            if target.data_file:
-                try:
-                    old_file_path = target.data_file.path
-                    if os.path.isfile(old_file_path):
-                        os.remove(old_file_path)
-                        target.data_file.save(dataset_name, dataset)
-                        target.save()
-                except Exception:
-                    return Response({"message": "Upload failed, please try again later."},
-                                    status=status.HTTP_400_BAD_REQUEST)
-            else:
-                target.data_file.save(dataset_name, dataset)
-                target.save()
-        return Response({"message": "ok",
-                         "datasetId": headers.data['id']},
-                        status=status.HTTP_201_CREATED)
 
 
 class uploadView(APIView):
@@ -78,10 +52,10 @@ class uploadView(APIView):
         if not dataset:
             return Response({"message": "Invalid dataset file"},
                             status=status.HTTP_400_BAD_REQUEST)
-        # rename file
-        dataset_name = str(target.id) + '_' + uuid4().hex + '.csv'
-        content = dataset.read().decode('utf-8')
         try:
+            # rename file
+            dataset_name = str(target.id) + '_' + uuid4().hex + '.csv'
+            content = dataset.read().decode('utf-8')
             target.subjective, target.content_size = verify_dataset(content)
         except Exception:
             return Response({"message": "Invalid dataset file"},
@@ -125,19 +99,10 @@ class updateView(mixins.UpdateModelMixin, generics.GenericAPIView):
     lookup_field = "id"
 
     @admin_required
-    def put(self, request, *args, **kwargs):
-        result = self.update(request, *args, **kwargs)
-        data = result.data
-        data['message'] = 'ok'
-        data['add_time'] = data['add_time'].split('T')[0]
-        return Response(data, status=status.HTTP_200_OK)
-
-    @admin_required
     def patch(self, request, *args, **kwargs):
         result = self.partial_update(request, *args, **kwargs)
         data = result.data
         data['message'] = 'ok'
-        data['add_time'] = data['add_time'].split('T')[0]
         return Response(data, status=status.HTTP_200_OK)
 
 
@@ -181,6 +146,7 @@ class downloadView(APIView):
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
 
+
 class updateTagView(APIView):
     @login_required
     def post(self, request):
@@ -189,6 +155,21 @@ class updateTagView(APIView):
             target.tag = request.data['tag']
             target.save()
             return Response({"message": "ok"}, status=status.HTTP_200_OK)
+        except BaseException:
+            return Response({"message": "Invalid dataset id"},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+
+class previewView(APIView):
+    def get(self, request, *args, **kwargs):
+        try:
+            target = Dataset.objects.get(id=kwargs['id'])
+            file = target.data_file
+            content = file.read().decode('utf-8')
+            data, subjective = get_first_10_rows(content)
+            response = Response({'message': 'ok', 'data': data, 'subjective': subjective},
+                                status=status.HTTP_200_OK)
+            return response
         except BaseException:
             return Response({"message": "Invalid dataset id"},
                             status=status.HTTP_400_BAD_REQUEST)
