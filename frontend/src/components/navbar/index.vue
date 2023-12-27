@@ -223,7 +223,7 @@ async function fetchSourceData() {
           Authorization: getToken()!,
         },
       });
-      if (item.msg_type === "Upload") {
+      if (item.msg_type === "Upload") { // 上传数据集
         newUserToDataset.msg_title = t('messageBox.upload.title');
         if (currentLocale.value === "zh-CN") {
           newUserToDataset.msg_text = `${responseUser.data.username}上传了数据集:${item.msg_content.datasetName}`;
@@ -232,7 +232,7 @@ async function fetchSourceData() {
           newUserToDataset.msg_text = `${responseUser.data.username} uploaded the dataset ${item.msg_content.datasetName}`;
         }
       }
-      else if (item.msg_type === "Reply") {
+      else if (item.msg_type === "Reply") { // 回复了评论
         if (currentLocale.value === "zh-CN") {
           newUserToDataset.msg_title = `${responseUser.data.username}回复了你的评论`;
         }
@@ -241,7 +241,7 @@ async function fetchSourceData() {
         }
         newUserToDataset.msg_text = item.msg_content.childContent;
       }
-      else if (item.msg_type === "Like") {
+      else if (item.msg_type === "Like") { // 点赞消息
         newUserToDataset.msg_title = t('messageBox.like.title');
         if (currentLocale.value === "zh-CN") {
           newUserToDataset.msg_text = `${responseUser.data.username}点赞了你的评论“${item.msg_content.likeContent}”`;
@@ -250,7 +250,7 @@ async function fetchSourceData() {
           newUserToDataset.msg_text = `${responseUser.data.username} liked your comment "${item.msg_content.likeContent}"`;
         }
       }
-      else if (item.msg_type === "Feedback" || item.msg_type === "feedback") {
+      else if (item.msg_type === "Feedback") { // 数据集反馈意见
         newUserToDataset.msg_title = t('messageBox.feedback.title');
         const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
           headers: {
@@ -264,7 +264,7 @@ async function fetchSourceData() {
           newUserToDataset.msg_text = `Reason: ${item.msg_content.feedbackType}, Detailed description: ${item.msg_content.feedbackContent}`;
         }
       }
-      else if (item.msg_type === "Report") {
+      else if (item.msg_type === "Report") { // 数据集举报
         newUserToDataset.msg_title = t('messageBox.upload.title');
         const responseDataset = await axios.get(apiCat(`/dataset/retrieve/${item.msg_content.datasetID}`), {
           headers: {
@@ -278,7 +278,7 @@ async function fetchSourceData() {
           newUserToDataset.msg_text = `Reason: ${item.msg_content.reportReason}, Detailed description: ${item.msg_content.reportContent}`;
         }
       }
-      else if (item.msg_type === "Advice") {
+      else if (item.msg_type === "Advice") { // 对抗评测意见
         if (currentLocale.value === "zh-CN") {
           newUserToDataset.msg_title = `${responseUser.data.username}提出评测建议`;
           newUserToDataset.msg_text = `具体内容:${item.msg_content.adviceContent}`;
@@ -301,7 +301,7 @@ async function readMessage(data: MessageListType) { // 提前msg_id设置为已�
   const ids = data.map((item) => item.msg_id);
   await setMessageStatus({ ids });
 }
-const renderList = computed(() => { // 创建一个过滤属性，只包含messageType为message的列表
+const renderList = computed(() => { // 创建一个过滤属性，只包含未读的消息列表，并设置显示四条
   return messageData.messageList.filter(
     (item) => !item.read
   ).slice(0, 4);;
@@ -330,7 +330,7 @@ const handleItemClick = (items: MessageListType) => {
   })
   msgVisible.value = false;
   const routerType = items[0].msg_type;
-  if (routerType === "Upload") // 设置反馈路由
+  if (routerType === "Upload") // 设置反馈路由，目前仅调转页面，后续具体参数要沟通
   {
     router.push('/dataset/details');
   }
@@ -360,7 +360,7 @@ const handleItemClick = (items: MessageListType) => {
       });
     }
   }
-  else if (routerType === "Feedback" || routerType === "feedback") {
+  else if (routerType === "Feedback") { // 设置反馈的路由
     router.push({
       name: 'Login',
     });
@@ -374,7 +374,7 @@ const handleItemClick = (items: MessageListType) => {
 const emptyList = () => {
   messageData.messageList = [];
 };
-const showMiniMsgBox = () => {
+const showMiniMsgBox = () => { // 点击后再获得消息
   fetchSourceData();
   msgVisible.value = true;
 }
