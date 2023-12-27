@@ -3,15 +3,15 @@ import apiCat from "@/api/main";
 
 export interface userToDataset {
   msg_id: number;
-  msg_type: string;
-  src_UserID: string;
-  msg_text: string;
-  msg_title: string;
-  msg_content: JSON;
+  msg_type: string; // 消息类型，对应六种
+  src_UserID: string; // 发送此消息的人ID，如上传数据集的用户，点赞你的人
+  msg_text: string; // 消息的内容，用于存储加工后的内容
+  msg_title: string; // 消息的标题，和上面的字段共同呈现消息框中消息样式
+  msg_content: JSON; // 存储各种需要的字段，不同消息类型字段不同，具体参考数据库
   add_time: string;
-  read: boolean;
+  read: boolean; // 是否读取
   avatar?: string;
-  messageType: "0";
+  messageType: "0"; // 后续会删除
 }
 export type MessageListType = userToDataset[];
 
