@@ -350,7 +350,7 @@ import {computed, ref, reactive, nextTick, shallowRef} from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useUserStore } from "@/store";
   import useLoading from '@/hooks/loading';
-  import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
+  import { PolicyParams } from '@/api/list';
   import { Pagination } from '@/types/global';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';

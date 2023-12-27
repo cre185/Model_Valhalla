@@ -119,7 +119,7 @@ export function queryCertification() {
 }
 
 export function userUploadApi(data: FormData, jwt: string) {
-  return axios.post('http://localhost:8000/user/update_avatar', data, {
+  return axios.post(apiCat('/user/update_avatar'), data, {
     headers: {
       Authorization: jwt,
     },
