@@ -11,7 +11,7 @@
 
     <ul key="update" class="right-side" id="parentNode">
       <a-space>
-        <a-dropdown trigger="click" @select="changeLocale as any">
+        <a-dropdown trigger="click" @select="changeLocale as any ">
           <a-button
               class="nav-btn"
               type="outline"
@@ -50,7 +50,13 @@
             </a-button>
           </a-badge>
           <template #content >
-            <MessageBox :currentLocale="currentLocale1"
+            <MessageBox v-if="currentLocale1==='zh-CN'"
+                        :currentLocale="'zh-CN'"
+                        @changeShowingStatus="showMiniMsgBox"
+                        :size="'small'"
+            />
+            <MessageBox v-else
+                        :currentLocale="'en-US'"
                         @changeShowingStatus="showMiniMsgBox"
                         :size="'small'"
             />
@@ -140,7 +146,7 @@
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   const { logout } = useUser();
-  const currentLocale1 = ref(getLocale());
+  const currentLocale1 = computed(() => getLocale());
   const { changeLocale, currentLocale } = useLocale();
   const locales = [...LOCALE_OPTIONS];
 

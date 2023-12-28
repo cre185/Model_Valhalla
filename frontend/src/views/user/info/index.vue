@@ -166,7 +166,6 @@
                 :contentType="showingDataType===1 ? 'llm' : 'dataset'"
                 :ID="item.id"
                 :userID="parseInt(userInfo.accountId, 10)"
-                @click="handleClick(item)"
             />
           </div>
         </a-col>
@@ -376,15 +375,6 @@ import {computed, onMounted, reactive, ref} from "vue";
 
   const handleCancelModal = () => {
     recordVisible.value = false;
-  }
-
-  const handleClick = async (data: any) => {
-    if(showingDataType.value === 1){
-      await router.push({ name: 'leaderboardDetails', params: { toShowDetailsID: data.id.toString()}});
-    }
-    else{
-      await router.push({ name: 'datasetDetails', params: { toShowDetailsID: data.id.toString()}});
-    }
   }
 </script>
 

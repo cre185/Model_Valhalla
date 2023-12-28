@@ -3,7 +3,7 @@
   alignItems: 'center', justifyContent: 'center', display: 'flex'}"
   >
     <a-card style="height: 16vh; width: 16vw;" :body-style="{display: 'flex', alignItems: 'center',
-    justifyContent: 'center', height: '100%'}" class="clickable-card"
+    justifyContent: 'center', height: '100%'}" class="clickable-card" @click="handleClick"
     >
       <a-skeleton v-if="loading" :loading="loading" :animation="true">
         <a-skeleton-line :rows="3" />
@@ -44,6 +44,7 @@
   import {isLLMSubscribed, subscribeLLM} from "@/api/model-list";
   import {isDatasetSubscribed, subscribeDataset} from "@/api/dataset";
   import { SubscribedModelRecord, SubscribedDatasetRecord } from "@/api/user-center";
+  import router from "@/router";
 
   const props = defineProps({
     contentType: {
@@ -70,6 +71,15 @@
     }
     subscribed.value = !subscribed.value;
   };
+
+  const handleClick = async () => {
+    if(props.contentType === 'llm'){
+      await router.push({ name: 'leaderboardDetails', params: { toShowDetailsID: props.ID.toString()}});
+    }
+    else{
+      await router.push({ name: 'datasetDetails', params: { toShowDetailsID: props.ID.toString()}});
+    }
+  }
 </script>
 
 <style scoped>

@@ -25,6 +25,7 @@
   import useLoading from "@/hooks/loading";
   import {computed, defineEmits, onMounted, reactive, ref, toRefs, watch} from "vue";
   import {getMessageData, MessageListType, setMessageStatus, userToDataset} from "@/api/message";
+  import {getLocale} from "@arco-design/web-vue";
   import axios from "axios";
   import apiCat from "@/api/main";
   import {getToken} from "@/utils/auth";
@@ -53,7 +54,7 @@
     messageList: [],
   });
   toRefs(messageData);
-  const tabList: TabItem[] = [
+  const tabList = computed(() => ([
     {
       key: 'like',
       title: t('messageBox.tab.title.one'),
@@ -66,7 +67,7 @@
       key: 'system',
       title: t('messageBox.tab.title.three'),
     },
-  ];
+  ]));
   const renderList = computed(() => { // 创建一个过滤属性，只包含未读的消息列表，并设置显示四条
     const size = props.size === 'small' ? 4 : 3
     if (messageType.value === 'like') {
@@ -105,6 +106,7 @@
     setLoading(true);
     messageData.messageList = [] as userToDataset[];
     try {
+      console.log(props.currentLocale);
       messageData.messageList = await getMessageData(props.currentLocale, t);
     } catch (err) {
       // you can report use errorHandler or other

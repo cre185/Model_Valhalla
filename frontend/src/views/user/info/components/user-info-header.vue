@@ -2,9 +2,6 @@
   <div class="header">
     <a-space :size="12" direction="vertical" align="center">
       <a-avatar :size="64">
-        <template #trigger-icon>
-          <icon-camera />
-        </template>
         <img :src="userInfo.avatar" />
       </a-avatar>
       <a-typography-title :heading="6" style="margin: 0">

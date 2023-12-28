@@ -77,6 +77,7 @@ export async function getUserAvatar(jwt: string, userID: string): Promise<string
 export async function getMessageData(lan: string, t: any){
   const { data } = await queryMessageList(getToken()!);
   const returnValue: userToDataset[] = [];
+  console.log(lan);
   // messageData.messageList = data;
   for (let i = 0; i < data.msgs.length; i += 1) {
     const item: any = data.msgs[i];
