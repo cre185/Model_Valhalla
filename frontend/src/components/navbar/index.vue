@@ -9,7 +9,7 @@
       </a-space>
     </div>
 
-    <ul key="update" class="right-side" id="parentNode">
+    <ul :key="update" class="right-side" id="parentNode">
       <a-space>
         <a-dropdown trigger="click" @select="handleChangeLocale">
           <a-button
