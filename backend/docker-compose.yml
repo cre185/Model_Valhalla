@@ -43,7 +43,8 @@ services:
       - "8000:8000"
     volumes:
       - ./nginx:/etc/nginx/conf.d
-      - ./build/static:/backend/build/static
+      - ./build/index.html:/etc/nginx/html/index.html
+      - ./build/assets:/backend/build/assets
     depends_on:
       - app
     networks:
