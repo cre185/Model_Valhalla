@@ -352,7 +352,11 @@ class CreditModelTests(TestCase):
         json_data = response.json()
         self.assertEqual(json_data['message'], "ok")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Credit.objects.get(dataset_id=dataset_id,LLM_id=llm_id).credit, None)
+        self.assertEqual(
+            Credit.objects.get(
+                dataset_id=dataset_id,
+                LLM_id=llm_id).credit,
+            None)
         # test clear with invalid datasetId
         response = self.client.post(
             '/ranking/clear',
@@ -425,7 +429,7 @@ class CreditModelTests(TestCase):
         )
         json_data = response.json()
         self.assertEqual(response.status_code, 400)
- 
+
     def testlistselected(self):
         jwt, dataset_id, dataset_id2, llm_id, llm_id2 = self.create_basics()
         # update credits

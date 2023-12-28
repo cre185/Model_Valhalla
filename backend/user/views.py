@@ -10,9 +10,9 @@ from rest_framework import generics, mixins, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from dataset.serializers import *
 from testing.models import LLMs
 from testing.serializers import *
-from dataset.serializers import *
 from utils.jwt import generate_jwt, login_required
 from utils.send_msg import send_msg
 
@@ -97,7 +97,7 @@ class registerView(mixins.CreateModelMixin, generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data) 
+        headers = self.get_success_headers(serializer.data)
         return Response(
             serializer.data,
             status=status.HTTP_201_CREATED,
@@ -140,8 +140,8 @@ class retrievePasswordView(APIView):
     @login_required
     def get(self, request):
         return Response({"message": "ok",
-                            "password": request.user.password},
-                            status=status.HTTP_200_OK)
+                         "password": request.user.password},
+                        status=status.HTTP_200_OK)
 
 
 class updateAvatarView(APIView):
@@ -156,7 +156,8 @@ class updateAvatarView(APIView):
             uuid4().hex + '.' + image.name.split('.')[-1]
         with transaction.atomic():
             # remove old file
-            if request.user.avatar and request.user.avatar.name.split('/')[-1] != 'default.jpg':
+            if request.user.avatar and request.user.avatar.name.split(
+                    '/')[-1] != 'default.jpg':
                 try:
                     old_file_path = request.user.avatar.path
                     if os.path.isfile(old_file_path):
@@ -172,7 +173,9 @@ class updateAvatarView(APIView):
 
 class logoutView(APIView):
     def post(self, request):
-        return Response({"message": "ok", "hint": "Surprise! Nothing happened."}, status=status.HTTP_200_OK)
+        return Response({"message": "ok",
+                         "hint": "Surprise! Nothing happened."},
+                        status=status.HTTP_200_OK)
 
 
 class deleteView(mixins.DestroyModelMixin, generics.GenericAPIView):
@@ -281,7 +284,7 @@ class list_llm_subscriptionView(APIView):
         except BaseException:
             return Response({"message": "Invalid userId"},
                             status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class list_dataset_subscriptionView(APIView):
     def get(self, request, *args, **kwargs):
@@ -328,7 +331,8 @@ class create_messageView(APIView):
             try:
                 upload_file = request.FILES.get('file')
                 msg = Msg.objects.get(id=msg_id)
-                file_name = str(msg_id) + '_' + uuid4().hex + '.' + upload_file.name.split('.')[-1]
+                file_name = str(msg_id) + '_' + uuid4().hex + \
+                    '.' + upload_file.name.split('.')[-1]
                 msg.msg_file.save(file_name, upload_file)
             except BaseException:
                 pass
@@ -357,7 +361,8 @@ class create_message_to_adminView(APIView):
             try:
                 upload_file = request.FILES.get('file')
                 msg = Msg.objects.get(id=msg_id)
-                file_name = str(msg_id) + '_' + uuid4().hex + '.' + upload_file.name.split('.')[-1]
+                file_name = str(msg_id) + '_' + uuid4().hex + \
+                    '.' + upload_file.name.split('.')[-1]
                 msg.msg_file.save(file_name, upload_file)
             except BaseException:
                 pass
@@ -385,6 +390,7 @@ class check_messageView(APIView):
         except BaseException:
             return Response({"message": "Invalid data"},
                             status=status.HTTP_400_BAD_REQUEST)
+
 
 class find_user_by_nameView(APIView):
     def post(self, request):

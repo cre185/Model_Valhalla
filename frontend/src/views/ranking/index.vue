@@ -259,7 +259,6 @@
   import {getToken} from "@/utils/auth";
   import { useI18n } from 'vue-i18n';
   import useLoading from '@/hooks/loading';
-  import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
   import {isLLMSubscribed, LLMRankingData, queryDatasetColumnList, queryLLMList, subscribeLLM} from "@/api/model-list";
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';

@@ -395,11 +395,12 @@
 </template>
 
 <script lang="ts" setup>
-  import {computed, ref, reactive, nextTick, onMounted, shallowRef} from 'vue';
+/* eslint-disable */
+import {computed, ref, reactive, nextTick, shallowRef, onMounted} from 'vue';
   import { useI18n } from 'vue-i18n';
   import { useUserStore } from "@/store";
   import useLoading from '@/hooks/loading';
-  import { queryPolicyList, PolicyRecord, PolicyParams } from '@/api/list';
+  import { PolicyParams } from '@/api/list';
   import { Pagination } from '@/types/global';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
@@ -660,15 +661,19 @@
     record.showInput = false;
   };
 
-  const handleDownload = (record: DatasetData) => {
+  const handleDownload = async (record: DatasetData) => {
     const downloadLink = document.createElement('a');
-    getDatasetFile(record.id).then(returnValue => {
+    await getDatasetFile(record.id).then(returnValue => {
       downloadLink.href = returnValue.data.data_file;
       downloadLink.download = `${record.name}.csv`;
-      document.body.appendChild(downloadLink);
+      const container = document.createElement('div');
+      container.appendChild(downloadLink);
+      document.body.appendChild(container);
       downloadLink.click();
+      document.body.removeChild(container);
     });
-  }
+  };
+
   const handleFeedback = () => {
     showDatasetFeedback.value = true;
 
@@ -677,13 +682,11 @@
     record.toDownload = !record.toDownload;
   }
 
-  const handleBatchDownload = () => {
-    for(let i = 0; i < renderData.value!.length; i += 1) {
-      if(renderData.value![i].toDownload){
-        handleDownload(renderData.value![i]);
-      }
+  const handleBatchDownload = async () => {
+    for (const item of renderData.value!.filter(item => item.toDownload)) {
+      await handleDownload(item);
     }
-  }
+  };
 
   const handleCancel = () => {
     toShowTab.value = 1;

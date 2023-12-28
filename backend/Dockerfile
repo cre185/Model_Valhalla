@@ -6,5 +6,5 @@ RUN mkdir /backend
 WORKDIR /backend
 RUN pip install pip -U
 ADD requirements.txt /backend/
-RUN pip install -r requirements.txt
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 ADD . /backend/

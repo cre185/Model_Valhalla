@@ -74,7 +74,7 @@ function setupInterceptors(router: Router) {
         return response;
       },
       (error) => {
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 408) {
           Message.error({
             content: 'Login Expired',
             duration: 5 * 1000,

@@ -1,4 +1,3 @@
-import json
 
 from rest_framework import serializers
 
@@ -16,7 +15,8 @@ class LLMsSerializer(serializers.ModelSerializer):
     def validate_name(self, name):
         # if the name has already been used
         if LLMs.objects.filter(name=name).exists():
-            if self.context['request'].method == 'PATCH' and str(self.context['request'].path).split('/')[-1] == str(LLMs.objects.get(name=name).id):
+            if self.context['request'].method == 'PATCH' and str(
+                    self.context['request'].path).split('/')[-1] == str(LLMs.objects.get(name=name).id):
                 return name
             raise ValidationErrorWithMsg('The name has already been used.')
         return name
