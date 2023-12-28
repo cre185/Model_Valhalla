@@ -283,6 +283,18 @@
               </template>
               <p>{{ $t('dataset.details.unsubscribe.btn') }}</p>
             </a-button>
+            <a-button
+                v-else-if="!modify"
+                class="llm-details-subscribe-btn"
+                type="primary"
+                size="large"
+                @click="handleSubscribe"
+            >
+              <template #icon>
+                <icon-star style="margin-top: 15%" :size="18"/>
+              </template>
+              <p>{{ $t('dataset.details.subscribe.btn') }}</p>
+            </a-button>
             <a-upload
                 v-else
                 action="http://localhost:8000/user/logout"
@@ -807,7 +819,6 @@ import {computed, ref, reactive, nextTick, shallowRef, onMounted} from 'vue';
       }
       if(props.toShowPanelIndex !== '' || props.toShowPanelIndex === undefined){
         toShowTab.value = parseInt(props.toShowPanelIndex, 10);
-        console.log(toShowTab.value);
       }
     })
   });

@@ -10,23 +10,53 @@
     </div>
 
     <ul key="update" class="right-side" id="parentNode">
-      <a-popover :popup-visible="msgVisible"
-                 :content-style="{width: '21vw', height: '50vh', padding: '0'}"
-      >
-        <a-badge :count="unreadCount">
-          <a-button id="msgButton" style="background-color: white;" shape="circle" @click="showMiniMsgBox">
+      <a-space>
+        <a-dropdown trigger="click" @select="changeLocale as any">
+          <a-button
+              class="nav-btn"
+              type="outline"
+              :shape="'circle'"
+          >
             <template #icon>
-              <icon-email />
+              <icon-language />
             </template>
           </a-button>
-        </a-badge>
-        <template #content >
-          <MessageBox :currentLocale="currentLocale"
-                      @changeShowingStatus="showMiniMsgBox"
-                      :size="'small'"
-          />
-        </template>
-      </a-popover>
+          <template #content>
+            <a-doption
+                v-for="item in locales"
+                :key="item.value"
+                :value="item.value"
+            >
+              <template #icon>
+                <icon-check v-show="item.value === currentLocale" />
+              </template>
+              {{ item.label }}
+            </a-doption>
+          </template>
+        </a-dropdown>
+        <a-popover :popup-visible="msgVisible"
+                   :content-style="{width: '21vw', height: '50vh', padding: '0'}"
+        >
+          <a-badge :count="unreadCount">
+            <a-button
+                class="nav-btn"
+                type="outline"
+                :shape="'circle'"
+                @click="showMiniMsgBox"
+            >
+              <template #icon>
+                <icon-notification />
+              </template>
+            </a-button>
+          </a-badge>
+          <template #content >
+            <MessageBox :currentLocale="currentLocale1"
+                        @changeShowingStatus="showMiniMsgBox"
+                        :size="'small'"
+            />
+          </template>
+        </a-popover>
+      </a-space>
       <li v-if="isLogin()">
         <a-space :size="16">
           <span>{{ $t('navbar.welcome') }}{{ userStore.username }}</span>
@@ -80,6 +110,8 @@
   import useUser from '@/hooks/user';
   import { useRouter } from 'vue-router';
   import { getToken, isLogin } from '@/utils/auth';
+  import { LOCALE_OPTIONS } from '@/locale';
+  import useLocale from '@/hooks/locale';
   import eventBus from '@/api/event-bus';
   import { useI18n } from "vue-i18n";
   import {
@@ -108,7 +140,9 @@
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   const { logout } = useUser();
-  const currentLocale = ref(getLocale());
+  const currentLocale1 = ref(getLocale());
+  const { changeLocale, currentLocale } = useLocale();
+  const locales = [...LOCALE_OPTIONS];
 
   const resizeBigAvatar = () => {
     myAvatar.value.$el.style.width = '64px';
@@ -157,10 +191,13 @@
     getMessageData(getLocale(), t).then(data => {
       messageData.value = data;
       unreadCount.value = data.filter(item => !item.read).length;
-    })
+    });
     document.addEventListener('scroll', ()=>{
       msgVisible.value = false;
-    })
+    });
+    eventBus.on('updateNavbar', () => {
+      update.value = !update.value;
+    });
   });
 </script>
 
