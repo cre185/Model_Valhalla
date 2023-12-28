@@ -11,7 +11,7 @@
 
     <ul key="update" class="right-side" id="parentNode">
       <a-space>
-        <a-dropdown trigger="click" @select="changeLocale as any ">
+        <a-dropdown trigger="click" @select="handleChangeLocale">
           <a-button
               class="nav-btn"
               type="outline"
@@ -146,7 +146,7 @@
   const userStore = useUserStore();
   userStore.setInfo(JSON.parse(localStorage.getItem('userStore')!));
   const { logout } = useUser();
-  const currentLocale1 = computed(() => getLocale());
+  const currentLocale1 = ref(getLocale());
   const { changeLocale, currentLocale } = useLocale();
   const locales = [...LOCALE_OPTIONS];
 
@@ -191,6 +191,12 @@
 
   const showMiniMsgBox = () => { // 点击后再获得消息
     msgVisible.value = !msgVisible.value;
+  }
+
+  const handleChangeLocale = (value: string) => {
+    console.log(value);
+    changeLocale(value);
+    currentLocale1.value = value;
   }
 
   onMounted(() => {

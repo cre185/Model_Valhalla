@@ -265,6 +265,15 @@ import {computed, onMounted, reactive, ref} from "vue";
     }
     else if (showingDataType.value === 3) {
       subscribedDataList.value = await queryBattleRecordsData(parseInt(userInfo.accountId!, 10));
+      subscribedDataList.value.sort((a: any, b: any) => {
+        if(new Date(a.battleTime) > new Date(b.battleTime)) {
+          return -1;
+        }
+        if(new Date(a.battleTime) < new Date(b.battleTime)) {
+          return 1;
+        }
+        return (a.model > b.model) ? -1 : 1;
+      });
     }
     else {
       messageData.value = await getMessageData(getLocale(), t);
