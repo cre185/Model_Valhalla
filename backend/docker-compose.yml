@@ -9,7 +9,7 @@ services:
       "python3 manage.py makemigrations --settings=Model_Valhalla.settings_prod &&
       python3 manage.py migrate --settings=Model_Valhalla.settings_prod &&
       python3 manage.py init_db --settings=Model_Valhalla.settings_prod &&
-      python3 manage.py runserver 0.0.0.0:8000 --settings=Model_Valhalla.settings_prod"
+      DJANGO_SETTINGS_MODULE=Model_Valhalla.settings_prod gunicorn --timeout=30 --workers=4 --preload --bind :8000 Model_Valhalla.wsgi:application"
     volumes:
       - .:/backend
     expose:
@@ -43,7 +43,8 @@ services:
       - "8000:8000"
     volumes:
       - ./nginx:/etc/nginx/conf.d
-      - ./build/static:/backend/build/static
+      - ./build/index.html:/etc/nginx/html/index.html
+      - ./build/assets:/backend/build/assets
     depends_on:
       - app
     networks:

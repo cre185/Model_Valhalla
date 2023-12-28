@@ -1011,7 +1011,7 @@ class JwtTests(TestCase):
             format="json",
         )
         json_data = response.json()
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 408)
         self.assertEqual(json_data['message'], "Token has expired.")
 
 
