@@ -1,21 +1,6 @@
 import axios from 'axios';
 import apiCat from "@/api/main";
-import {queryLLMList} from "@/api/model-list";
-
-export interface MyProjectRecord {
-  id: number;
-  name: string;
-  description: string;
-  peopleNumber: number;
-  contributors: {
-    name: string;
-    email: string;
-    avatar: string;
-  }[];
-}
-export function queryMyProjectList() {
-  return axios.post('/api/user/my-project/list');
-}
+import {BattleRecords, GetModelInfo, queryLLMList, QuestionAndAnswer} from "@/api/model-list";
 
 export interface SubscribedModelRecord{
   id: number;
@@ -61,16 +46,6 @@ export async function querySubscribedDatasets(userId: number) {
   return datasetList;
 }
 
-export interface MyTeamRecord {
-  id: number;
-  avatar: string;
-  name: string;
-  peopleNumber: number;
-}
-export function queryMyTeamList() {
-  return axios.post('/api/user/my-team/list');
-}
-
 export interface LatestActivity {
   id: number;
   title: string;
@@ -81,47 +56,58 @@ export function queryLatestActivity() {
   return axios.post<LatestActivity[]>('/api/user/latest-activity');
 }
 
-export function saveUserInfo() {
-  return axios.post('/api/user/save-info');
-}
-
-export interface BasicInfoModel {
-  username: string;
-  profile: string;
-}
-
-export interface EnterpriseCertificationModel {
-  accountType: number;
-  status: number;
-  time: string;
-  legalPerson: string;
-  certificateType: string;
-  authenticationNumber: string;
-  enterpriseName: string;
-  enterpriseCertificateType: string;
-  organizationCode: string;
-}
-
-export type CertificationRecord = Array<{
-  certificationType: number;
-  certificationContent: string;
-  status: number;
-  time: string;
-}>;
-
-export interface UnitCertification {
-  enterpriseInfo: EnterpriseCertificationModel;
-  record: CertificationRecord;
-}
-
-export function queryCertification() {
-  return axios.post<UnitCertification>('/api/user/certification');
-}
-
 export function userUploadApi(data: FormData, jwt: string) {
   return axios.post('http://localhost:8000/user/update_avatar', data, {
     headers: {
       Authorization: jwt,
     },
   });
+}
+
+export interface BattleRecordsData {
+  id: number;
+  testUser: number;
+  model: string;
+  adversarialModel: string;
+  battleTime: string;
+  winner: string;
+  QA: QuestionAndAnswer[];
+}
+
+export async function queryBattleRecordsData(userID: number){
+  const modelList = await axios.get(apiCat('/testing/list'));
+  const battleRecordsDatalist: BattleRecordsData[] = [];
+  const currentRecordID = new Set();
+
+  const promises = modelList.data.data.map(async (model: any) => {
+    const returnValue = await axios.post(apiCat('/testing/battle_history'), { llm: model.id });
+    await Promise.all(
+        returnValue.data.data.map(async (record: any) => {
+          if (!currentRecordID.has(record.id)) {
+            currentRecordID.add(record.id);
+            if (record.user_id === userID) {
+              battleRecordsDatalist.push({
+                id: record.id,
+                testUser: record.user_id,
+                model: (await GetModelInfo(record.llm1)).name,
+                adversarialModel: (await GetModelInfo(record.llm2)).name,
+                battleTime: record.add_time,
+                winner: '',
+                QA: record.result
+              });
+              if(record.winner === 1){
+                battleRecordsDatalist[battleRecordsDatalist.length - 1].winner =
+                    battleRecordsDatalist[battleRecordsDatalist.length - 1].model;
+              }
+              else if(record.winner === -1){
+                battleRecordsDatalist[battleRecordsDatalist.length - 1].winner =
+                    battleRecordsDatalist[battleRecordsDatalist.length - 1].adversarialModel;
+              }
+            }
+          }
+        })
+    );
+  });
+  await Promise.all(promises);
+  return battleRecordsDatalist;
 }

@@ -1,6 +1,7 @@
 import { DEFAULT_LAYOUT } from '../base';
 import { AppRouteRecordRaw } from '../types';
 
+// @ts-ignore
 const DATASET: AppRouteRecordRaw = {
   path: '/dataset',
   name: 'dataset',
@@ -13,7 +14,11 @@ const DATASET: AppRouteRecordRaw = {
   },
   children: [
     {
-      path: 'details',
+      path: 'details/:toShowDetailsID?/:toShowPanelIndex?',
+      props: (route: any) => ({
+        toShowDetailsID: route.params.toShowDetailsID,
+        toShowPanelIndex: route.params.toShowPanelIndex
+      }),
       name: 'datasetDetails',
       component: () => import('@/views/dataset/index.vue'),
       meta: {
@@ -22,7 +27,7 @@ const DATASET: AppRouteRecordRaw = {
         roles: ['*'],
       },
     },
-  ],
+  ]
 };
 
 export default DATASET;

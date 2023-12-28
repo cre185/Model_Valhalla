@@ -187,7 +187,52 @@
         </header>
       </template>
       <div>
-        <a-tabs size="large">
+        <a-tabs size="large" v-if="toShowTab===1" default-active-key="1">
+          <a-tab-pane key="1" :title="$t('ranking.details.details')">
+            <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('ranking.details.datasetScore')">
+            <DatasetProfile :modelid="ModelID" />
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
+            <AdversarialRecords :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
+            <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
+                                 @change-comment="handleChangeComment" />
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large" v-else-if="toShowTab===2" default-active-key="2">
+          <a-tab-pane key="1" :title="$t('ranking.details.details')">
+            <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('ranking.details.datasetScore')">
+            <DatasetProfile :modelid="ModelID" />
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
+            <AdversarialRecords :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
+            <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
+                                 @change-comment="handleChangeComment" />
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large" v-else-if="toShowTab===3" default-active-key="3">
+          <a-tab-pane key="1" :title="$t('ranking.details.details')">
+            <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="2" :title="$t('ranking.details.datasetScore')">
+            <DatasetProfile :modelid="ModelID" />
+          </a-tab-pane>
+          <a-tab-pane key="3" :title="$t('ranking.details.competitionRecords')">
+            <AdversarialRecords :modelID="ModelID"/>
+          </a-tab-pane>
+          <a-tab-pane key="4" :title="$t('ranking.details.discussions')">
+            <ModelDiscussionArea :comment-details="commentDetails" :model-id=ModelID
+                                 @change-comment="handleChangeComment" />
+          </a-tab-pane>
+        </a-tabs>
+        <a-tabs size="large" v-else default-active-key="4">
           <a-tab-pane key="1" :title="$t('ranking.details.details')">
             <ModelProfile v-if="ModelID !== ''" :key="paintFirstTab" :modelID="ModelID"/>
           </a-tab-pane>
@@ -243,6 +288,8 @@
   const currentLLM = ref<LLMRankingData>();
   const ModelID = ref('');
   const paintFirstTab = ref(false);
+  const props = defineProps(['toShowDetailsID', 'toShowPanelIndex']);
+  const toShowTab = ref(1);
 
 
   const size = ref<SizeProps>('medium');
@@ -258,6 +305,7 @@
 
   const handleCancel = () => {
     visible.value = false;
+    toShowTab.value = 1;
   }
 
   const densityList = computed(() => [
@@ -353,7 +401,6 @@
     }
     return false;
   }
-  fetchData();
 
   const handleSelectDensity = (
       val: string | number | Record<string, any> | undefined,
@@ -535,7 +582,7 @@
   }
 
   const handleRotatingGallery = () =>{
-    let radius = 360;
+    let radius = 300;
     const autoRotate = true;
     const rotateSpeed = -60;
     const imgWidth = 80;
@@ -663,18 +710,46 @@
   }
 
   onMounted(() => {
-    handleRotatingGallery();
-    const startBtn = document.getElementById('startBtn');
-    document.getElementById('rankings')!.style.animation="upAndDown 3s cubic-bezier(.7,.3,.3,.7) infinite";
-    document.getElementById('rankings')!.style.marginTop="20px";
-    startBtn!.addEventListener('click', function(event: Event) {
-      scrollAnimation(null, true);
-      event.preventDefault();
-    });
-    setTimeout(() => {
-      startBtn!.style.visibility = 'visible';
-      startBtn!.style.opacity = '1';
-    }, 3000)
+    if(props.toShowDetailsID === '' || props.toShowDetailsID === undefined){
+      fetchData();
+      handleRotatingGallery();
+      const startBtn = document.getElementById('startBtn');
+      document.getElementById('rankings')!.style.animation="upAndDown 3s cubic-bezier(.7,.3,.3,.7) infinite";
+      document.getElementById('rankings')!.style.marginTop="20px";
+      startBtn!.addEventListener('click', function(event: Event) {
+        scrollAnimation(null, true);
+        event.preventDefault();
+      });
+      setTimeout(() => {
+        startBtn!.style.visibility = 'visible';
+        startBtn!.style.opacity = '1';
+      }, 3000)
+    }
+    else {
+      const gallery = document.getElementById('llm-rotatingGallery');
+      const startBtn = document.getElementById('startBtn');
+      const doubleDown = document.getElementById('doubleDown');
+      const rankings = document.getElementById('rankings');
+      startBtn!.style.display = 'none';
+      doubleDown!.style.display = 'none';
+      gallery!.style.display = 'none';
+      rankings!.style.marginTop = '10px';
+      rankings!.style.animation = '';
+      fetchData().then(() => {
+        if(props.toShowDetailsID !== '' || props.toShowDetailsID === undefined){
+          for(let i = 0; i < renderData.value!.length; i += 1){
+            if(renderData.value![i].id === parseInt(props.toShowDetailsID, 10)){
+              currentLLM.value = renderData.value![i];
+              visible.value = true;
+              break;
+            }
+          }
+        }
+        if(props.toShowPanelIndex !== '' || props.toShowPanelIndex === undefined){
+          toShowTab.value = parseInt(props.toShowPanelIndex, 10)
+        }
+      })
+    }
   })
 </script>
 
@@ -819,7 +894,7 @@
 
   #startBtn{
     display: inline-block;
-    margin: 290px 50% auto 50%;
+    margin: 200px 50% auto 50%;
     transform: translateX(-50%);
     visibility: hidden;
     opacity: 0;

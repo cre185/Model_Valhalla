@@ -13,7 +13,11 @@ const HOME: AppRouteRecordRaw = {
   },
   children: [
     {
-      path: 'details',
+      path: 'details/:toShowDetailsID?/:toShowPanelIndex?',
+      props: (route: any) => ({
+        toShowDetailsID: route.params.toShowDetailsID,
+        toShowPanelIndex: route.params.toShowPanelIndex
+      }),
       name: 'leaderboardDetails',
       component: () => import('@/views/ranking/index.vue'),
       meta: {

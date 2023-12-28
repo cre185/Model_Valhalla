@@ -109,7 +109,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch, defineProps } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { FileItem } from '@arco-design/web-vue';
+import { FileItem, Message } from '@arco-design/web-vue';
 import { simplifiedQueryDatasetList, SelectedDataset, sendFeedback, sendReport} from "@/api/dataset";
 import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
 import {getToken} from "@/utils/auth";
@@ -181,18 +181,14 @@ const DatasetSelectOptions = computed<SelectOptionData[]>(() => {
     }));
 });
 const uploadChange = async (fileItem: FileItem) => {
-    console.log(props.datasetFeedbackID)
-    // fileItemList.push(fileItem);
     formModel.value.annex.push(fileItem);
     if(fileItem.file)
     {
         formModel.value.file.push(fileItem.file);
-        console.log(formModel.value.file[0].name);
     }
     
   };
 const handleSubmit = async () => {
-    console.log("Name", formModel.value.datasetName)
     if(currentForm.value === 'feedbackForm') {
         await sendFeedback(getToken()!, formModel.value);
     }
@@ -218,5 +214,6 @@ const handleCancel = async () => {
     formModel.value = generateFormModel();
     switchClick(currentForm.value);
 }
+
 </script>
 <style scoped lang="less"></style>
