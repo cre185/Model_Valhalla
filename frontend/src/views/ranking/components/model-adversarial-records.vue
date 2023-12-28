@@ -209,7 +209,6 @@ import {
     }
     battleHistory.value = await queryLLMBattleRecords(id);
     originalData.value = [];
-    console.log(battleHistory.value);
 
     originalData.value = battleHistory.value.data.map(async (data) => {
       const adversarialModel =
