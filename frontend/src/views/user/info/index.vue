@@ -239,7 +239,7 @@ import {computed, onMounted, reactive, ref} from "vue";
   const userInfo = useUserStore();
   const visible = ref(false);
   const recordVisible = ref(false);
-  const t = useI18n();
+  const {t} = useI18n();
   const subscribedDataList = ref<SubscribedModelRecord[] | SubscribedDatasetRecord[] | BattleRecordsData[]>([]);
   const showingDataType = ref(1);
   const toUpdate = ref(false);
