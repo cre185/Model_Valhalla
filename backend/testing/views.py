@@ -70,7 +70,6 @@ class retrieveView(mixins.RetrieveModelMixin, generics.GenericAPIView):
     serializer_class = LLMsSerializer
     lookup_field = "id"
 
-    @login_required
     def get(self, request, *args, **kwargs):
         result = self.retrieve(request, *args, **kwargs)
         data = result.data

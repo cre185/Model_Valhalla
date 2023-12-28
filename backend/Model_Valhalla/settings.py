@@ -32,7 +32,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,6 +50,8 @@ INSTALLED_APPS = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -152,5 +153,3 @@ EMAIL_HOST_PASSWORD = 'ORUGISJTYHSXQPEC'
 
 EMAIL_USE_TLS = True
 EMAIL_FROM = '18622735565@163.com'
-
-SILENCE = True
