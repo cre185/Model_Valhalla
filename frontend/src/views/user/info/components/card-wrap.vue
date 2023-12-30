@@ -30,6 +30,7 @@
       {{ $t('userInfo.subscription.card.subscribed.btn') }}
     </a-button>
     <a-button v-else
+              type="primary"
               size="large"
               style="margin-left: 1vw; font-size: 1.5vh; font-weight: bolder; padding: 1vh 1vw"
               @click="handleSubscribe"

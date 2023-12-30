@@ -7,6 +7,9 @@ import configArcoStyleImportPlugin from './plugin/arcoStyleImport';
 
 // @ts-ignore
 export default defineConfig({
+  server:{
+    host: 'localhost',
+  },
   plugins: [
     vue(),
     vueJsx(),
