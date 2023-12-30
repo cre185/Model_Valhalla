@@ -28,164 +28,163 @@
                 <template #extra>
                   <a-link @click="handleShowMore(4)">{{ $t('userInfo.viewAll') }}</a-link>
                 </template>
-                <MessageBox :currentLocale="getLocale()"/>
+                <MessageBox :currentLocale="getLocale()" @changeShowingStatus="handleChangeStatus"/>
               </a-card>
             </a-grid-item>
           </a-grid>
         </a-col>
     </div>
-  </div>
-  <a-drawer :width="showingDataType>=3 ? 700 : 1000"
-            :visible="visible"
-            :footer="false"
-            style="display: flex;"
-            unmountOnClose
-            @open="setDrawer"
-            @cancel="handleCancel"
-  >
-    <template #title>
-      <header>
-        <div style="font-size: 3vh" v-if="showingDataType===1">
-          {{ $t('userInfo.title.subscribedModels') }}
-        </div>
-        <div style="font-size: 3vh" v-else-if="showingDataType===2">
-          {{ $t('userInfo.title.subscribedDatasets') }}
-        </div>
-        <div style="font-size: 3vh" v-else-if="showingDataType===3">
-          {{ $t('userInfo.title.adversarialRecords') }}
-        </div>
-        <div style="font-size: 3vh" v-else>
-          {{ $t('userInfo.title.receivedMessages') }}
-        </div>
-      </header>
-    </template>
-    <MessageBox :current-locale="getLocale()" :size="'big'" v-if="showingDataType === 4"/>
-    <a-space class="drawer-space" direction="vertical" fill v-else-if="showingDataType === 3">
-      <a-row justify="center" align="center" style="margin-left: 1vw">
-        <a-col :span="20">
-          <a-form label-align="left">
-            <a-row :gutter="16">
-              <a-col :span="12" flex="auto">
-                <a-form-item
-                    :label-col-props="{ span: 6 }"
-                    :wrapper-col-props="{ span: 18 }"
-                    field="modelA"
-                    :label="$t('userInfo.adversarial.records.modelA')"
-                >
-                  <a-input v-model="searchModelA"
-                           :placeholder="$t('userInfo.adversarial.records.modelA.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-              <a-col :span="12">
-                <a-form-item
-                    :label-col-props="{ span: 6 }"
-                    :wrapper-col-props="{ span: 18 }"
-                    field="modelB"
-                    :label="$t('userInfo.adversarial.records.modelB')"
-                >
-                  <a-input v-model="searchModelB"
-                           :placeholder="$t('userInfo.adversarial.records.modelB.placeholder')"
-                  />
-                </a-form-item>
-              </a-col>
-            </a-row>
-            <a-row :gutter="16">
-              <a-col :span="24">
-                <a-form-item
-                    :label-col-props="{ span: 3 }"
-                    :wrapper-col-props="{ span: 21 }"
-                    field="contentSizeLowerBound"
-                    :label="$t('searchDataset.form.contentSize')"
-                    style="margin-bottom: 0"
-                >
-                  <a-range-picker
-                      v-model="searchDateRange"
-                      :placeholder="[$t('userInfo.adversarial.records.testTime.placeholder1'),
-                                    $t('userInfo.adversarial.records.testTime.placeholder2')]"
-                      style=" width: 100%;"
-                  />
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form>
-        </a-col>
-        <a-col :span="4" style="display:flex; flex-direction: column">
-          <a-button style="margin: auto auto 1vh auto" type="primary" @click="handleSearchRecord">
-            <template #icon>
-              <icon-search/>
-            </template>
-            {{ $t('userInfo.adversarial.records.search.btn') }}
-          </a-button>
-          <a-button style="margin: 1vh auto auto auto" @click="handleReset">
-            <template #icon>
-              <icon-refresh/>
-            </template>
-            {{ $t('userInfo.adversarial.records.reset.btn') }}
-          </a-button>
-        </a-col>
-      </a-row>
-      <a-list :bordered="false"
-      >
-        <a-list-item v-for="(data, index) in subscribedDataList" :key="index">
-          <a-list-item-meta
-              :title="`${$t('userInfo.adversarial.models')}${data.model} & ${data.adversarialModel}`"
-              :description="data.battleTime"
-              :style="{visibility: data.id !== undefined ? 'visible' : 'hidden'}"
-          >
-          </a-list-item-meta>
-          <template #actions>
-            <a-button type="outline" size="mini" @click="handleShowDetails(data)">
-              <template #icon>
-                <icon-exclamation-circle />
-              </template>
-              {{ $t('userInfo.adversarial.records.details.btn') }}
-            </a-button>
-          </template>
-        </a-list-item>
-      </a-list>
-    </a-space>
-    <a-space class="drawer-space" direction="vertical" fill v-else>
-      <a-input-search v-model="searchContent"
-                      :style="{width:'45vw', alignItems: 'center'}"
-                      :placeholder="showingDataType===1 ? $t('userInfo.subscription.llm.input.placeholder') :
-                                $t('userInfo.subscription.dataset.input.placeholder') "
-                      @search="handleSearch"
-                      @blur="handleSearch"
-      />
-      <a-row :gutter="[24, 24]" style="margin-top: 3vh">
-        <a-col
-            v-for="item in subscribedDataList"
-            :key="item.id"
-            :span="12"
-            class="list-col"
-        >
-          <div class="card-wrap">
-            <CardWrap
-                :content="item"
-                :contentType="showingDataType===1 ? 'llm' : 'dataset'"
-                :ID="item.id"
-                :userID="parseInt(userInfo.accountId, 10)"
-            />
+    <a-drawer :width="showingDataType>=3 ? 700 : 1000"
+              :visible="visible"
+              :footer="false"
+              style="display: flex;"
+              unmountOnClose
+              @open="setDrawer"
+              @cancel="handleCancel"
+    >
+      <template #title>
+        <header>
+          <div style="font-size: 3vh" v-if="showingDataType===1">
+            {{ $t('userInfo.title.subscribedModels') }}
           </div>
-        </a-col>
-      </a-row>
-    </a-space>
-    <a-pagination style="justify-content: center; margin: auto auto 2vh auto"
-                  :total="totalDataNum"
-                  :current="currentPage"
-                  :page-size="pageSize"
-                  @change="handlePageChange"
-                  show-jumper
-                  v-if="showingDataType !== 4"
-    />
-  </a-drawer>
-  <a-modal v-if="showingRecord!==undefined"
-           :visible="recordVisible"
-           :footer="false"
-           width="40vw"
-           @cancel="handleCancelModal"
-           :hide-title="true">
+          <div style="font-size: 3vh" v-else-if="showingDataType===2">
+            {{ $t('userInfo.title.subscribedDatasets') }}
+          </div>
+          <div style="font-size: 3vh" v-else-if="showingDataType===3">
+            {{ $t('userInfo.title.adversarialRecords') }}
+          </div>
+          <div style="font-size: 3vh" v-else>
+            {{ $t('userInfo.title.receivedMessages') }}
+          </div>
+        </header>
+      </template>
+      <MessageBox :current-locale="getLocale()" :size="'big'" v-if="showingDataType === 4"/>
+      <a-space class="drawer-space" direction="vertical" fill v-else-if="showingDataType === 3">
+        <a-row justify="center" align="center" style="margin-left: 1vw">
+          <a-col :span="20">
+            <a-form label-align="left">
+              <a-row :gutter="16">
+                <a-col :span="12" flex="auto">
+                  <a-form-item
+                      :label-col-props="{ span: 6 }"
+                      :wrapper-col-props="{ span: 18 }"
+                      field="modelA"
+                      :label="$t('userInfo.adversarial.records.modelA')"
+                  >
+                    <a-input v-model="searchModelA"
+                             :placeholder="$t('userInfo.adversarial.records.modelA.placeholder')"
+                    />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                  <a-form-item
+                      :label-col-props="{ span: 6 }"
+                      :wrapper-col-props="{ span: 18 }"
+                      field="modelB"
+                      :label="$t('userInfo.adversarial.records.modelB')"
+                  >
+                    <a-input v-model="searchModelB"
+                             :placeholder="$t('userInfo.adversarial.records.modelB.placeholder')"
+                    />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+              <a-row :gutter="16">
+                <a-col :span="24">
+                  <a-form-item
+                      :label-col-props="{ span: 3 }"
+                      :wrapper-col-props="{ span: 21 }"
+                      field="contentSizeLowerBound"
+                      :label="$t('searchDataset.form.contentSize')"
+                      style="margin-bottom: 0"
+                  >
+                    <a-range-picker
+                        v-model="searchDateRange"
+                        :placeholder="[$t('userInfo.adversarial.records.testTime.placeholder1'),
+                                    $t('userInfo.adversarial.records.testTime.placeholder2')]"
+                        style=" width: 100%;"
+                    />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+            </a-form>
+          </a-col>
+          <a-col :span="4" style="display:flex; flex-direction: column">
+            <a-button style="margin: auto auto 1vh auto" type="primary" @click="handleSearchRecord">
+              <template #icon>
+                <icon-search/>
+              </template>
+              {{ $t('userInfo.adversarial.records.search.btn') }}
+            </a-button>
+            <a-button style="margin: 1vh auto auto auto" @click="handleReset">
+              <template #icon>
+                <icon-refresh/>
+              </template>
+              {{ $t('userInfo.adversarial.records.reset.btn') }}
+            </a-button>
+          </a-col>
+        </a-row>
+        <a-list :bordered="false"
+        >
+          <a-list-item v-for="(data, index) in subscribedDataList" :key="index">
+            <a-list-item-meta
+                :title="`${$t('userInfo.adversarial.models')}${data.model} & ${data.adversarialModel}`"
+                :description="data.battleTime"
+                :style="{visibility: data.id !== undefined ? 'visible' : 'hidden'}"
+            >
+            </a-list-item-meta>
+            <template #actions>
+              <a-button type="outline" size="mini" @click="handleShowDetails(data)">
+                <template #icon>
+                  <icon-exclamation-circle />
+                </template>
+                {{ $t('userInfo.adversarial.records.details.btn') }}
+              </a-button>
+            </template>
+          </a-list-item>
+        </a-list>
+      </a-space>
+      <a-space class="drawer-space" direction="vertical" fill v-else>
+        <a-input-search v-model="searchContent"
+                        :style="{width:'45vw', alignItems: 'center'}"
+                        :placeholder="showingDataType===1 ? $t('userInfo.subscription.llm.input.placeholder') :
+                                $t('userInfo.subscription.dataset.input.placeholder') "
+                        @search="handleSearch"
+                        @blur="handleSearch"
+        />
+        <a-row :gutter="[24, 24]" style="margin-top: 3vh">
+          <a-col
+              v-for="item in subscribedDataList"
+              :key="item.id"
+              :span="12"
+              class="list-col"
+          >
+            <div class="card-wrap">
+              <CardWrap
+                  :content="item"
+                  :contentType="showingDataType===1 ? 'llm' : 'dataset'"
+                  :ID="item.id"
+                  :userID="parseInt(userInfo.accountId, 10)"
+              />
+            </div>
+          </a-col>
+        </a-row>
+      </a-space>
+      <a-pagination style="justify-content: center; margin: auto auto 2vh auto"
+                    :total="totalDataNum"
+                    :current="currentPage"
+                    :page-size="pageSize"
+                    @change="handlePageChange"
+                    show-jumper
+                    v-if="showingDataType !== 4"
+      />
+    </a-drawer>
+    <a-modal v-if="showingRecord!==undefined"
+             :visible="recordVisible"
+             :footer="false"
+             width="40vw"
+             @cancel="handleCancelModal"
+             :hide-title="true">
       <div style="display: flex; flex-direction: column; height: 70vh">
         <a-space v-for="(data, index) in showingRecord.QA"
                  direction="vertical"
@@ -212,11 +211,12 @@
         <a-divider orientation="center">{{
             `${$t('userInfo.adversarial.records.details.result.prefix')} ${ showingRecord.winner } ${$t('userInfo.adversarial.records.details.result.suffix')}` }}</a-divider>
       </div>
-  </a-modal>
+    </a-modal>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import {computed, onMounted, reactive, ref} from "vue";
+  import {computed, onMounted, reactive, ref} from "vue";
   import { useUserStore } from '@/store';
   import {
     BattleRecordsData, queryBattleRecordsData,
@@ -231,6 +231,7 @@ import {computed, onMounted, reactive, ref} from "vue";
   import {useI18n} from "vue-i18n";
   import {getLocale} from "@arco-design/web-vue";
   import MessageBox from "@/components/navbar/components/message-box.vue";
+  import eventBus from "@/api/event-bus";
   import CardWrap from "./components/card-wrap.vue";
   import UserInfoHeader from './components/user-info-header.vue';
   import SubscribedList from './components/subscribed-list.vue';
@@ -384,6 +385,10 @@ import {computed, onMounted, reactive, ref} from "vue";
 
   const handleCancelModal = () => {
     recordVisible.value = false;
+  }
+
+  const handleChangeStatus = () => {
+    eventBus.emit('messageRead');
   }
 </script>
 
