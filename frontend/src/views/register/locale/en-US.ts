@@ -3,6 +3,7 @@ export default {
   'register.form.typeSelector.title': 'Choose the type of your account',
   'register.form.user.buttonText': 'User',
   'register.form.administrator.buttonTex': 'Administrator',
+  'register.form.back.buttonText': 'Back',
   'register.form.userName.errMsg1': 'Username cannot be empty',
   'register.form.userName.errMsg2':
     'The length of username should be at least 6',

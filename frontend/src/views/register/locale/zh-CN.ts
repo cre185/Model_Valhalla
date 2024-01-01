@@ -3,6 +3,7 @@ export default {
   'register.form.typeSelector.title': '选择你的用户类型',
   'register.form.user.buttonText': '普通用户',
   'register.form.administrator.buttonText': '管理员',
+  'register.form.back.buttonText': '返回',
   'register.form.userName.errMsg1': '用户名不能为空',
   'register.form.userName.errMsg2': '用户名长度至少为6',
   'register.form.password.errMsg1': '密码不能为空',
