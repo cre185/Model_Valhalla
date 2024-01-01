@@ -212,8 +212,8 @@ Github仓库：https://github.com/cre185/Model_Valhalla
 
 #### 后端：
 
-后端使用django框架及其扩展包django-rest-framework，实现了对前端的数据请求的响应。通过django框架的ORM机制，可以轻松实现对数据库的操作。  
-DRF框架提供了一套强大的序列化工具以及视图类，保证接口RESTful风格，同时也极大的简化了开发难度。  
+后端使用django框架及其扩展包django-rest-framework，实现了对前端的数据请求的响应。通过django框架的ORM机制，可以轻松实现对数据库的操作。 
+DRF框架提供了一套强大的序列化工具以及视图类，保证接口RESTful风格，同时也极大的简化了开发难度。 
 项目使用pip和conda作为包管理工具，借助PyJwt实现了用户登录的token验证，使用了Django-cors-headers解决了跨域问题。DRF内置的更强大的Response对象让后端返回的响应更加灵活，APIClient测试工具则使得测试工作更加便捷。  
 
 ### 配置管理
