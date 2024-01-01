@@ -28,6 +28,14 @@
           {{ $t('register.form.administrator.buttonText') }}
         </a-button>
       </a-space>
+      <router-link to="../login">
+        <a-button shape="round">
+          <template #icon>
+            <icon-reply />
+          </template>
+          {{ $t('register.form.back.buttonText') }}
+        </a-button>
+      </router-link>
     </a-space>
   </div>
   <div v-if="userType !== ''" class="register-form-wrapper">

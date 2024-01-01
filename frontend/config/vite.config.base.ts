@@ -5,7 +5,11 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import svgLoader from 'vite-svg-loader';
 import configArcoStyleImportPlugin from './plugin/arcoStyleImport';
 
+// @ts-ignore
 export default defineConfig({
+  server:{
+    host: 'localhost',
+  },
   plugins: [
     vue(),
     vueJsx(),

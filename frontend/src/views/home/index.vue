@@ -155,7 +155,7 @@
 
   .home {
     position: relative;
-    background: white;
+    background: var(--color-fill-1);
     width: 100%;
     height: 100%;
     display: flex;
@@ -165,6 +165,7 @@
   }
 
   .home-content {
+    color: var(--color-text-1);
     max-width: 600px;
     transform: translateY(-3%);
   }

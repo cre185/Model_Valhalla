@@ -156,7 +156,7 @@
     getRegisterTime,
     getPhone,
     getAvatar,
-    getEmail,
+    getEmail, getUserType,
   } from '@/api/user-info';
   import { getToken } from '@/utils/auth';
   import {getUserInfo} from "@/api/user";
@@ -212,6 +212,7 @@
         let avatar;
         let phone;
         let email;
+        let userType;
         await getUsername(userID!, jwt!).then((returnValue) => {
           name = returnValue;
         });
@@ -227,12 +228,16 @@
         await getEmail(userID!, jwt!).then((returnValue) => {
           email = returnValue;
         });
+        await getUserType(userID!, jwt!).then((returnValue) => {
+          userType = returnValue;
+        });
         userStore.setInfo({
           username: name,
           avatar,
           registrationDate,
           phone,
           email,
+          role: userType,
         });
         localStorage.setItem('userStore', JSON.stringify(userStore.$state));
         router.push({

@@ -34,8 +34,28 @@
             </a-doption>
           </template>
         </a-dropdown>
+          <a-tooltip
+              :content="
+            theme === 'light'
+              ? $t('settings.navbar.theme.toDark')
+              : $t('settings.navbar.theme.toLight')
+          "
+          >
+            <a-button
+                class="nav-btn"
+                type="outline"
+                :shape="'circle'"
+                @click="handleToggleTheme"
+            >
+              <template #icon>
+                <icon-moon-fill v-if="theme === 'dark'" />
+                <icon-sun-fill v-else />
+              </template>
+            </a-button>
+          </a-tooltip>
         <a-popover :popup-visible="msgVisible"
                    :content-style="{width: '21vw', height: '50vh', padding: '0'}"
+                   v-if="isLogin()"
         >
           <a-badge :count="unreadCount">
             <a-button
@@ -52,12 +72,12 @@
           <template #content >
             <MessageBox v-if="currentLocale1==='zh-CN'"
                         :currentLocale="'zh-CN'"
-                        @changeShowingStatus="showMiniMsgBox"
+                        @changeShowingStatus="handleChangeStatus"
                         :size="'small'"
             />
             <MessageBox v-else
                         :currentLocale="'en-US'"
-                        @changeShowingStatus="showMiniMsgBox"
+                        @changeShowingStatus="handleChangeStatus"
                         :size="'small'"
             />
           </template>
@@ -65,7 +85,7 @@
       </a-space>
       <li v-if="isLogin()">
         <a-space :size="16">
-          <span>{{ $t('navbar.welcome') }}{{ userStore.username }}</span>
+          <span style="color: var(--color-text-1)">{{ $t('navbar.welcome') }}{{ userStore.username }}</span>
           <a-popover @mouseenter="resizeBigAvatar" @mouseleave="resizeSmallAvatar">
             <a-avatar ref="myAvatar" id="userInfoPanelAvatar">
               <img alt="用户头像" :src="userStore.avatar" />
@@ -98,7 +118,7 @@
       </li>
       <li v-else @click="Login" id="userInfoPanel">
         <a-space size="medium">
-          <span>您好，请先登录</span>
+          <span style="color: var(--color-text-1)">您好，请先登录</span>
           <a-avatar :size="32" :style="{ backgroundColor: '#FFC72E' }">
             <IconUser />
           </a-avatar>
@@ -149,7 +169,9 @@
   const currentLocale1 = ref(getLocale());
   const { changeLocale, currentLocale } = useLocale();
   const locales = [...LOCALE_OPTIONS];
-
+  const theme = computed(() => {
+    return appStore.theme;
+  });
   const resizeBigAvatar = () => {
     myAvatar.value.$el.style.width = '64px';
     myAvatar.value.$el.style.height = '64px';
@@ -189,6 +211,11 @@
   const messageData = ref<userToDataset[]>([]);
   const unreadCount = ref(0);
 
+  const handleChangeStatus = () => {
+    msgVisible.value = false;
+    unreadCount.value = unreadCount.value === 0 ? 0 : unreadCount.value - 1;
+  }
+
   const showMiniMsgBox = () => { // 点击后再获得消息
     msgVisible.value = !msgVisible.value;
   }
@@ -198,18 +225,41 @@
     changeLocale(value);
     currentLocale1.value = value;
   }
+  const isDark = useDark({
+    selector: 'body',
+    attribute: 'arco-theme',
+    valueDark: 'dark',
+    valueLight: 'light',
+    storageKey: 'arco-theme',
+    onChanged(dark: boolean) {
+      // overridden default behavior
+      appStore.toggleTheme(dark);
+    },
+  });
+  const toggleTheme = useToggle(isDark);
+  const handleToggleTheme = () => {
+    toggleTheme();
+  };
 
   onMounted(() => {
-    getMessageData(getLocale(), t).then(data => {
-      messageData.value = data;
-      unreadCount.value = data.filter(item => !item.read).length;
-    });
+    if(isLogin()){
+      getMessageData(getLocale(), t).then(data => {
+        messageData.value = data;
+        unreadCount.value = data.filter(item => !item.read).length;
+      });
+    }
     document.addEventListener('scroll', ()=>{
       msgVisible.value = false;
     });
     eventBus.on('updateNavbar', () => {
       update.value = !update.value;
     });
+    eventBus.on('messageRead', () => {
+      getMessageData(getLocale(), t).then(data => {
+        messageData.value = data;
+        unreadCount.value = data.filter(item => !item.read).length;
+      });
+    })
   });
 </script>
 

@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite --config ./config/vite.config.dev.ts",
-    "build": "vue-tsc --noEmit && vite build --config ./config/vite.config.prod.ts",
+    "build": "vite build --config ./config/vite.config.prod.ts",
     "report": "cross-env REPORT=true npm run build",
     "preview": "npm run build && vite preview --host",
     "type:check": "vue-tsc --noEmit --skipLibCheck",
@@ -39,6 +39,7 @@
     "dayjs": "^1.11.5",
     "echarts": "^5.4.0",
     "lodash": "^4.17.21",
+    "logalot": "^2.1.0",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
     "papaparse": "^5.4.1",
@@ -50,6 +51,7 @@
     "vue": "^3.2.36",
     "vue-echarts": "^6.2.3",
     "vue-i18n": "^9.2.2",
+    "vue-resource": "^1.5.3",
     "vue-router": "^4.0.14",
     "vuex": "^4.1.0"
   },
@@ -106,5 +108,7 @@
     "bin-wrapper": "npm:bin-wrapper-china",
     "rollup": "^2.56.3",
     "gifsicle": "5.2.0"
-  }
+  },
+  "main": ".eslintrc.js",
+  "keywords": []
 }

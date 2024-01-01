@@ -106,7 +106,6 @@
     setLoading(true);
     messageData.messageList = [] as userToDataset[];
     try {
-      console.log(props.currentLocale);
       messageData.messageList = await getMessageData(props.currentLocale, t);
     } catch (err) {
       // you can report use errorHandler or other

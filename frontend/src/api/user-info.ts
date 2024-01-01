@@ -76,6 +76,25 @@ export async function getPassword(
   }
 }
 
+export async function getUserType(
+    userId: string,
+    jwt: string
+): Promise<string> {
+  try {
+    const response = await axios.get(apiCat(`/user/retrieve/${userId}`), {
+      headers: {
+        Authorization: jwt,
+      },
+    });
+
+    const responseJson = response.data;
+    return responseJson.is_admin ? 'admin' : 'user';
+  } catch (error) {
+    console.error('Error fetching password:', error);
+    throw error;
+  }
+}
+
 interface updateRequest {
   key: string;
 }

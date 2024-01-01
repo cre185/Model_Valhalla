@@ -10,7 +10,7 @@
     align-items: center;
     justify-content: center;
     height: 40px;
-    background-color: white;
+    background: var(--color-bg-1);
     color: var(--color-text-2);
     text-align: center;
   }
