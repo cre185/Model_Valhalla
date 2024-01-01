@@ -42,7 +42,7 @@
         <a-card class="resultShow">
           <div id="selectModel">
             <a-select v-model="formModel.id" :options="ModelSelectOptions"
-                      :placeholder="$t('evaluation.select.models')" />
+                      :placeholder="$t('evaluation.select.models')" :disabled="selectDisabled"/>
             <a-button type="primary" style="margin-right: 20px;" @click="confirmClick" :disabled="confirmButtonDisabled">
               <template #icon>
                 <icon-check></icon-check>
@@ -296,6 +296,7 @@ const evaluateFourButtonsVisible = ref(false); // 四个评价按钮是否可见
 const evaluateFourButtonsDisabled = ref(false); // 四个按钮是否可选
 const sendQuestionsDisabled = ref(true); // 发送按钮是否禁用，true表示禁用
 const adviseButtonDisabled = ref(true); // 建议按钮是否禁用，true表示禁用
+const selectDisabled = ref(false);
 const confirmButtonDisabled = ref(false);
 const modelAname = ref('');
 const modelBname = ref('');
@@ -514,6 +515,7 @@ const evaluateClick = async () => {
     });
     await round.getStreamResponse(getToken()!, QAModelA.value, QAModelB.value, sendQuestionsDisabled); // 多传入了一个对象，直接传值不能奏效
     evaluateFourButtonsVisible.value = true;
+    selectDisabled.value = true;
     // sendQuestionsDisabled.value = false;
     lastQuestion.value = formModel.value.question;
     formModel.value.question = '';
@@ -639,7 +641,7 @@ const newRoundClick = async () => {
   regenerateButtonDisabled.value = true;
   confirmButtonDisabled.value = false;
   evaluateFourButtonsVisible.value = false;
-
+  selectDisabled.value = false;
 }
 const regenerateClick = async () => {
   round.QA.pop();
