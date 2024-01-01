@@ -346,7 +346,7 @@
                 v-else-if="toShowTab===2"
         >
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
-            <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
+            <DatasetProfile :datasetID="currentDataset.id.toString()" :update="updateFlag" :update-now="updateNow" @change-tag="fetchData" @update-modify="handleUpdateModify"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('dataset.details.preview')">
             <DatasetPreview :datasetID="currentDataset.id.toString()"/>
@@ -365,7 +365,7 @@
                 v-else-if="toShowTab===3"
         >
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
-            <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
+            <DatasetProfile :datasetID="currentDataset.id.toString()" :update="updateFlag" :update-now="updateNow" @change-tag="fetchData" @update-modify="handleUpdateModify"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('dataset.details.preview')">
             <DatasetPreview :datasetID="currentDataset.id.toString()"/>
@@ -384,7 +384,7 @@
                 v-else
         >
           <a-tab-pane key="1" :title="$t('dataset.details.details')">
-            <DatasetProfile :datasetID="currentDataset.id.toString()" :modify="modifySign" @change-tag="fetchData"/>
+            <DatasetProfile :datasetID="currentDataset.id.toString()" :update="updateFlag" :update-now="updateNow" @change-tag="fetchData" @update-modify="handleUpdateModify"/>
           </a-tab-pane>
           <a-tab-pane key="2" :title="$t('dataset.details.preview')">
             <DatasetPreview :datasetID="currentDataset.id.toString()"/>
