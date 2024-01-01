@@ -211,6 +211,9 @@
           <a-button type="text" size="small" @click="handleDetails(record)">
             {{ $t('searchDataset.columns.operations.view') }}
           </a-button>
+          <a-button type="text" size="small" @click="handleDelete(record)" v-if="userInfo.role==='admin'">
+            {{ $t('searchDataset.columns.operations.delete') }}
+          </a-button>
         </template>
       </a-table>
     </a-card>
@@ -417,16 +420,16 @@ import {computed, ref, reactive, nextTick, shallowRef, onMounted} from 'vue';
   import type { SelectOptionData } from '@arco-design/web-vue/es/select/interface';
   import type { TableColumnData } from '@arco-design/web-vue/es/table/interface';
   import { FileItem } from "@arco-design/web-vue/es/upload/interfaces";
-  import {
-    DatasetData,
-    queryDatasetList,
-    updateDatasetTags,
-    getDatasetFile,
-    updateDataset,
-    uploadDatasetFile,
-    isDatasetSubscribed,
-    subscribeDataset
-  } from "@/api/dataset";
+import {
+  DatasetData,
+  queryDatasetList,
+  updateDatasetTags,
+  getDatasetFile,
+  updateDataset,
+  uploadDatasetFile,
+  isDatasetSubscribed,
+  subscribeDataset, deleteDataset
+} from "@/api/dataset";
   import MyComment, {getComment, updateComment} from "@/api/comment";
   import DatasetProfile from "@/views/dataset/components/dataset-profile.vue";
   import DatasetPreview from "@/views/dataset/components/dataset-preview.vue";
@@ -793,6 +796,11 @@ import {computed, ref, reactive, nextTick, shallowRef, onMounted} from 'vue';
       fileList.value = [];
     }
   }
+
+  const handleDelete = async (record: any) => {
+    await deleteDataset(record.id);
+    await fetchData();
+}
 
   const handleChange = (value:any) => {
     currentDataset.value!.name = value;
