@@ -27,6 +27,7 @@ export default {
   'searchDataset.form.isSubjective.objective': 'Objective',
   'searchDataset.columns.operations.download': 'Download',
   'searchDataset.columns.operations.view': 'View',
+  'searchDataset.columns.operations.delete': 'Delete',
   'searchDataset.operation.feedback': 'Feedback',
   'searchDataset.operation.edit': 'Edit',
   'searchDataset.operation.save': 'Save',

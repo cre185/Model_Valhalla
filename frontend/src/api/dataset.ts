@@ -323,7 +323,7 @@ export async function sendDataset(jwt: string, formData: FormDataset) {
         },
         body: JSON.stringify({
             msg_type: "Upload",
-            msg: "数据集上�?",
+            msg: "数据集上传?",
             msg_content: {
                 'DatasetName': formData.datasetName,
             }
@@ -351,4 +351,8 @@ export async function subscribeDataset(datasetID: number){
 export async function isDatasetSubscribed(userID: number, datasetID: number) {
     const response = await axios.get(apiCat(`/user/list_dataset_subscription/${userID}`));
     return response.data.datasets.some((item: any) => item.id === datasetID);
+}
+
+export async function deleteDataset(datasetID: number){
+    return axios.delete(apiCat(`/dataset/delete/${datasetID}`));
 }
