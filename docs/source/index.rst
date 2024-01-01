@@ -40,3 +40,9 @@ Welcome to Model Valhalla documentation!
    :caption: 会议记录
    
    meeting.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 代码规范
+   
+   代码编写规范.md

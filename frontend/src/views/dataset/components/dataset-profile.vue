@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import axios from "axios";
   import apiCat from "@/api/main";
-  import {defineEmits, nextTick, onMounted, ref, watch} from "vue";
+  import {defineEmits, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
   import {updateDataset, updateDatasetTags} from "@/api/dataset";
 
   const props = defineProps(['datasetID', 'update', 'updateNow']);
@@ -74,6 +74,10 @@
       oldFlag = props.update.edit;
     }
   }, 500);
+
+  onUnmounted(() => {
+    clearInterval(timerId.value);
+  });
 </script>
 
 <template>

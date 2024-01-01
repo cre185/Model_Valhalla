@@ -27,6 +27,7 @@ export default {
   'searchDataset.form.isSubjective.objective': '客观',
   'searchDataset.columns.operations.download': '下载',
   'searchDataset.columns.operations.view': '查看',
+  'searchDataset.columns.operations.delete': '删除',
   'searchDataset.operation.feedback': '反馈',
   'searchDataset.operation.edit': '编辑',
   'searchDataset.operation.save': '保存',
