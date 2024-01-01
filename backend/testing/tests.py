@@ -578,10 +578,7 @@ class BattleModelTests(TestCase):
         self.assertEqual(response.status_code, 400)
 
 
-# @unittest.skipUnless(settings.DEBUG == False, "skip ok")
 class GenerateRelatedTests(TestCase):
-    # Warning: the test case costs a lot of time, and will not be tested usually
-    # Test carried out only when DEBUG is False
     def setUp(self):
         user = User(
             username="testuser",
@@ -601,7 +598,7 @@ class GenerateRelatedTests(TestCase):
         llm2.save()
         dataset = Dataset(
             name="testdataset",
-            data_file="user/management/commands/static/data/ceval_lite.csv",
+            data_file="data/ceval_lite.csv",
         )
         dataset.save()
         credit = Credit(

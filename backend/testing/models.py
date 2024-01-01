@@ -11,8 +11,8 @@ class LLMs(models.Model):
     model_name = models.CharField(max_length=255, default='mistral_7b')
     api_RPM = models.IntegerField(null=True)
     logo = models.ImageField(
-        upload_to='static/logo',
-        default='static/logo/default.jpg')
+        upload_to='logo',
+        default='media/logo/default.jpg')
     official_website = models.CharField(max_length=255, default='')
     description = models.TextField(default='')
     document_name = models.TextField(default='')

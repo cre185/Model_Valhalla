@@ -11,8 +11,8 @@ class User(models.Model):
     email = models.CharField(max_length=255, null=True)
     is_admin = models.BooleanField(default=False)
     avatar = models.ImageField(
-        upload_to='static/avatar',
-        default='static/avatar/default.jpg')
+        upload_to='avatar',
+        default='media/avatar/default.jpg')
 
 
 class VerifyMsg(models.Model):
@@ -46,7 +46,7 @@ class Msg(models.Model):
         on_delete=models.CASCADE,
         related_name='author')
     msg_content = models.JSONField(default=dict)
-    msg_file = models.FileField(upload_to='static/msg', null=True)
+    msg_file = models.FileField(upload_to='msg', null=True)
     target = models.ManyToManyField(
         User, related_name='target', through='MsgTarget')
 

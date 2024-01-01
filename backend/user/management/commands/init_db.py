@@ -16,7 +16,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Copy the static files
         src_dir = "user/management/commands/static"
-        dst_dir = "static"
+        dst_dir = "media"
 
         if(os.path.exists(dst_dir)):
             shutil.rmtree(dst_dir)
