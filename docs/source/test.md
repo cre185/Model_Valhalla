@@ -25,3 +25,6 @@ coverage run manage.py test
 coverage report
 ```
 目前项目的单元测试覆盖率已经达到97%，较为令人满意。  
+### 性能测试  
+性能测试使用了Apache JMeter进行测试，测试使用的配置位于`tests/performanceTest`目录下。  
+性能测试的并发量设为了100，对于非文件接口一切工作正常，文件上传相关的接口由于设计时禁止了并发访问以保障文件正确保存，所以性能测试的结果不准确。  
