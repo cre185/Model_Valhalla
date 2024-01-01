@@ -1,3 +1,3 @@
 username,password,mobile,email,avatar
-realadmin,realadmin,11111111111,realadmin@163.com,static/avatar/default.jpg
-testuser,testuser,12345678901,testuser@163.com,static/avatar/default.jpg
+realadmin,realadmin,11111111111,realadmin@163.com,media/avatar/default.jpg
+testuser,testuser,12345678901,testuser@163.com,media/avatar/default.jpg
