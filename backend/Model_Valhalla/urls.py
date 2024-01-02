@@ -26,5 +26,5 @@ urlpatterns = [
     path('ranking/', include('ranking.urls')),
     path('testing/', include('testing.urls')),
     path('admin/', admin.site.urls),
-    url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}, name='media'),
+    url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}, name='media'),
 ]
