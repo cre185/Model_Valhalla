@@ -514,6 +514,18 @@ REST即Representational State Transfer的缩写，提供了一组设计原则和
 + Problem：文件上传功能的实现，前端组件采用了arco-pro-design的a-upload组件，但是教程中没有提供具体细节，网上也缺少相关示例。
   
   Solution：先是发现前端上传文件屡屡显示上传失败，在经过多次失败的尝试后，查看返回信息发现前端上传文件时会发出一个POST请求，但是这个请求并没有被我们定义，经过尝试后猜想与a-upload组件的action参数有关，在与后端协调后增加了一个无用的接口，将action参数修改为该接口的url，发现文件才能正确上传。之后查阅相关资料，发现上传文件还不能使用JSON格式，要使用formData结构体来存储fileItem对象，修改后实现了文件的上传功能，并在许多模块都得到了成功应用。
+  
++ Problem：前端部署后，只能通过ip:端口号访问，但不支持带url访问；页面之间的路由可以正常访问，但刷新页面时就会报nginx404的错误。
+
+  Solution：项目的Vue.router采用了history模式，这虽然使得url无需附上#且页面跳转无需刷新，但其缺少了服务端的配置，因此当直接输入url或刷新带来的get请求出现时，服务端将无法处理。
+
+  解决的方法是在ngin.conf内加入如下内容，使得带url的访问请求也被定位到index.html：
+
+  ```
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+  ```
 
 
 ### 核心算法  
