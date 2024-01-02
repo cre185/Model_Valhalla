@@ -9,5 +9,9 @@
 * .env：MySQL环境变量配置文件  
 
 ### 部署至服务器  
-项目的服务器部署依靠docker一步实现，在backend目录下执行`docker-compose up`即可。  
-注意，在部署前需要确保前端的静态产生文件已经正确提供。前端得到的静态文件在本项目中为assets文件夹以及一个index.html文件，这些文件应当位于backend/build目录下。  
+项目的服务器部署依靠docker实现，主要需要以下几个步骤：
+1. 修改后端的settings中的`CORS_ORIGIN_WHITELIST`，添加目标服务器的地址。  
+2. 将后端部分的文件拷贝进服务器。  
+3. 在backend目录下执行`docker-compose up`即可。 
+
+注意，在部署前需要确保前端的静态产生文件已经正确提供。前端得到的静态文件在本项目中为assets文件夹以及一个index.html文件，这些文件应当位于backend/build目录下。 

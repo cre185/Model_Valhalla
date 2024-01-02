@@ -8,7 +8,7 @@ from user.models import User
 class Dataset(models.Model):
     name = models.CharField(max_length=127)
     data_file = models.FileField(
-        upload_to='static/data',
+        upload_to='data',
         null=True)
     content_size = models.IntegerField(default=0)
     add_time = models.DateTimeField(auto_now_add=True)
