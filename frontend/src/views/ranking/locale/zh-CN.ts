@@ -24,7 +24,7 @@ export default {
   'ranking.profile.discussion.reply': '回复',
   'ranking.profile.discussion.submit': '发布',
   'ranking.profile.discussion.reply.placeholder': '发表你的评论',
-  'ranking.profile.discussion.replyEmbed.placeholder': '回复 @',
+  'ranking.profile.discussion.replyEmbed.placeholder': '回复@',
   'ranking.behaviour.dataset.num': '编号',
   'ranking.behaviour.dataset.name': '名称',
   'ranking.behaviour.dataset.contenttype': '内容',
