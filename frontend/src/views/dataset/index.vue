@@ -275,7 +275,7 @@
               <p v-else>{{ currentDataset.name }}</p>
             </div>
             <a-button
-                v-if="!modify && currentDataset.isSubscribed"
+                v-if="!modifySign && currentDataset.isSubscribed"
                 class="llm-details-subscribe-btn"
                 type="primary"
                 size="large"
@@ -286,20 +286,8 @@
               </template>
               <p>{{ $t('dataset.details.unsubscribe.btn') }}</p>
             </a-button>
-            <a-button
-                v-else-if="!modify"
-                class="llm-details-subscribe-btn"
-                type="primary"
-                size="large"
-                @click="handleSubscribe"
-            >
-              <template #icon>
-                <icon-star style="margin-top: 15%" :size="18"/>
-              </template>
-              <p>{{ $t('dataset.details.subscribe.btn') }}</p>
-            </a-button>
             <a-upload
-                v-else
+                v-else-if="modifySign"
                 action="http://localhost:8000/user/logout"
                 accept=".csv"
                 :file-list="fileList"
@@ -320,6 +308,18 @@
                 </a-button>
               </template>
             </a-upload>
+            <a-button
+                v-else
+                class="llm-details-subscribe-btn"
+                type="primary"
+                size="large"
+                @click="handleSubscribe"
+            >
+              <template #icon>
+                <icon-star style="margin-top: 15%" :size="18"/>
+              </template>
+              <p>{{ $t('dataset.details.subscribe.btn') }}</p>
+            </a-button>
           </a-space>
         </header>
       </template>

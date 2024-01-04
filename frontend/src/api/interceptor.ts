@@ -50,8 +50,7 @@ function setupInterceptors(router: Router) {
           });
           // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
           if (
-              [50008, 50012, 50014].includes(response.status) &&
-              response.config.url !== '/api/user/info'
+              [50008, 50012, 50014].includes(response.status)
           ) {
             Modal.error({
               title: 'Confirm logout',
