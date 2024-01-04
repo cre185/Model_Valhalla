@@ -1,7 +1,7 @@
 version: "3"
 services:
-  app:
-    container_name: app
+  modelv:
+    container_name: modelv
     restart: always
     build: .
     command: >
@@ -44,7 +44,7 @@ services:
       - ./build/index.html:/etc/nginx/html/index.html
       - ./build/assets:/backend/build/assets
     depends_on:
-      - app
+      - modelv
     networks:
       - web_network
   
