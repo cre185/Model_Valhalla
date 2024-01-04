@@ -1,1 +1,0 @@
-import{_ as o}from"./index.35e9d874.js";import{C as a,aE as t,aH as _,aM as c,bi as s}from"./arco.a9e9ea8e.js";const n={};function r(d,l){const e=s;return a(),t(e,{class:"footer"},{default:_(()=>[c("Model Valhalla")]),_:1})}const p=o(n,[["render",r],["__scopeId","data-v-5c9a07ca"]]);export{p as F};

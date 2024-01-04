@@ -224,7 +224,6 @@
   }
 
   const handleChangeLocale = (value: string) => {
-    console.log(value);
     changeLocale(value);
     currentLocale1.value = value;
   }
