@@ -1,6 +1,6 @@
 <template>
     <div class="dataset-behaviour">
-        <a-card class="general-card">
+        <a-card class="general-card" :bordered="false">
             <a-row>
                 <a-col :flex="1">
                     <a-form
@@ -56,7 +56,7 @@
                                     :rules="sizeRules"
                                     :label-col-props="{ span: 7 }"
                                     :wrapper-col-props="{ span: 17 }"
-                                >   
+                                >
                                     <a-input
                                         v-model="SearchFormModel.contentSize_min"
                                         :placeholder="$t('ranking.behaviour.dataset.size.min.default')"
@@ -88,7 +88,7 @@
                                     :rules="scoreRules"
                                     :label-col-props="{ span: 7 }"
                                     :wrapper-col-props="{ span: 17 }"
-                                >   
+                                >
                                     <a-input
                                         v-model="SearchFormModel.score_min"
                                         :placeholder="$t('ranking.behaviour.dataset.score_min.default')"
@@ -128,7 +128,7 @@
                 :pagination=false
                 :columns="columns"
                 :data="renderData"
-                :bordered="false"
+                :bordered=false
             >
                 <template #num="{ record }">
                     {{ record.num }}
@@ -170,7 +170,7 @@
     },
 
   });
-        
+
     const { t } = useI18n();
     const { proxy } = getCurrentInstance();
     const {loading, setLoading} = useLoading(false);
@@ -180,7 +180,7 @@
 
     watch(
         () => props.modelid,
-    
+
         async (newModelid, oldModelid) => {
             try {
                 const response = await queryDatasetbehaviorList(newModelid);
@@ -224,7 +224,7 @@
     const reset = () => {
         SearchFormModel.value = generateSearchFormModel();
     };
-    
+
     const numRules=[
         {
             required: false,
@@ -337,7 +337,7 @@
             trigger: ['blur', 'change'],
         },
     ];
-    
+
     const columns = computed<TableColumnData[]>(() => [
         {
             title: t('ranking.behaviour.table.num'),
@@ -474,7 +474,7 @@
 }
 .general-card {
     padding: 10px;
-    
+
 }
 .custom-filter-footer {
   display: flex;

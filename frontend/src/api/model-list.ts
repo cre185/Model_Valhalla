@@ -91,6 +91,7 @@ export async function queryLLMList() {
       description: string;
       api_RPM: number;
       elo_credit: number;
+      license: string;
     };
     LLMRankingList.data.push({
       id: model.id,
@@ -98,7 +99,7 @@ export async function queryLLMList() {
       ranking: 0,
       datasetScore: averageScore.data.data[model.id - 1].toFixed(2),
       eloScore: model.elo_credit.toFixed(2),
-      license: '',
+      license: model.license,
     });
   }
   // 获取排名
