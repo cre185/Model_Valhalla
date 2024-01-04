@@ -94,6 +94,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Model_Valhalla.wsgi.application'
 
+SECURE_SSL_REDIRECT = False
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

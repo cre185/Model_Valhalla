@@ -14,8 +14,8 @@ class Command(BaseCommand):
     help = "Initialize Database with test data"
 
     def handle(self, *args, **options):
-        # Copy the static files
-        src_dir = "user/management/commands/static"
+        # Copy the media files
+        src_dir = "user/management/commands/media"
         dst_dir = "media"
 
         if(os.path.exists(dst_dir)):

@@ -1,6 +1,6 @@
 name,description,domain,data_file,subjective,content_size
-"ceval_select","ceval_select","versatile","media/data/ceval_select.csv",0,200
-"cmmlu_select","cmmlu_select","versatile","media/data/cmmlu_select.csv",0,197
-"mmlu_select","mmlu_select","high_school_subjects","media/data/mmlu_select.csv",0,197
-"zbench_common","zbench_common","versatile","media/data/zbench_common.csv",1,63
-"zbench_emergent","zbench_emergent","versatile","media/data/zbench_emergent.csv",1,209
+"ceval_select","ceval_select","versatile","data/ceval_select.csv",0,200
+"cmmlu_select","cmmlu_select","versatile","data/cmmlu_select.csv",0,197
+"mmlu_select","mmlu_select","high_school_subjects","data/mmlu_select.csv",0,197
+"zbench_common","zbench_common","versatile","data/zbench_common.csv",1,63
+"zbench_emergent","zbench_emergent","versatile","data/zbench_emergent.csv",1,209
