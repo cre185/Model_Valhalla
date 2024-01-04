@@ -163,3 +163,5 @@ cython_debug/
 # static
 /media/*
 !/media/.gitkeep
+/static/*
+!/static/.gitkeep
