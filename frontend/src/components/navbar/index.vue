@@ -161,6 +161,7 @@
       name: 'Login',
     });
   };
+
   const { t } = useI18n();
   const jwt = getToken();
   const update = ref(false);

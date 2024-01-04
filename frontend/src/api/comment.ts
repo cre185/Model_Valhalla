@@ -256,7 +256,6 @@ export async function updateComment(
     jwt: string,
     flag = true
 ) {
-    console.log("ID", modelId);
     let responseTwo;
     if (flag) {
         const response = await axios.post(apiCat('/ranking/comment'), { llm: modelId, comment: newComment.content, respond_to: newComment.toId }, {
