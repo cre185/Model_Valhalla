@@ -3,7 +3,6 @@ import {
   login as userLogin,
   loginByPhone as userLoginByPhone,
   logout as userLogout,
-  getUserInfo,
   verifyPhone as registerVerifyPhone,
   verifyCode as registerVerifyCode,
   verifyEmail as registerVerifyEmail,
@@ -53,13 +52,6 @@ const useUserStore = defineStore('user', {
     // Reset user's information
     resetInfo() {
       this.$reset();
-    },
-
-    // Get user's information
-    async info() {
-      const res = await getUserInfo();
-
-      this.setInfo(res.data);
     },
 
     // Login

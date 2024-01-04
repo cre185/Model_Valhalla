@@ -220,6 +220,7 @@
           registrationDate = returnValue;
         });
         await getAvatar(userID!, jwt!).then((returnValue) => {
+          console.log(returnValue);
           avatar = returnValue;
         });
         await getPhone(userID!, jwt!).then((returnValue) => {

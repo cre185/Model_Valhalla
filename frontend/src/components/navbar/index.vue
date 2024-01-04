@@ -87,8 +87,10 @@
         <a-space :size="16">
           <span style="color: var(--color-text-1)">{{ $t('navbar.welcome') }}{{ userStore.username }}</span>
           <a-popover @mouseenter="resizeBigAvatar" @mouseleave="resizeSmallAvatar">
-            <a-avatar ref="myAvatar" id="userInfoPanelAvatar">
-              <img alt="用户头像" :src="userStore.avatar" />
+            <a-avatar ref="myAvatar"
+                      id="userInfoPanelAvatar"
+                      :image-url="userStore.avatar"
+            >
             </a-avatar>
             <template #content>
               <a-space direction="vertical">
