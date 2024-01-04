@@ -1,6 +1,6 @@
 name,description,domain,data_file,subjective,content_size
-"ceval_select","ceval_select","versatile","data/ceval_select.csv",0,200
-"cmmlu_select","cmmlu_select","versatile","data/cmmlu_select.csv",0,197
-"mmlu_select","mmlu_select","high_school_subjects","data/mmlu_select.csv",0,197
-"zbench_common","zbench_common","versatile","data/zbench_common.csv",1,63
-"zbench_emergent","zbench_emergent","versatile","data/zbench_emergent.csv",1,209
+"ceval_select","C-EVAL是一个用于评估中文基础模型的综合评估套件，旨在测试模型在中文语境下的知识和推理能力，以及在不同领域的泛化能力。本数据集为C-EVAL采用的数据集，包含200条数据，没有主观性内容。","versatile","data/ceval_select.csv",0,200
+"cmmlu_select","CMMLU是一个用于评估中文语言模型的综合评估套件，旨在测试模型在中文语境下的知识和推理能力，以及在不同领域的泛化能力。本数据集为CMMLU采用的数据集，包含197条数据，没有主观性内容。","versatile","data/cmmlu_select.csv",0,197
+"mmlu_select","MMLU是一个用于评估语言模型的综合评估套件，旨在测试模型在知识和推理方面的能力，以及在不同领域的泛化能力。本数据集针对高中知识层面，包含197条数据，没有主观性内容。","high_school_subjects","data/mmlu_select.csv",0,197
+"zbench_common","Z-BENCH是一个由真格基金的一支热情的AI团队开发的，为非技术用户准备的大语言模型（LLM）中文测试集1。它涵盖了基础能力、进阶能力和垂直能力三个方面。本数据集为Z-BENCH数据集的一部分，包含63条数据，且包含主观性内容。","versatile","data/zbench_common.csv",1,63
+"zbench_emergent","Z-BENCH是一个由真格基金的一支热情的AI团队开发的，为非技术用户准备的大语言模型（LLM）中文测试集1。它涵盖了基础能力、进阶能力和垂直能力三个方面。本数据集为Z-BENCH数据集的一部分，包含209条数据，且包含主观性内容。","versatile","data/zbench_emergent.csv",1,209

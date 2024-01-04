@@ -38,7 +38,7 @@ class Command(BaseCommand):
             if index == 0:
                 user[index].is_admin = True
             user[index].save()
-        # Create the five standard datasets
+        # Create the standard datasets
         df = pd.read_csv("user/management/commands/data/dataset.csv")
         for index, row in df.iterrows():
             dataset = Dataset(
@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 subjective=row['subjective'],
                 content_size=row['content_size'])
             dataset.save()
-        # Create the four standard llms
+        # Create the standard llms
         df = pd.read_csv("user/management/commands/data/llm.csv")
         for index, row in df.iterrows():
             llm = LLMs(
