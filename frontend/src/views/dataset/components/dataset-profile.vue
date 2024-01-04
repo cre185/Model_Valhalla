@@ -9,7 +9,6 @@
   const author = ref('');
   const domain = ref('');
   const tag = ref<string[]>([]);
-  const license = ref('');
   let oldFlag = false;
 
   const emit = defineEmits<{
@@ -24,7 +23,6 @@
     author.value = responseJson.author_name;
     domain.value = responseJson.domain;
     tag.value = responseJson.tag;
-    license.value = responseJson.license;
   });
 
   const inputRef = ref(null);
@@ -65,7 +63,6 @@
           description: description.value,
           domain: domain.value,
           tag: tag.value,
-          license: license.value
         };
         await updateDataset(props.datasetID, data);
         emit('updateModify');
@@ -142,12 +139,6 @@
                 {{ $t('searchDataset.tags.addTag') }}
               </a-tag>
             </a-space>
-          </a-card>
-        </a-row>
-        <a-row  id="row5">
-          <a-card :title="$t('dataset.license')" :bordered="false">
-            <span v-if="!props.updateNow">{{ license }}</span>
-            <a-input v-else v-model="license" :placeholder="$t('dataset.details.modifyLicense')" allow-clear />
           </a-card>
         </a-row>
       </a-col>
